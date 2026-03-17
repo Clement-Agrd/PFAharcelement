@@ -25,27 +25,18 @@ public class IsometricCameraController : MonoBehaviour
         HandleZoom();
 
         if (isLocked)
-        {
             FollowTarget();
-        }
         else
-        {
             HandleEdgeScrolling();
-        }
     }
 
     void HandleLockToggle()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
+        if (Input.GetKeyDown(KeyCode.Y))
             isLocked = !isLocked;
-        }
 
-        // Re-lock rapide
         if (Input.GetKeyDown(KeyCode.F))
-        {
             isLocked = true;
-        }
     }
 
     void FollowTarget()

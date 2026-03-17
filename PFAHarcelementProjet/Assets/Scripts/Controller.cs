@@ -1,25 +1,27 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class HadesController : MonoBehaviour
+public class HadesControllerAdvanced : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed = 8f;
-    public float rotationSpeed = 20f;
 
     [Header("Dash")]
-    public float dashSpeed = 20f;
+    public float dashSpeed = 22f;
     public float dashDuration = 0.2f;
     public float dashCooldown = 0.5f;
 
     [Header("Gravity")]
     public float gravity = -20f;
 
+    [Header("References")]
     public Transform cameraTransform;
 
     private CharacterController controller;
     private Vector3 velocity;
-    private Vector3 dashDirection;
+
+    private Vector3 mouseDirection;
+
     private float dashTimer;
     private float dashCooldownTimer;
     private bool isDashing;
@@ -34,9 +36,26 @@ public class HadesController : MonoBehaviour
 
     void Update()
     {
+        AimWithMouse();
         HandleDash();
         HandleMovement();
         ApplyGravity();
+    }
+
+    void AimWithMouse()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Plane groundPlane = new Plane(Vector3.up, transform.position);
+
+        if (groundPlane.Raycast(ray, out float distance))
+        {
+            Vector3 point = ray.GetPoint(distance);
+            mouseDirection = (point - transform.position).normalized;
+            mouseDirection.y = 0;
+
+            if (mouseDirection != Vector3.zero)
+                transform.forward = mouseDirection;
+        }
     }
 
     void HandleMovement()
@@ -61,13 +80,7 @@ public class HadesController : MonoBehaviour
 
             Vector3 moveDir = camForward * input.z + camRight * input.x;
 
-            // Rotation rapide (style Hades)
-            transform.forward = moveDir;
-
             controller.Move(moveDir.normalized * moveSpeed * Time.deltaTime);
-
-            // Stock direction pour dash
-            dashDirection = moveDir.normalized;
         }
     }
 
@@ -80,14 +93,11 @@ public class HadesController : MonoBehaviour
             isDashing = true;
             dashTimer = dashDuration;
             dashCooldownTimer = dashCooldown;
-
-            if (dashDirection == Vector3.zero)
-                dashDirection = transform.forward;
         }
 
         if (isDashing)
         {
-            controller.Move(dashDirection * dashSpeed * Time.deltaTime);
+            controller.Move(mouseDirection * dashSpeed * Time.deltaTime);
 
             dashTimer -= Time.deltaTime;
 
