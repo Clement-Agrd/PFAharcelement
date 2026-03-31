@@ -7,7 +7,6 @@ public class DebugTest : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            StageManager.Instance.GiveReward();
             StageManager.Instance.ShowChoices();
         }
     }

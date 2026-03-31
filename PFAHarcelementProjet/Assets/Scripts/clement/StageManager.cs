@@ -16,7 +16,11 @@ public class StageManager : MonoBehaviour
 
     void Start()
     {
-        ShowChoices();
+        // Prend automatiquement le premier choix du premier node
+        if (layout.nodes.Length > 0 && layout.nodes[0].choices.Length > 0)
+        {
+            SelectChoice(layout.nodes[0].choices[0]);
+        }
     }
 
     public void ShowChoices()
