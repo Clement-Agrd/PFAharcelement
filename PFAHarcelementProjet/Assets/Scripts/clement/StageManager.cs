@@ -7,6 +7,8 @@ public class StageManager : MonoBehaviour
     public StageLayout layout;
     private int index = 0;
 
+    private RoomChoice pendingChoice;
+
     void Awake()
     {
         Instance = this;
@@ -14,16 +16,40 @@ public class StageManager : MonoBehaviour
 
     void Start()
     {
-        LoadNext();
+        ShowChoices();
     }
 
-    public void LoadNext()
+    public void ShowChoices()
     {
-        if (index >= layout.rooms.Length)
+        if (index >= layout.nodes.Length)
             return;
 
-        RoomLoader.Instance.LoadRoom(layout.rooms[index]);
+        StageNode node = layout.nodes[index];
 
+        // 👉 ici tu affiches ton UI de choix
+        ChoiceUI.Instance.Show(node.choices);
+    }
+
+    public void SelectChoice(RoomChoice choice)
+    {
+        pendingChoice = choice;
+
+        RoomLoader.Instance.LoadRoom(choice.roomType);
         index++;
+    }
+
+    public void GiveReward()
+    {
+        if (pendingChoice == null) return;
+
+        switch (pendingChoice.rewardType)
+        {
+            case RewardType.Gold:
+                Debug.Log("Donner gold");
+                break;
+            case RewardType.Item:
+                Debug.Log("Donner item");
+                break;
+        }
     }
 }

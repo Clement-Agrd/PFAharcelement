@@ -14,7 +14,8 @@ public class RoomEndTrigger : MonoBehaviour
             triggered = true;
 
             // Charge la salle suivante
-            StageManager.Instance.LoadNext();
+            StageManager.Instance.GiveReward();
+            StageManager.Instance.ShowChoices();
         }
     }
 }
