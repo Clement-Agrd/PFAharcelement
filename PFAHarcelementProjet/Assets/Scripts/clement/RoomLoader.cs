@@ -65,7 +65,7 @@ public class RoomLoader : MonoBehaviour
         yield return StartCoroutine(SlideInRoomStylized(currentRoom));
     }
 
-    // 🔻 SORTIE
+    // SORTIE
     private IEnumerator SlideOutRoom(GameObject room)
     {
         Transform[] parts = room.GetComponentsInChildren<Transform>();
@@ -104,7 +104,7 @@ public class RoomLoader : MonoBehaviour
         }
     }
 
-    // 🔺 ENTRÉE
+    // ENTRÉE
     private IEnumerator SlideInRoomStylized(GameObject room)
     {
         Transform[] parts = room.GetComponentsInChildren<Transform>();
