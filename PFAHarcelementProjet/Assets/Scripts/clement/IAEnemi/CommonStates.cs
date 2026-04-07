@@ -37,12 +37,23 @@ public class ChaseState : EnemyStateBase
             return;
         }
 
-        Vector2 dir = (enemy.PlayerTransform.position - enemy.transform.position).normalized;
+        Vector3 dir = enemy.PlayerTransform.position - enemy.transform.position;
+        dir.y = 0f; // 🔥 on ignore la hauteur
+
+        dir = dir.normalized;
+
         enemy.Rb.MovePosition(enemy.Rb.position + dir * enemy.moveSpeed * Time.fixedDeltaTime);
 
-        // Flip sprite
-        if (dir.x != 0)
-            enemy.transform.localScale = new Vector3(Mathf.Sign(dir.x), 1, 1);
+
+        Vector3 lookDir = enemy.PlayerTransform.position - enemy.transform.position;
+        lookDir.y = 0f;
+
+        enemy.transform.rotation =
+            Quaternion.Slerp(
+                enemy.transform.rotation,
+                Quaternion.LookRotation(lookDir),
+                Time.deltaTime * 1f
+            );
     }
 }
 

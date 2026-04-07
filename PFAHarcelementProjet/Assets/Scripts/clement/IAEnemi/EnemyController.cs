@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Rigidbody))]
 public abstract class EnemyController : MonoBehaviour
 {
     [Header("Stats")]
@@ -16,7 +16,7 @@ public abstract class EnemyController : MonoBehaviour
     // Runtime
     public float          CurrentHealth { get; private set; }
     public Transform      PlayerTransform { get; private set; }
-    public Rigidbody2D    Rb            { get; private set; }
+    public Rigidbody    Rb            { get; private set; }
     public Animator       Anim          { get; private set; }
     public StateMachine   StateMachine  { get; private set; }
 
@@ -36,7 +36,7 @@ public abstract class EnemyController : MonoBehaviour
 
     protected virtual void Awake()
     {
-        Rb           = GetComponent<Rigidbody2D>();
+        Rb           = GetComponent<Rigidbody>();
         Anim         = GetComponent<Animator>();
         StateMachine = new StateMachine();
         CurrentHealth = maxHealth;
