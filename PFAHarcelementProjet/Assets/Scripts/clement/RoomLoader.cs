@@ -31,19 +31,18 @@ public class RoomLoader : MonoBehaviour
     [SerializeField] private float totalAnimDuration = 2f;
 
     private GameObject currentRoom;
+    private PlayerController player;
 
     void Awake()
     {
         Instance = this;
-    }
-
-    public void LoadRoom(RoomType type)
-    {
-        StartCoroutine(TransitionAndLoad(type));
+        player   = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
     }
 
     private IEnumerator TransitionAndLoad(RoomType type)
     {
+        player.SetMovement(false); // 🔒 bloque le joueur
+
         if (currentRoom != null)
         {
             yield return StartCoroutine(SlideOutRoom(currentRoom));
@@ -54,17 +53,23 @@ public class RoomLoader : MonoBehaviour
         switch (type)
         {
             case RoomType.Combat: prefab = combatRooms[Random.Range(0, combatRooms.Length)]; break;
-            case RoomType.Elite:  prefab = eliteRooms[Random.Range(0, eliteRooms.Length)]; break;
-            case RoomType.Shop:   prefab = shopRooms[Random.Range(0, shopRooms.Length)]; break;
-            case RoomType.Event:  prefab = eventRoom; break;
-            case RoomType.Boss:   prefab = bossRoom; break;
+            case RoomType.Elite:  prefab = eliteRooms[Random.Range(0, eliteRooms.Length)];  break;
+            case RoomType.Shop:   prefab = shopRooms[Random.Range(0, shopRooms.Length)];    break;
+            case RoomType.Event:  prefab = eventRoom;                                        break;
+            case RoomType.Boss:   prefab = bossRoom;                                         break;
         }
 
         currentRoom = Instantiate(prefab, spawnPoint.position, Quaternion.identity, roomContainer);
 
         yield return StartCoroutine(SlideInRoomStylized(currentRoom));
+
+        player.SetMovement(true); // 🔓 débloque quand la salle est prête
     }
 
+    public void LoadRoom(RoomType type)
+    {
+        StartCoroutine(TransitionAndLoad(type));
+    }
     // SORTIE
     private IEnumerator SlideOutRoom(GameObject room)
     {
