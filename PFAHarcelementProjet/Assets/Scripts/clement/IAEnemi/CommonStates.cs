@@ -5,7 +5,7 @@ public class IdleState : EnemyStateBase
 {
     public IdleState(EnemyController e, StateMachine sm) : base(e, sm) { }
 
-    public override void Enter()  => enemy.Anim.Play("Idle");
+    public override void Enter() => enemy.PlayAnim("Idle");
 
     public override void Update()
     {
@@ -19,7 +19,7 @@ public class ChaseState : EnemyStateBase
 {
     public ChaseState(EnemyController e, StateMachine sm) : base(e, sm) { }
 
-    public override void Enter()  => enemy.Anim.Play("Walk");
+    public override void Enter() => enemy.PlayAnim("Walk");
 
     public override void FixedUpdate()
     {
@@ -38,21 +38,19 @@ public class ChaseState : EnemyStateBase
         }
 
         Vector3 dir = enemy.PlayerTransform.position - enemy.transform.position;
-        dir.y = 0f; // 🔥 on ignore la hauteur
-
-        dir = dir.normalized;
+        dir.y = 0f;
+        dir   = dir.normalized;
 
         enemy.Rb.MovePosition(enemy.Rb.position + dir * enemy.moveSpeed * Time.fixedDeltaTime);
-
 
         Vector3 lookDir = enemy.PlayerTransform.position - enemy.transform.position;
         lookDir.y = 0f;
 
-        enemy.transform.rotation =
-            Quaternion.Slerp(
+        if (lookDir != Vector3.zero)
+            enemy.transform.rotation = Quaternion.Slerp(
                 enemy.transform.rotation,
                 Quaternion.LookRotation(lookDir),
-                Time.deltaTime * 1f
+                Time.deltaTime * 10f
             );
     }
 }
@@ -62,13 +60,12 @@ public class AttackState : EnemyStateBase
 {
     private float timer;
 
-    public AttackState(EnemyController e, StateMachine sm)
-        : base(e, sm) {}
+    public AttackState(EnemyController e, StateMachine sm) : base(e, sm) { }
 
     public override void Enter()
     {
         timer = 0f;
-        enemy.Anim.Play("Attack");
+        enemy.PlayAnim("Attack");
     }
 
     public override void Update()
@@ -101,7 +98,7 @@ public class HurtState : EnemyStateBase
     public override void Enter()
     {
         timer = 0f;
-        enemy.Anim.Play("Hurt");
+        enemy.PlayAnim("Hurt");
     }
 
     public override void Update()
@@ -119,9 +116,9 @@ public class DeathState : EnemyStateBase
 
     public override void Enter()
     {
-        enemy.Anim.Play("Death");
-        enemy.Rb.linearVelocity    = Vector2.zero;
-        enemy.Rb.isKinematic = true;
+        enemy.PlayAnim("Death");
+        enemy.Rb.linearVelocity = Vector3.zero;
+        enemy.Rb.isKinematic    = true;
         enemy.Die();
     }
 }

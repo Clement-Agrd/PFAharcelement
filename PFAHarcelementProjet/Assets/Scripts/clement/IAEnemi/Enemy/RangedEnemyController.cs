@@ -7,25 +7,31 @@ public class RangedEnemyController : EnemyController
 
     protected override void InitStates()
     {
-        idleState = new IdleState(this, StateMachine);
-        chaseState = new ChaseState(this, StateMachine);
-        attackState = new AttackState(this, StateMachine);
-
-        attackRange = 6f;
+        // Valeurs AVANT de créer les états
+        attackRange    = 6f;
         attackCooldown = 1.6f;
+        chaseRange     = 12f; // 👈 donne de la marge pour voir le chase
+
+        idleState   = new IdleState(this, StateMachine);
+        chaseState  = new ChaseState(this, StateMachine);
+        attackState = new AttackState(this, StateMachine);
+        hurtState   = new HurtState(this, StateMachine);   // 👈 manquant
+        deathState  = new DeathState(this, StateMachine);  // 👈 manquant
     }
 
+    // ✅ RangedEnemyController.cs
     public override void PerformAttack()
     {
-        Vector2 dir =
-            (PlayerTransform.position - firePoint.position).normalized;
+        if (PlayerTransform == null) return;
+
+        Vector3 dir = (PlayerTransform.position - firePoint.position).normalized;
 
         GameObject projectile = Instantiate(
             projectilePrefab,
             firePoint.position,
-            Quaternion.identity
+            Quaternion.LookRotation(dir) // oriente le sprite/mesh aussi
         );
 
-        projectile.GetComponent<Rigidbody2D>().linearVelocity = dir * 6f;
+        projectile.GetComponent<ProjectileEnemy>()?.Init(dir);
     }
 }

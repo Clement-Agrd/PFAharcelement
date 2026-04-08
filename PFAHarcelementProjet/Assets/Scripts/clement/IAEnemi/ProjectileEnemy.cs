@@ -18,9 +18,6 @@ public class ProjectileEnemy : MonoBehaviour
     {
         // Détruire après un certain temps
         Destroy(gameObject, lifeTime);
-
-        // Appliquer la vitesse
-        rb.linearVelocity = transform.forward * speed;
     }
 
     void OnTriggerEnter(Collider other)
@@ -39,5 +36,10 @@ public class ProjectileEnemy : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    
+    public void Init(Vector3 direction)
+    {
+        rb.linearVelocity = direction.normalized * speed;
     }
 }

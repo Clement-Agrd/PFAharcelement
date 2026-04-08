@@ -3,12 +3,14 @@
 public class MeleeEnemyController : EnemyController
 {
     public int damage = 10;
-
+    
     protected override void InitStates()
     {
-        idleState = new IdleState(this, StateMachine);
-        chaseState = new ChaseState(this, StateMachine);
+        idleState   = new IdleState(this, StateMachine);
+        chaseState  = new ChaseState(this, StateMachine);
         attackState = new AttackState(this, StateMachine);
+        hurtState   = new HurtState(this, StateMachine); 
+        deathState  = new DeathState(this, StateMachine);
     }
 
     public override void PerformAttack()

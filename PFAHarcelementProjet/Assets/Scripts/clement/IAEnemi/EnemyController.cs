@@ -52,6 +52,17 @@ public abstract class EnemyController : MonoBehaviour
     {
         StateMachine.Initialize(idleState);
     }
+    
+    // ✅ EnemyController.cs — ajoute cette méthode
+    public void PlayAnim(string stateName)
+    {
+        if (Anim == null) return;
+        if (!Anim.isActiveAndEnabled) return;
+
+        // Vérifie que le state existe avant de jouer (évite le warning Unity)
+        if (Anim.HasState(0, Animator.StringToHash(stateName)))
+            Anim.Play(stateName);
+    }
 
     protected virtual void Update()       => StateMachine.Update();
     protected virtual void FixedUpdate()  => StateMachine.FixedUpdate();
@@ -63,7 +74,7 @@ public abstract class EnemyController : MonoBehaviour
     public float DistanceToPlayer()
     {
         if (PlayerTransform == null) return float.MaxValue;
-        return Vector2.Distance(transform.position, PlayerTransform.position);
+        return Vector3.Distance(transform.position, PlayerTransform.position);
     }
 
     public bool IsPlayerInRange(float range) => DistanceToPlayer() <= range;
