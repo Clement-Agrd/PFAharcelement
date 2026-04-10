@@ -9,7 +9,7 @@ public abstract class EnemyController : MonoBehaviour
     public float attackRange = 1.5f;
     public float chaseRange  = 8f;
     public float attackCooldown = 1.2f;
-    
+    public float stopChaseRange = 4f; // Distance à laquelle l'ennemi arrête de chase
     
     public abstract void PerformAttack();
 

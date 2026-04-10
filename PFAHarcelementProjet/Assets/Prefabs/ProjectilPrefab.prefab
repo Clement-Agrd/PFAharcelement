@@ -153,6 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db642d69db334652aff66771b3397a90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectileEnemy
-  speed: 10
+  speed: 20
   lifeTime: 5
   damage: 10

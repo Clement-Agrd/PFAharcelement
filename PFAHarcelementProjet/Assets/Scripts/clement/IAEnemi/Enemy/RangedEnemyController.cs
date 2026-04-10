@@ -7,11 +7,6 @@ public class RangedEnemyController : EnemyController
 
     protected override void InitStates()
     {
-        // Valeurs AVANT de créer les états
-        attackRange    = 6f;
-        attackCooldown = 1.6f;
-        chaseRange     = 12f; // 👈 donne de la marge pour voir le chase
-
         idleState   = new IdleState(this, StateMachine);
         chaseState  = new ChaseState(this, StateMachine);
         attackState = new AttackState(this, StateMachine);

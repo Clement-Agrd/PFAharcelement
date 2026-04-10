@@ -3,14 +3,16 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    [Header("Joysticks")]
-    public VirtualJoystick moveJoystick;
-    public VirtualJoystick aimJoystick;
+    public VirtualJoystick aimJoystick; // mobile
+    public Vector2 MoveInput => moveInput;
+    
 
-    private PlayerControls controls;
+    PlayerControls controls;
 
-    private Vector2 keyboardMove;
-    private Vector2 gamepadAim;
+    Vector2 aimInput;
+    Vector2 moveInput;
+    bool shootPressed;
+    bool meleePressed;
 
     void Awake()
     {
@@ -20,44 +22,28 @@ public class PlayerInputHandler : MonoBehaviour
     void OnEnable()
     {
         controls.Enable();
+        
+        controls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        controls.Player.Move.canceled  += _  => moveInput = Vector2.zero;
 
-        controls.Player.Move.performed += ctx => keyboardMove = ctx.ReadValue<Vector2>();
-        controls.Player.Move.canceled += ctx => keyboardMove = Vector2.zero;
+        // AIM (manette / souris delta / joystick virtuel)
+        controls.Player.Aim.performed += ctx => aimInput = ctx.ReadValue<Vector2>();
+        controls.Player.Aim.canceled += _ => aimInput = Vector2.zero;
 
-        controls.Player.Aim.performed += ctx => gamepadAim = ctx.ReadValue<Vector2>();
-        controls.Player.Aim.canceled += ctx => gamepadAim = Vector2.zero;
+        // SHOOT
+        controls.Player.Shoot.performed += _ => shootPressed = true;
+        controls.Player.Shoot.canceled += _ => shootPressed = false;
+
+        // MELEE
+        controls.Player.Attack.performed += _ => meleePressed = true;
+        controls.Player.Attack.canceled += _ => meleePressed = false;
     }
 
-    void OnDisable()
-    {
-        controls.Disable();
-    }
+    public Vector2 AimInput =>
+        aimJoystick != null && aimJoystick.Input.magnitude > 0.2f
+            ? aimJoystick.Input
+            : aimInput;
 
-    public Vector2 MoveInput
-    {
-        get
-        {
-            Vector2 joystick = moveJoystick != null ? moveJoystick.Input : Vector2.zero;
-
-            // Priorité joystick mobile
-            if (joystick.magnitude > 0.1f)
-                return joystick;
-
-            // Sinon clavier / manette
-            return keyboardMove;
-        }
-    }
-
-    public Vector2 AimInput
-    {
-        get
-        {
-            Vector2 joystick = aimJoystick != null ? aimJoystick.Input : Vector2.zero;
-
-            if (joystick.magnitude > 0.1f)
-                return joystick;
-
-            return gamepadAim;
-        }
-    }
+    public bool ShootPressed => shootPressed;
+    public bool MeleePressed => meleePressed;
 }

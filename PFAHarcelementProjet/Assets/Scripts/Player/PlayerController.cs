@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     private PlayerInputHandler  input;
     private float               verticalVelocity;
 
+
     void Awake()
     {
         controller = GetComponent<CharacterController>();

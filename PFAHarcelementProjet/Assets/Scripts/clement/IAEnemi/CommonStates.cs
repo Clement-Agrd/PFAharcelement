@@ -25,21 +25,26 @@ public class ChaseState : EnemyStateBase
     {
         if (enemy.PlayerTransform == null) return;
 
-        if (enemy.IsPlayerInRange(enemy.attackRange))
-        {
-            stateMachine.ChangeState(enemy.GetAttackState());
-            return;
-        }
+        float dist = enemy.DistanceToPlayer();
 
-        if (!enemy.IsPlayerInRange(enemy.chaseRange))
+        // ❌ Trop loin → retour idle
+        if (dist > enemy.chaseRange)
         {
             stateMachine.ChangeState(enemy.GetIdleState());
             return;
         }
 
+        // ✅ Assez proche → stop déplacement et attaque
+        if (dist <= enemy.stopChaseRange)
+        {
+            stateMachine.ChangeState(enemy.GetAttackState());
+            return;
+        }
+
+        // 👉 Sinon → continuer à chase
         Vector3 dir = enemy.PlayerTransform.position - enemy.transform.position;
         dir.y = 0f;
-        dir   = dir.normalized;
+        dir = dir.normalized;
 
         enemy.Rb.MovePosition(enemy.Rb.position + dir * enemy.moveSpeed * Time.fixedDeltaTime);
 
@@ -72,12 +77,16 @@ public class AttackState : EnemyStateBase
     {
         timer += Time.deltaTime;
 
-        if (!enemy.IsPlayerInRange(enemy.attackRange))
+        float dist = enemy.DistanceToPlayer();
+
+        // ❌ Trop loin → revenir en chase
+        if (dist > enemy.attackRange)
         {
             stateMachine.ChangeState(enemy.GetChaseState());
             return;
         }
 
+        // ✅ Attaque en boucle
         if (timer >= enemy.attackCooldown)
         {
             enemy.PerformAttack();
