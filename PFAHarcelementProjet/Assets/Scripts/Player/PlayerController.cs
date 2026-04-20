@@ -1,4 +1,4 @@
-﻿// Scripts/Player/PlayerController.cs
+// Scripts/Player/PlayerController.cs
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -40,16 +40,7 @@ public class PlayerController : MonoBehaviour
         Vector2 moveInput = input.MoveInput;
         Vector3 move      = new Vector3(moveInput.x, 0, moveInput.y);
 
-        if (move.magnitude > 0.1f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(move);
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetRotation,
-                rotationSpeed * Time.deltaTime
-            );
-        }
-
+        // On injecte la gravité dans le déplacement vertical
         move.y = verticalVelocity;
         controller.Move(move * moveSpeed * Time.deltaTime);
     }

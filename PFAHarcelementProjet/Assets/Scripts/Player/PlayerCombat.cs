@@ -1,10 +1,15 @@
-﻿// Scripts/Player/PlayerCombat.cs
+// Scripts/Player/PlayerCombat.cs
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
     public Transform  firePoint;
     public GameObject projectile;
+    public float fireRate = 0.25f;
+    public PlayerMelee melee;
+    public float rotationSpeed = 15f;
+    
+    Quaternion targetRotation;
 
     private PlayerInputHandler input;
     private PlayerStats        stats;
@@ -15,26 +20,52 @@ public class PlayerCombat : MonoBehaviour
         input = GetComponent<PlayerInputHandler>();
         stats = GetComponent<PlayerStats>();
     }
+    
+    Vector3 GetMoveDirection()
+    {
+        Vector2 move = input.MoveInput;
+
+        if (move.magnitude > 0.1f)
+        {
+            return new Vector3(move.x, 0f, move.y).normalized;
+        }
+
+        return Vector3.zero;
+    }
+
+
 
     void Update()
     {
-        Vector3 direction = GetAimDirection();
+        Vector3 aimDirection = GetAimDirection();
+        Vector3 moveDirection = GetMoveDirection();
 
-        // MOBILE : joystick droit = vise + tire automatiquement
-        bool mobileAutoShoot = input.aimJoystick != null && input.aimJoystick.Input.magnitude > 0.3f;
+        bool mobileAutoShoot =
+            input.aimJoystick != null &&
+            input.aimJoystick.Input.magnitude > 0.3f;
 
-        if (direction != Vector3.zero)
+        bool isShooting = input.ShootPressed || mobileAutoShoot;
+
+        // 🔁 ROTATION
+        if (isShooting && aimDirection != Vector3.zero)
         {
-            if (input.ShootPressed || mobileAutoShoot)
-                Shoot(direction);
+            RotateTowards(aimDirection);
+            Shoot(aimDirection);
+        }
+        else if (!isShooting && moveDirection != Vector3.zero)
+        {
+            RotateTowards(moveDirection);
         }
 
-        if (input.MeleePressed)
-            Debug.Log("👊 Attaque mêlée");
+        // 👊 Mêlée
+        if (input.MeleePressed && melee != null)
+        {
+            melee.TryAttack();
+        }
     }
 
-    // ─── DIRECTION DE VISÉE ──────────────────────────────────────────────────
 
+    // 🎯 DIRECTION DE VISÉE
     Vector3 GetAimDirection()
     {
         // 🎮 Manette / Mobile
@@ -69,7 +100,8 @@ public class PlayerCombat : MonoBehaviour
         direction.y = 0;
         direction.Normalize();
 
-        firePoint.rotation = Quaternion.LookRotation(direction);
+        firePoint.rotation = transform.rotation;
+        Instantiate(projectile, firePoint.position, firePoint.rotation);
 
         // Instanciation + injection des stats dans le projectile
         GameObject proj = Instantiate(projectile, firePoint.position, firePoint.rotation);
@@ -83,5 +115,18 @@ public class PlayerCombat : MonoBehaviour
         }
 
         nextFire = Time.time + fireRate;
+    }
+    void RotateTowards(Vector3 direction)
+    {
+        direction.y = 0f;
+        if (direction == Vector3.zero) return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            targetRotation,
+            rotationSpeed * Time.deltaTime
+        );
     }
 }

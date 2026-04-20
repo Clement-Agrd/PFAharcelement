@@ -37,7 +37,6 @@ public class PlayerShoot : MonoBehaviour
         }
     }
 
-
     
 
     Vector3 GetMouseDirection()

@@ -3,14 +3,13 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    public VirtualJoystick aimJoystick; // mobile
-    public Vector2 MoveInput => moveInput;
-    
+    public VirtualJoystick moveJoystick; // mobile déplacement
+    public VirtualJoystick aimJoystick;  // mobile visée
 
     PlayerControls controls;
 
-    Vector2 aimInput;
     Vector2 moveInput;
+    Vector2 aimInput;
     bool shootPressed;
     bool meleePressed;
 
@@ -22,23 +21,31 @@ public class PlayerInputHandler : MonoBehaviour
     void OnEnable()
     {
         controls.Enable();
-        
+
+        // MOVE
         controls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         controls.Player.Move.canceled  += _  => moveInput = Vector2.zero;
 
-        // AIM (manette / souris delta / joystick virtuel)
+        // AIM (manette)
         controls.Player.Aim.performed += ctx => aimInput = ctx.ReadValue<Vector2>();
-        controls.Player.Aim.canceled += _ => aimInput = Vector2.zero;
+        controls.Player.Aim.canceled  += _  => aimInput = Vector2.zero;
 
         // SHOOT
         controls.Player.Shoot.performed += _ => shootPressed = true;
-        controls.Player.Shoot.canceled += _ => shootPressed = false;
+        controls.Player.Shoot.canceled  += _ => shootPressed = false;
 
         // MELEE
         controls.Player.Attack.performed += _ => meleePressed = true;
-        controls.Player.Attack.canceled += _ => meleePressed = false;
+        controls.Player.Attack.canceled  += _ => meleePressed = false;
     }
 
+    // ✅ MOVE
+    public Vector2 MoveInput =>
+        moveJoystick != null && moveJoystick.Input.magnitude > 0.2f
+            ? moveJoystick.Input
+            : moveInput;
+
+    // ✅ AIM
     public Vector2 AimInput =>
         aimJoystick != null && aimJoystick.Input.magnitude > 0.2f
             ? aimJoystick.Input

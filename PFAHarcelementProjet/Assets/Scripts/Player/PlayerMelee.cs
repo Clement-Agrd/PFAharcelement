@@ -14,7 +14,6 @@ public class PlayerMelee : MonoBehaviour
     {
         if (Time.time < nextAttack) return;
 
-        // 🔥 Joue animation quoi qu'il arrive
         if (animator != null)
         {
             animator.ResetTrigger("Attack");
@@ -46,7 +45,6 @@ public class PlayerMelee : MonoBehaviour
             }
         }
 
-        // Attaque seulement si ennemi
         if (closestEnemy != null)
         {
             Attack(closestEnemy);
