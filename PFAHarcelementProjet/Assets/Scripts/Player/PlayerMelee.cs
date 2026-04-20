@@ -6,11 +6,20 @@ public class PlayerMelee : MonoBehaviour
     public float attackCooldown = 0.5f;
     public int damage = 20;
 
+    public Animator animator;
+
     float nextAttack;
 
     public void TryAttack()
     {
         if (Time.time < nextAttack) return;
+
+        // 🔥 Joue animation quoi qu'il arrive
+        if (animator != null)
+        {
+            animator.ResetTrigger("Attack");
+            animator.SetTrigger("Attack");
+        }
 
         Collider[] hits = Physics.OverlapSphere(
             transform.position,
@@ -37,11 +46,13 @@ public class PlayerMelee : MonoBehaviour
             }
         }
 
+        // Attaque seulement si ennemi
         if (closestEnemy != null)
         {
             Attack(closestEnemy);
-            nextAttack = Time.time + attackCooldown;
         }
+
+        nextAttack = Time.time + attackCooldown;
     }
 
     void Attack(Transform enemy)
