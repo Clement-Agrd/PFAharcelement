@@ -1,5 +1,58 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2835188453624644382
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 969216620953856863}
+  - component: {fileID: 1162263463331806339}
+  m_Layer: 3
+  m_Name: PlayerHitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &969216620953856863
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2835188453624644382}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.041}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 884616890281227949}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1162263463331806339
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2835188453624644382}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.1, y: 0.2, z: 0.6}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &850181021901558086
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -125,7 +178,10 @@ PrefabInstance:
     - {fileID: 5334037119324981776, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
     m_RemovedGameObjects:
     - {fileID: -3129169844198408572, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 969216620953856863}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
       insertIndex: -1
@@ -148,6 +204,18 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1523878409773160722}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7664396945085282298}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1294674083771397067}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4505299890611462188}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5693633082057436255}
   m_SourcePrefab: {fileID: 100100000, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
 --- !u!1 &508091965707234327 stripped
 GameObject:
@@ -324,7 +392,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77db1f6070a2499895fe4817ccd0f1c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 6
   rotationSpeed: 15
   gravity: -20
 --- !u!114 &9058250058556949396
@@ -339,6 +406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 722e856fc41c4ebe8155ee731ef6f507, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputHandler
+  moveJoystick: {fileID: 0}
   aimJoystick: {fileID: 0}
 --- !u!114 &2508467873361170745
 MonoBehaviour:
@@ -365,7 +433,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 50524477cbbde4c48b305bf91ca05765, type: 2}
-  m_CullingMode: 0
+  m_CullingMode: 2
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -391,6 +459,68 @@ MonoBehaviour:
   firePoint: {fileID: 884616890281227949}
   projectile: {fileID: 8152043541084529555, guid: caaa49321c411b54787ea5c8a55529bb, type: 3}
   fireRate: 0.25
+  melee: {fileID: 7664396945085282298}
+  rotationSpeed: 15
+--- !u!114 &7664396945085282298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 508091965707234327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69c26ce4333749fda7f1a0512efd64ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMelee
+  attackRange: 2
+  attackCooldown: 0.5
+  damage: 20
+  animator: {fileID: 6754660798104594037}
+--- !u!114 &1294674083771397067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 508091965707234327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f820c77a322143a3a3a8b394b0cb5457, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  baseData: {fileID: 11400000, guid: fd3c0defc1cdf244f8fac2128505a1c7, type: 2}
+--- !u!114 &4505299890611462188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 508091965707234327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c6fb47e82744b4c8d7e21b4b50d4c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  onHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &5693633082057436255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 508091965707234327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d353aa1bd245e21469b78d754d6f2269, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TestBuff
+  playerStats: {fileID: 1294674083771397067}
 --- !u!4 &884616890281227949 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}

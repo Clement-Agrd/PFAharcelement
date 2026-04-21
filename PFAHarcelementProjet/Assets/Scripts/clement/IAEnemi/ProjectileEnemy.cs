@@ -6,38 +6,43 @@ public class ProjectileEnemy : MonoBehaviour
     public float speed = 10f;
     public float lifeTime = 5f;
     public int damage = 10;
-
-    private Rigidbody rb;
-
+    int playerHitboxLayer;
+    
+    Rigidbody rb;
+    
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        playerHitboxLayer = LayerMask.NameToLayer("PlayerHitbox");
     }
+
 
     void Start()
     {
-        // Détruire après un certain temps
         Destroy(gameObject, lifeTime);
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        // ✅ HITBOX JOUEUR (pas le CharacterController)
+        if (other.gameObject.layer == playerHitboxLayer)
         {
-            Debug.Log("💥 Player hit");
+            Debug.Log("💥 Player hit (hitbox)");
 
-            // Ici tu pourras appeler un script de vie plus tard
-            // other.GetComponent<PlayerHealth>().TakeDamage(damage);
+            // Exemple plus tard :
+            // other.GetComponentInParent<PlayerHealth>()?.TakeDamage(damage);
 
             Destroy(gameObject);
+            return;
         }
 
+        // ✅ Décors
         if (other.CompareTag("Wall") || other.CompareTag("Obstacle"))
         {
             Destroy(gameObject);
         }
     }
-    
+
     public void Init(Vector3 direction)
     {
         rb.linearVelocity = direction.normalized * speed;

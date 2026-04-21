@@ -9,6 +9,15 @@ public class Projectile : MonoBehaviour
 
     public float lifetime = 5f;
 
+    int playerLayer;
+    int playerHitboxLayer;
+
+    void Awake()
+    {
+        playerLayer        = LayerMask.NameToLayer("Player");
+        playerHitboxLayer  = LayerMask.NameToLayer("PlayerHitbox");
+    }
+
     void Start()
     {
         Destroy(gameObject, lifetime);
@@ -21,20 +30,26 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // Ignore le joueur lui-même
-        if (other.CompareTag("Player")) return;
+        // ✅ Ignore joueur + hitbox joueur
+        if (other.gameObject.layer == playerLayer ||
+            other.gameObject.layer == playerHitboxLayer)
+        {
+            return;
+        }
 
         IDamageable target = other.GetComponent<IDamageable>();
         if (target != null)
         {
             target.TakeDamage(damage);
 
-            // Vol de vie : renvoie les HP au joueur
+            // Vol de vie
             if (lifeStealRatio > 0f)
             {
                 PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
                 if (playerHealth != null)
+                {
                     playerHealth.Heal(damage * lifeStealRatio);
+                }
             }
         }
 

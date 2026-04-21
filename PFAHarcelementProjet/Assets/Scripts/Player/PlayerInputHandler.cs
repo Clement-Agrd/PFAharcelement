@@ -12,7 +12,7 @@ public class PlayerInputHandler : MonoBehaviour
     Vector2 aimInput;
     bool shootPressed;
     bool meleePressed;
-
+    bool dashPressed;
     void Awake()
     {
         controls = new PlayerControls();
@@ -37,6 +37,9 @@ public class PlayerInputHandler : MonoBehaviour
         // MELEE
         controls.Player.Attack.performed += _ => meleePressed = true;
         controls.Player.Attack.canceled  += _ => meleePressed = false;
+
+        controls.Player.Dash.performed += _ => dashPressed = true;
+        controls.Player.Dash.canceled  += _ => dashPressed = false;
     }
 
     // ✅ MOVE
@@ -53,4 +56,5 @@ public class PlayerInputHandler : MonoBehaviour
 
     public bool ShootPressed => shootPressed;
     public bool MeleePressed => meleePressed;
+    public bool DashPressed => dashPressed;
 }

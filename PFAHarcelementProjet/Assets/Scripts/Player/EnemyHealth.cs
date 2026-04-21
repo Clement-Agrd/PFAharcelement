@@ -1,37 +1,38 @@
 ﻿using UnityEngine;
 
-public class EnemyHealth : MonoBehaviour
+public class EnemyHealth : MonoBehaviour, IDamageable
 {
     [Header("Health")]
-    public int maxHealth = 100;
+    public float maxHealth = 100f;
 
-    private int currentHealth;
+    float currentHealth;
 
     void Start()
     {
         currentHealth = maxHealth;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         currentHealth -= damage;
 
-        Debug.Log(gameObject.name + " prend " + damage + " dégâts");
+        Debug.Log($"{gameObject.name} prend {damage} dégâts");
 
-        if (currentHealth <= 0)
+        if (currentHealth <= 0f)
         {
             Die();
         }
     }
 
+    public bool IsDead { get; }
+
     void Die()
     {
-        Debug.Log(gameObject.name + " est mort");
-
+        Debug.Log($"{gameObject.name} est mort");
         Destroy(gameObject);
     }
 
-    // Gizmo pour voir l'ennemi
+    // Gizmo debug
     void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
