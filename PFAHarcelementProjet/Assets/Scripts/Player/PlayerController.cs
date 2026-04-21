@@ -1,4 +1,5 @@
-// Scripts/Player/PlayerController.cs
+
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -7,10 +8,17 @@ public class PlayerController : MonoBehaviour
     public float rotationSpeed = 15f;
     public float gravity       = -20f;
 
+    [Header("Dash mêlée")]
+    public float dashSpeed    = 18f;
+    public float dashDuration = 0.12f;
+
     private CharacterController controller;
     private PlayerInputHandler  input;
     private PlayerStats         stats;
     private float               verticalVelocity;
+
+    private bool    isDashing;
+    private Vector3 dashDirection;
 
     void Awake()
     {
@@ -22,7 +30,9 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         ApplyGravity();
-        Move();
+
+        if (!isDashing)
+            Move();
     }
 
     void ApplyGravity()
@@ -35,15 +45,51 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        float moveSpeed = stats.GetStat(StatType.MoveSpeed); // ← vient de PlayerStats
+        float moveSpeed = stats.GetStat(StatType.MoveSpeed);
 
         Vector2 moveInput = input.MoveInput;
         Vector3 move      = new Vector3(moveInput.x, 0, moveInput.y);
 
-        // On injecte la gravité dans le déplacement vertical
+        if (move.magnitude > 0.1f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(move);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                rotationSpeed * Time.deltaTime
+            );
+        }
+
         move.y = verticalVelocity;
         controller.Move(move * moveSpeed * Time.deltaTime);
     }
+
+    // ─── Dash appelé par PlayerMelee ─────────────────────────────────────────
+
+    public void StartDash(Vector3 direction)
+    {
+        if (isDashing) return;
+        StartCoroutine(DashCoroutine(direction));
+    }
+
+    IEnumerator DashCoroutine(Vector3 direction)
+    {
+        isDashing = true;
+
+        float elapsed = 0f;
+        while (elapsed < dashDuration)
+        {
+            Vector3 move = direction * dashSpeed;
+            move.y = verticalVelocity;
+            controller.Move(move * Time.deltaTime);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        isDashing = false;
+    }
+
+    public bool IsDashing => isDashing;
 
     public void SetMovement(bool enabled)
     {

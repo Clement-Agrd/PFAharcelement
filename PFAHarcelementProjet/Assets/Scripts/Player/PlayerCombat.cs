@@ -26,18 +26,14 @@ public class PlayerCombat : MonoBehaviour
         Vector2 move = input.MoveInput;
 
         if (move.magnitude > 0.1f)
-        {
             return new Vector3(move.x, 0f, move.y).normalized;
-        }
 
         return Vector3.zero;
     }
 
-
-
     void Update()
     {
-        Vector3 aimDirection = GetAimDirection();
+        Vector3 aimDirection  = GetAimDirection();
         Vector3 moveDirection = GetMoveDirection();
 
         bool mobileAutoShoot =
@@ -46,7 +42,7 @@ public class PlayerCombat : MonoBehaviour
 
         bool isShooting = input.ShootPressed || mobileAutoShoot;
 
-        // 🔁 ROTATION
+        // ROTATION
         if (isShooting && aimDirection != Vector3.zero)
         {
             RotateTowards(aimDirection);
@@ -57,23 +53,17 @@ public class PlayerCombat : MonoBehaviour
             RotateTowards(moveDirection);
         }
 
-        // 👊 Mêlée
+        // Mêlée
         if (input.MeleePressed && melee != null)
-        {
             melee.TryAttack();
-        }
     }
 
-
-    // 🎯 DIRECTION DE VISÉE
     Vector3 GetAimDirection()
     {
-        // 🎮 Manette / Mobile
         Vector2 aim = input.AimInput;
         if (aim.magnitude > 0.3f)
             return new Vector3(aim.x, 0, aim.y);
 
-        // 🖱️ Souris (top-down)
         Ray   ray    = Camera.main.ScreenPointToRay(Input.mousePosition);
         Plane ground = new Plane(Vector3.up, transform.position);
 
@@ -85,8 +75,6 @@ public class PlayerCombat : MonoBehaviour
 
         return Vector3.zero;
     }
-
-    // ─── TIR ─────────────────────────────────────────────────────────────────
 
     void Shoot(Vector3 direction)
     {
@@ -106,13 +94,14 @@ public class PlayerCombat : MonoBehaviour
         Projectile projScript = proj.GetComponent<Projectile>();
         if (projScript != null)
         {
-            projScript.damage         = stats.GetStat(StatType.Damage);
+            projScript.damage         = stats.GetStat(StatType.RangedDamage); // ← RangedDamage
             projScript.speed          = stats.GetStat(StatType.ProjectileSpeed);
             projScript.lifeStealRatio = stats.GetStat(StatType.LifeSteal);
         }
 
         nextFire = Time.time + fireRate;
     }
+
     void RotateTowards(Vector3 direction)
     {
         direction.y = 0f;

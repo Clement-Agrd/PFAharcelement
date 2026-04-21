@@ -26,11 +26,10 @@ public class PlayerStats : MonoBehaviour
         modifiers.Clear();
     }
 
-    /// <summary>Retourne la valeur finale d'une stat (base + flat + percent).</summary>
     public float GetStat(StatType stat)
     {
-        float baseValue = GetBaseValue(stat);
-        float flatBonus = 0f;
+        float baseValue    = GetBaseValue(stat);
+        float flatBonus    = 0f;
         float percentBonus = 0f;
 
         foreach (StatModifier mod in modifiers)
@@ -43,9 +42,10 @@ public class PlayerStats : MonoBehaviour
                 percentBonus += mod.value;
         }
 
-        // Formule : (base + flat) × (1 + percent)
         return (baseValue + flatBonus) * (1f + percentBonus);
     }
+
+    // ─── Privé ───────────────────────────────────────────────────────────────
 
     private float GetBaseValue(StatType stat)
     {
@@ -53,7 +53,8 @@ public class PlayerStats : MonoBehaviour
         {
             case StatType.HP:                return baseData.hp;
             case StatType.Tankiness:         return baseData.tankiness;
-            case StatType.Damage:            return baseData.damage;
+            case StatType.MeleeDamage:       return baseData.meleeDamage;
+            case StatType.RangedDamage:      return baseData.rangedDamage;
             case StatType.ProjectileSpeed:   return baseData.projectileSpeed;
             case StatType.AttackSpeed:       return baseData.attackSpeed;
             case StatType.LifeSteal:         return baseData.lifeSteal;

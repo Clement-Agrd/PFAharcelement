@@ -1,8 +1,10 @@
+
 public enum StatType
 {
     HP,
     Tankiness,
-    Damage,
+    MeleeDamage,      
+    RangedDamage,     
     ProjectileSpeed,
     AttackSpeed,
     LifeSteal,
