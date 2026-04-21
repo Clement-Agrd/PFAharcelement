@@ -90,7 +90,6 @@ public class PlayerCombat : MonoBehaviour
 
     void Shoot(Vector3 direction)
     {
-        // Cooldown basé sur AttackSpeed + CooldownReduction
         float attackSpeed       = stats.GetStat(StatType.AttackSpeed);
         float cooldownReduction = stats.GetStat(StatType.CooldownReduction);
         float fireRate          = (1f / attackSpeed) * (1f - Mathf.Clamp01(cooldownReduction));
@@ -100,11 +99,9 @@ public class PlayerCombat : MonoBehaviour
         direction.y = 0;
         direction.Normalize();
 
-        firePoint.rotation = transform.rotation;
-        Instantiate(projectile, firePoint.position, firePoint.rotation);
+        Quaternion shotRotation = Quaternion.LookRotation(direction);
 
-        // Instanciation + injection des stats dans le projectile
-        GameObject proj = Instantiate(projectile, firePoint.position, firePoint.rotation);
+        GameObject proj = Instantiate(projectile, firePoint.position, shotRotation);
 
         Projectile projScript = proj.GetComponent<Projectile>();
         if (projScript != null)
