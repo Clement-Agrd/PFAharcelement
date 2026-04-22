@@ -12,10 +12,6 @@ public class RoomEndTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             triggered = true;
-
-            // Charge la salle suivante
-            StageManager.Instance.GiveReward();
-            StageManager.Instance.ShowChoices();
         }
     }
 }

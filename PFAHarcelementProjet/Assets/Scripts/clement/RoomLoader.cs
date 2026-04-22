@@ -59,7 +59,11 @@ public class RoomLoader : MonoBehaviour
             case RoomType.Boss:   prefab = bossRoom;                                         break;
         }
 
+        
         currentRoom = Instantiate(prefab, spawnPoint.position, Quaternion.identity, roomContainer);
+
+        StageManager.Instance.RegisterRoom(currentRoom);
+
 
         yield return StartCoroutine(SlideInRoomStylized(currentRoom));
 

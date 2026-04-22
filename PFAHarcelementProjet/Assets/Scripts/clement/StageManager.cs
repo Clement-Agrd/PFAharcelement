@@ -6,13 +6,28 @@ public class StageManager : MonoBehaviour
 
     public StageLayout layout;
     private int index = 0;
-
     private RoomChoice pendingChoice;
+    
+    private RoomSpawnPoints currentRoomSpawnPoints;
+    
+    [Header("World Choices")]
+    public GameObject choicePrefab;
+    
+    [Header("Reward Prefabs")]
+    public GameObject goldRewardPrefab;
+    public GameObject itemRewardPrefab;
 
+    public RoomChoiceVisualDatabase choiceVisualDatabase;
+    
+
+  
     void Awake()
     {
         Instance = this;
+        choiceVisualDatabase.Init();
     }
+
+
 
     void Start()
     {
@@ -29,11 +44,42 @@ public class StageManager : MonoBehaviour
             return;
 
         StageNode node = layout.nodes[index];
+        
+    }
+    public void OnRoomEnd()
+    {
+        if (pendingChoice == null) return;
+        GiveReward();
+    }
+    
+    public void SpawnRoomChoices()
+    {
+        if (index >= layout.nodes.Length || currentRoomSpawnPoints == null)
+            return;
 
-        // 👉 ici tu affiches ton UI de choix
-        ChoiceUI.Instance.Show(node.choices);
+        StageNode node = layout.nodes[index];
+
+        for (int i = 0;
+             i < node.choices.Length &&
+             i < currentRoomSpawnPoints.choiceSpawnPoints.Length;
+             i++)
+        {
+            GameObject obj = Instantiate(
+                choicePrefab,
+                currentRoomSpawnPoints.choiceSpawnPoints[i].position,
+                Quaternion.identity
+            );
+
+            obj.GetComponent<RoomChoiceInteractable>()
+                .Init(node.choices[i], choiceVisualDatabase);
+        }
     }
 
+    public void RegisterRoom(GameObject room)
+    {
+        currentRoomSpawnPoints = room.GetComponent<RoomSpawnPoints>();
+    }
+    
     public void SelectChoice(RoomChoice choice)
     {
         pendingChoice = choice;
@@ -42,18 +88,32 @@ public class StageManager : MonoBehaviour
         index++;
     }
 
+   
     public void GiveReward()
     {
-        if (pendingChoice == null) return;
+        if (pendingChoice == null || currentRoomSpawnPoints == null) return;
+
+        GameObject rewardPrefab = null;
 
         switch (pendingChoice.rewardType)
         {
             case RewardType.Gold:
-                Debug.Log("Donner gold");
+                rewardPrefab = goldRewardPrefab;
                 break;
+
             case RewardType.Item:
-                Debug.Log("Donner item");
+                rewardPrefab = itemRewardPrefab;
                 break;
+
+            case RewardType.None:
+                SpawnRoomChoices();
+                return;
         }
+
+        Instantiate(
+            rewardPrefab,
+            currentRoomSpawnPoints.rewardSpawnPoint.position,
+            Quaternion.identity
+        );
     }
 }

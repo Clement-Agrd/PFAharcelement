@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5b882aeb8a847f6bacfc1cf950bc77c, type: 3}
+  m_Name: test
+  m_EditorClassIdentifier: Assembly-CSharp::RoomChoiceVisualDatabase
+  roomVisuals:
+  - roomType: 0
+    prefab: {fileID: 2996310512706540801, guid: 7b0055fd62490614ea265a2b05b4698d, type: 3}
+  - roomType: 1
+    prefab: {fileID: 2996310512706540801, guid: 032a7c8ac0a918a42924a09b3d0ed863, type: 3}
+  - roomType: 2
+    prefab: {fileID: 8081432087240451746, guid: 74bf7af144ec66242900215f3c5808e1, type: 3}
+  - roomType: 3
+    prefab: {fileID: 1722166324853502446, guid: 89c6c7aa64267ff4db1f8c15410f4182, type: 3}
+  - roomType: 4
+    prefab: {fileID: 3668865739353077625, guid: e77e473b698dc4942a11bc6309f80f57, type: 3}
+  rewardVisuals:
+  - rewardType: 1
+    prefab: {fileID: 7246104903477765224, guid: 02f1da986d8ba174dac7462b1cceeee8, type: 3}
+  - rewardType: 2
+    prefab: {fileID: 8167748416442163260, guid: cee4de96e8d2f80489d367a206940a0c, type: 3}
+  - rewardType: 3
+    prefab: {fileID: 7246104903477765224, guid: 720a2e91105500244a5d5d69765db30c, type: 3}
+  - rewardType: 0
+    prefab: {fileID: 1671519736698248526, guid: d84caf04d7645c94787d1aa4efdb660f, type: 3}

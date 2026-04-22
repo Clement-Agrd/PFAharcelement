@@ -36,12 +36,13 @@ public class PlayerCombat : MonoBehaviour
 
     Vector3 GetDashDirection(Vector3 aimDirection, Vector3 moveDirection, bool isShooting)
     {
-        if (isShooting && aimDirection != Vector3.zero)
-            return aimDirection;
 
         if (moveDirection != Vector3.zero)
             return moveDirection;
 
+        if (isShooting && aimDirection != Vector3.zero)
+            return aimDirection;
+        
         return transform.forward;
     }
 
