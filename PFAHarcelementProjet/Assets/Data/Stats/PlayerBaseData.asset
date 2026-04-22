@@ -15,8 +15,9 @@ MonoBehaviour:
   hp: 100
   tankiness: 0
   lifeSteal: 0
-  damage: 10
-  attackSpeed: 4
+  meleeDamage: 20
+  rangedDamage: 10
+  attackSpeed: 0.69
   projectileSpeed: 15
   cooldownReduction: 0
   moveSpeed: 6
