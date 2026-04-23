@@ -1,8 +1,13 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class StageManager : MonoBehaviour
 {
+
     public static StageManager Instance;
+
+    private List<GameObject> spawnedChoices = new List<GameObject>();
+
 
     public StageLayout layout;
     private int index = 0;
@@ -60,6 +65,8 @@ public class StageManager : MonoBehaviour
         if (index >= layout.nodes.Length || currentRoomSpawnPoints == null)
             return;
 
+        spawnedChoices.Clear();
+
         StageNode node = layout.nodes[index];
 
         for (int i = 0;
@@ -75,8 +82,11 @@ public class StageManager : MonoBehaviour
 
             obj.GetComponent<RoomChoiceInteractable>()
                 .Init(node.choices[i], choiceVisualDatabase);
+
+            spawnedChoices.Add(obj);
         }
     }
+
 
     public void RegisterRoom(GameObject room)
     {
@@ -119,4 +129,16 @@ public class StageManager : MonoBehaviour
             Quaternion.identity
         );
     }
+    
+    public void ClearRoomChoices()
+    {
+        foreach (var choice in spawnedChoices)
+        {
+            if (choice != null)
+                Destroy(choice);
+        }
+
+        spawnedChoices.Clear();
+    }
+
 }

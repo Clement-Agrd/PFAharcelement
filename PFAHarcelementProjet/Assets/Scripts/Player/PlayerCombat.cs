@@ -46,8 +46,6 @@ public class PlayerCombat : MonoBehaviour
         return transform.forward;
     }
 
-
-
     void Update()
     {
         Vector3 aimDirection  = GetAimDirection();

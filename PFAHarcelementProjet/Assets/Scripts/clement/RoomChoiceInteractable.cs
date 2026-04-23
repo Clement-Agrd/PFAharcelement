@@ -33,14 +33,15 @@ public class RoomChoiceInteractable : MonoBehaviour
         }
     }
 
+
     private void OnTriggerEnter(Collider other)
     {
         if (used) return;
         if (!other.CompareTag("Player")) return;
 
         used = true;
+
+        StageManager.Instance.ClearRoomChoices();
         StageManager.Instance.SelectChoice(choice);
-        
-        Destroy(gameObject);
     }
 }
