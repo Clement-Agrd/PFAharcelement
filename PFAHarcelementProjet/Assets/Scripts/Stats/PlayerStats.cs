@@ -1,30 +1,17 @@
-﻿// Scripts/Stats/PlayerStats.cs
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
-    [Tooltip("Glisse ici l'asset PlayerBaseData créé dans le Project")]
     public PlayerBaseData baseData;
 
     private readonly List<StatModifier> modifiers = new List<StatModifier>();
 
-    // ─── API publique ────────────────────────────────────────────────────────
+    // ─── API publique ─────────────────────────────────────────────────────────
 
-    public void AddModifier(StatModifier modifier)
-    {
-        modifiers.Add(modifier);
-    }
-
-    public void RemoveModifier(StatModifier modifier)
-    {
-        modifiers.Remove(modifier);
-    }
-
-    public void ClearAllModifiers()
-    {
-        modifiers.Clear();
-    }
+    public void AddModifier(StatModifier modifier)    => modifiers.Add(modifier);
+    public void RemoveModifier(StatModifier modifier) => modifiers.Remove(modifier);
+    public void ClearAllModifiers()                   => modifiers.Clear();
 
     public float GetStat(StatType stat)
     {
@@ -32,20 +19,32 @@ public class PlayerStats : MonoBehaviour
         float flatBonus    = 0f;
         float percentBonus = 0f;
 
+        // Buffs du run (objets ramassés)
         foreach (StatModifier mod in modifiers)
         {
             if (mod.targetStat != stat) continue;
+            if (mod.modifierType == ModifierType.Flat) flatBonus    += mod.value;
+            else                                        percentBonus += mod.value;
+        }
 
-            if (mod.modifierType == ModifierType.Flat)
-                flatBonus += mod.value;
-            else
-                percentBonus += mod.value;
+        // Bonus permanents de l'arbre de stats
+        if (StatTreeManager.Instance != null)
+        {
+            StatNodeData node = StatTreeManager.Instance.treeData.nodes
+                .Find(n => n.statType == stat);
+
+            if (node != null)
+            {
+                float treeBonus = StatTreeManager.Instance.GetTotalBonus(stat);
+                if (node.modifierType == ModifierType.Flat) flatBonus    += treeBonus;
+                else                                         percentBonus += treeBonus;
+            }
         }
 
         return (baseValue + flatBonus) * (1f + percentBonus);
     }
 
-    // ─── Privé ───────────────────────────────────────────────────────────────
+    // ─── Privé ────────────────────────────────────────────────────────────────
 
     private float GetBaseValue(StatType stat)
     {
