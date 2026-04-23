@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b512f87d4b0a3e4696ca8c16b11280e, type: 3}
+  m_Name: StatTreeData
+  m_EditorClassIdentifier: Assembly-CSharp::StatTreeData
+  nodes:
+  - displayName: "Sant\xE9 Marine"
+    description: "Ces donn\xE9es servent \xE0 augmenter vos points de vies."
+    icon: {fileID: 0}
+    statType: 0
+    modifierType: 0
+    maxLevel: 10
+    valuePerLevel: 20
+    baseCost: 100
+    costMultiplier: 2
+  - displayName: "D\xE9g\xE2ts de Morsure"
+    description: "D\xE9g\xE2ts faits par le requin \xE0 courte port\xE9e."
+    icon: {fileID: 0}
+    statType: 2
+    modifierType: 0
+    maxLevel: 5
+    valuePerLevel: 5
+    baseCost: 100
+    costMultiplier: 2
+  - displayName: "D\xE9g\xE2ts Aquatiques"
+    description: "D\xE9g\xE2ts faits \xE0 distance."
+    icon: {fileID: 0}
+    statType: 3
+    modifierType: 0
+    maxLevel: 5
+    valuePerLevel: 5
+    baseCost: 100
+    costMultiplier: 2
+  - displayName: Vitesse de Nage
+    description: Vitesse du requin.
+    icon: {fileID: 0}
+    statType: 7
+    modifierType: 1
+    maxLevel: 5
+    valuePerLevel: 0.1
+    baseCost: 150
+    costMultiplier: 2
+  - displayName: Vitesse d'attaque
+    description: "Rapidit\xE9 d'ex\xE9cution des attaques."
+    icon: {fileID: 0}
+    statType: 5
+    modifierType: 1
+    maxLevel: 5
+    valuePerLevel: 0.1
+    baseCost: 150
+    costMultiplier: 2
+  - displayName: Vitesse de Projectile
+    description: "Rapidit\xE9 de d\xE9placements des projectiles."
+    icon: {fileID: 0}
+    statType: 4
+    modifierType: 0
+    maxLevel: 5
+    valuePerLevel: 3
+    baseCost: 100
+    costMultiplier: 2
+  - displayName: "\xC9caille Solide"
+    description: "R\xE9sistance aux d\xE9g\xE2ts du requin."
+    icon: {fileID: 0}
+    statType: 1
+    modifierType: 1
+    maxLevel: 5
+    valuePerLevel: 0.05
+    baseCost: 200
+    costMultiplier: 2
+  - displayName: Sangsue
+    description: Vol de vie du requin aux ennemis.
+    icon: {fileID: 0}
+    statType: 6
+    modifierType: 1
+    maxLevel: 5
+    valuePerLevel: 0.05
+    baseCost: 200
+    costMultiplier: 2
+  - displayName: "R\xE9duction de Recharge"
+    description: "R\xE9duit le temps de recharge de la capacit\xE9 ultime."
+    icon: {fileID: 0}
+    statType: 8
+    modifierType: 1
+    maxLevel: 5
+    valuePerLevel: 0.05
+    baseCost: 150
+    costMultiplier: 2
