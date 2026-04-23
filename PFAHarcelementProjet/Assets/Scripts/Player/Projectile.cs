@@ -51,8 +51,7 @@ public class Projectile : MonoBehaviour
                     playerHealth.Heal(damage * lifeStealRatio);
                 }
             }
+            Destroy(gameObject);
         }
-
-        Destroy(gameObject);
     }
 }

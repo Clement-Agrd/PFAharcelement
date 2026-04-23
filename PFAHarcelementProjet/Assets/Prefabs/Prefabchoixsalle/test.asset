@@ -31,4 +31,4 @@ MonoBehaviour:
   - rewardType: 3
     prefab: {fileID: 7246104903477765224, guid: 720a2e91105500244a5d5d69765db30c, type: 3}
   - rewardType: 0
-    prefab: {fileID: 1671519736698248526, guid: d84caf04d7645c94787d1aa4efdb660f, type: 3}
+    prefab: {fileID: 2926421387557078411, guid: 07f47a55c5b74fd408d57b102db9a4a1, type: 3}

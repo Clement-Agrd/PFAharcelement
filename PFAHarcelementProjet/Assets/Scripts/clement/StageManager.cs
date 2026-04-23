@@ -21,10 +21,13 @@ public class StageManager : MonoBehaviour
     
 
   
+
     void Awake()
     {
         Instance = this;
-        choiceVisualDatabase.Init();
+
+        if (choiceVisualDatabase != null)
+            choiceVisualDatabase.Init();
     }
 
 

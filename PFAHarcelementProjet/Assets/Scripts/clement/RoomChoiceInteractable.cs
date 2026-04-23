@@ -14,11 +14,23 @@ public class RoomChoiceInteractable : MonoBehaviour
 
         GameObject roomVisual = db.GetRoomVisual(choice.roomType);
         if (roomVisual != null)
-            Instantiate(roomVisual, roomVisualRoot);
+        {
+            GameObject roomInstance =
+                Instantiate(roomVisual, roomVisualRoot);
+
+            roomInstance.transform.localPosition = Vector3.zero;
+            roomInstance.transform.localRotation = Quaternion.identity;
+        }
 
         GameObject rewardVisual = db.GetRewardVisual(choice.rewardType);
         if (rewardVisual != null)
-            Instantiate(rewardVisual, rewardVisualRoot);
+        {
+            GameObject rewardInstance =
+                Instantiate(rewardVisual, rewardVisualRoot);
+
+            rewardInstance.transform.localPosition = Vector3.zero;
+            rewardInstance.transform.localRotation = Quaternion.identity;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -28,5 +40,7 @@ public class RoomChoiceInteractable : MonoBehaviour
 
         used = true;
         StageManager.Instance.SelectChoice(choice);
+        
+        Destroy(gameObject);
     }
 }
