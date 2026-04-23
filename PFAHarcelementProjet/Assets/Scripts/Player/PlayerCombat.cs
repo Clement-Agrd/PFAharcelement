@@ -73,7 +73,7 @@ public class PlayerCombat : MonoBehaviour
         // Mêlée
         if (input.MeleePressed && melee != null)
             melee.TryAttack();
-        }
+        
         
         bool dashPressed = input.DashPressed; // clavier / manette / mobile
 

@@ -821,6 +821,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   rotationSpeed: 15
   gravity: -20
+  dashSpeed: 18
+  dashDuration: 0.12
 --- !u!114 &9058250058556949396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -884,7 +886,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
   firePoint: {fileID: 884616890281227949}
-  projectile: {fileID: 8152043541084529555, guid: caaa49321c411b54787ea5c8a55529bb, type: 3}
+  projectile: {fileID: 3381772053132140057, guid: 673dd86dc0590e84a976de2f8dc35a63, type: 3}
   fireRate: 0.25
   melee: {fileID: 7664396945085282298}
   rotationSpeed: 15
@@ -901,9 +903,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69c26ce4333749fda7f1a0512efd64ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMelee
-  attackRange: 2
-  attackCooldown: 0.5
-  damage: 20
+  detectionRange: 6
+  stopDistance: 1
   animator: {fileID: 6754660798104594037}
 --- !u!114 &1294674083771397067
 MonoBehaviour:
@@ -948,7 +949,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d353aa1bd245e21469b78d754d6f2269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestBuff
-  playerStats: {fileID: 1294674083771397067}
 --- !u!114 &-8886685305317126292
 MonoBehaviour:
   m_ObjectHideFlags: 0
