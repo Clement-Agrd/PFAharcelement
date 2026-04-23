@@ -621,9 +621,6 @@ PrefabInstance:
       addedObject: {fileID: 9058250058556949396}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2508467873361170745}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 6754660798104594037}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fc0a269bb0de7ab4ea30411056f9866f, type: 3}
       insertIndex: -1
@@ -832,20 +829,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 722e856fc41c4ebe8155ee731ef6f507, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputHandler
-  moveJoystick: {fileID: 0}
-  aimJoystick: {fileID: 0}
---- !u!114 &2508467873361170745
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 508091965707234327}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1ae34291d7d4256adda5b6702405c75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerMobileInput
   moveJoystick: {fileID: 0}
   aimJoystick: {fileID: 0}
 --- !u!95 &6754660798104594037

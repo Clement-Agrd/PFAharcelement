@@ -12,6 +12,28 @@ public class PlayerStats : MonoBehaviour
     public void AddModifier(StatModifier modifier)    => modifiers.Add(modifier);
     public void RemoveModifier(StatModifier modifier) => modifiers.Remove(modifier);
     public void ClearAllModifiers()                   => modifiers.Clear();
+    
+    public void ApplyBuff(BuffPickupData buff)
+    {
+        if (buff == null)
+        {
+            Debug.LogWarning("[PlayerStats] BuffPickupData null");
+            return;
+        }
+
+        Debug.Log($"[PlayerStats] Apply buff : {buff.buffName}");
+
+        foreach (StatModifierData data in buff.modifiers)
+        {
+            StatModifier modifier = new StatModifier(
+                data.statType,
+                data.modifierType,
+                data.value
+            );
+
+            AddModifier(modifier);
+        }
+    }
 
     public float GetStat(StatType stat)
     {

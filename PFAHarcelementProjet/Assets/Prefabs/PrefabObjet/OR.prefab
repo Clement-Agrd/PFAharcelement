@@ -126,3 +126,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RewardPickup
   rewardType: 1
+  buffData: {fileID: 11400000, guid: 396a4d740db284f428847a3514afa1b6, type: 2}
+  goldAmount: 100

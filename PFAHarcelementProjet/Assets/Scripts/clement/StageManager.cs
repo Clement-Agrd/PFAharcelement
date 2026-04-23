@@ -21,6 +21,13 @@ public class StageManager : MonoBehaviour
     [Header("Reward Prefabs")]
     public GameObject goldRewardPrefab;
     public GameObject itemRewardPrefab;
+    
+    
+
+    [Header("Item Rewards")]
+    public ItemPrefabPool itemPrefabPool;
+
+
 
     public RoomChoiceVisualDatabase choiceVisualDatabase;
     
@@ -104,31 +111,46 @@ public class StageManager : MonoBehaviour
    
     public void GiveReward()
     {
-        if (pendingChoice == null || currentRoomSpawnPoints == null) return;
-
-        GameObject rewardPrefab = null;
+        if (pendingChoice == null || currentRoomSpawnPoints == null)
+            return;
 
         switch (pendingChoice.rewardType)
         {
             case RewardType.Gold:
-                rewardPrefab = goldRewardPrefab;
+                Instantiate(
+                    goldRewardPrefab,
+                    currentRoomSpawnPoints.rewardSpawnPoint.position,
+                    Quaternion.identity
+                );
                 break;
 
             case RewardType.Item:
-                rewardPrefab = itemRewardPrefab;
+                SpawnRandomItemPrefab();
                 break;
 
             case RewardType.None:
                 SpawnRoomChoices();
-                return;
+                break;
+        }
+    }
+    
+    
+    void SpawnRandomItemPrefab()
+    {
+        GameObject itemPrefab = itemPrefabPool.GetRandomItemPrefab();
+        if (itemPrefab == null)
+        {
+            SpawnRoomChoices();
+            return;
         }
 
         Instantiate(
-            rewardPrefab,
+            itemPrefab,
             currentRoomSpawnPoints.rewardSpawnPoint.position,
             Quaternion.identity
         );
     }
+
     
     public void ClearRoomChoices()
     {

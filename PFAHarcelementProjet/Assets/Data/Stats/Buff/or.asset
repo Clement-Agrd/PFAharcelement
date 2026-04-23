@@ -10,12 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b8d3cbd19db411bb071c0d8120d5b89, type: 3}
-  m_Name: Algue bien douce
+  m_Name: or
   m_EditorClassIdentifier: Assembly-CSharp::BuffPickupData
-  buffName: Algue bien douce
-  description: Rajoute des points de vie au personnage
+  buffName: or
+  description: 
   icon: {fileID: 0}
-  modifiers:
-  - statType: 7
-    modifierType: 0
-    value: 5
+  modifiers: []

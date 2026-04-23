@@ -4,7 +4,14 @@ public class RewardPickup : MonoBehaviour
 {
     public RewardType rewardType;
 
+    [Header("Item Data")]
+    public BuffPickupData buffData;
+
     private bool picked = false;
+    
+    [Header("Gold")]
+    public int goldAmount = 10;
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -13,24 +20,24 @@ public class RewardPickup : MonoBehaviour
 
         picked = true;
 
-        ApplyReward();
-        StageManager.Instance.SpawnRoomChoices();
+        ApplyReward(other.gameObject);
 
+        StageManager.Instance.SpawnRoomChoices();
         Destroy(gameObject);
     }
 
-    private void ApplyReward()
+   
+
+    private void ApplyReward(GameObject player)
     {
         switch (rewardType)
         {
-            case RewardType.Gold:
-                Debug.Log("Ajout d’or au joueur");
-                // PlayerStats.Instance.AddGold(x);
+            case RewardType.Item:
+                player.GetComponent<PlayerStats>().ApplyBuff(buffData);
                 break;
 
-            case RewardType.Item:
-                Debug.Log("Ajout d’un item");
-                // Inventory.Instance.AddItem(...)
+            case RewardType.Gold:
+                XPManager.Instance.AddGold(goldAmount);
                 break;
         }
     }
