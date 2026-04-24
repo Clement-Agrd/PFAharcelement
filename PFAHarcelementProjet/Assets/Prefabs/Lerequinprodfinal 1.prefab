@@ -929,8 +929,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a517190c2e64c7ba4ae9743749eff12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDash
-  dashSpeed: 20
-  dashDuration: 0.15
+  dashSpeed: 25
+  dashDuration: 0.2
   dashCooldown: 1
 --- !u!4 &884616890281227949 stripped
 Transform:
