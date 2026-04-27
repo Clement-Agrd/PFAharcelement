@@ -5,7 +5,7 @@ public class XPManager : MonoBehaviour
 {
     public static XPManager Instance { get; private set; }
 
-    private int goldThisRun = 0;
+    [SerializeField] int goldThisRun = 0;
     public event Action<int> OnGoldChanged;
 
     void Awake()

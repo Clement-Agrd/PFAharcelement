@@ -2,43 +2,57 @@ using UnityEngine;
 
 public class RewardPickup : MonoBehaviour
 {
-    public RewardType rewardType;
-
-    [Header("Item Data")]
+    [Header("Common")]
     public BuffPickupData buffData;
+    public PickupMode pickupMode = PickupMode.Reward;
+
+    [Header("Shop Only")]
+    public int price = 0;
 
     private bool picked = false;
     
-    [Header("Gold")]
-    public int goldAmount = 10;
-
-
+    
     private void OnTriggerEnter(Collider other)
     {
         if (picked) return;
         if (!other.CompareTag("Player")) return;
 
+        if (pickupMode == PickupMode.Shop)
+        {
+            TryBuy(other.gameObject);
+        }
+        else
+        {
+            GiveReward(other.gameObject);
+        }
+    }
+
+    // 🎁 Reward gratuit
+    void GiveReward(GameObject player)
+    {
         picked = true;
 
-        ApplyReward(other.gameObject);
-
+        player.GetComponent<PlayerStats>().ApplyBuff(buffData);
         StageManager.Instance.SpawnRoomChoices();
+
         Destroy(gameObject);
     }
 
-   
-
-    private void ApplyReward(GameObject player)
+    // 🛒 Shop
+    void TryBuy(GameObject player)
     {
-        switch (rewardType)
+        if (XPManager.Instance.GetGold() < price)
         {
-            case RewardType.Item:
-                player.GetComponent<PlayerStats>().ApplyBuff(buffData);
-                break;
-
-            case RewardType.Gold:
-                XPManager.Instance.AddGold(goldAmount);
-                break;
+            Debug.Log($"❌ Pas assez d'or (coût : {price})");
+            return;
         }
+
+        picked = true;
+
+        XPManager.Instance.AddGold(-price);
+        player.GetComponent<PlayerStats>().ApplyBuff(buffData);
+
+        Debug.Log($"✅ Item acheté : {buffData.buffName} (-{price} or)");
+        Destroy(gameObject);
     }
 }

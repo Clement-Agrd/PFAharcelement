@@ -25,13 +25,15 @@ public class StageManager : MonoBehaviour
     
 
     [Header("Item Rewards")]
-    public ItemPrefabPool itemPrefabPool;
-
+   
+    [Header("Item Pools")]
+    public ItemPrefabPool combatItemPool;
+    public ItemPrefabPool eliteItemPool;
+    public ItemPrefabPool bossItemPool;
 
 
     public RoomChoiceVisualDatabase choiceVisualDatabase;
     
-
   
 
     void Awake()
@@ -137,18 +139,44 @@ public class StageManager : MonoBehaviour
     
     void SpawnRandomItemPrefab()
     {
-        GameObject itemPrefab = itemPrefabPool.GetRandomItemPrefab();
+        ItemPrefabPool pool = GetPoolForRoomType(pendingChoice.roomType);
+        if (pool == null)
+        {
+            SpawnRoomChoices();
+            return;
+        }
+
+        GameObject itemPrefab = pool.GetRandomItemPrefab();
         if (itemPrefab == null)
         {
             SpawnRoomChoices();
             return;
         }
 
-        Instantiate(
+        GameObject obj = Instantiate(
             itemPrefab,
             currentRoomSpawnPoints.rewardSpawnPoint.position,
             Quaternion.identity
         );
+
+        RewardPickup pickup = obj.GetComponent<RewardPickup>();
+        pickup.pickupMode = PickupMode.Reward;
+    }
+    
+    ItemPrefabPool GetPoolForRoomType(RoomType roomType)
+    {
+        switch (roomType)
+        {
+            case RoomType.Elite:
+                return eliteItemPool;
+
+            case RoomType.Boss:
+                return bossItemPool;
+
+            case RoomType.Combat:
+            default:
+                return combatItemPool;
+        }
     }
 
     
