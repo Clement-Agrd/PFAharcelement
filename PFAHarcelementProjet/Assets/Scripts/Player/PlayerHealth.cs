@@ -5,14 +5,12 @@ using UnityEngine.Events;
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
     [Header("Événements")]
-    public UnityEvent<float, float> onHealthChanged; // (hpActuel, hpMax)
+    public UnityEvent<float, float> onHealthChanged;
     public UnityEvent               onDeath;
 
     private PlayerStats stats;
     private float       currentHP;
     private bool        isDead;
-
-    // ─── IDamageable ─────────────────────────────────────────────────────────
 
     public bool IsDead => isDead;
 
@@ -32,8 +30,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             Die();
     }
 
-    // ─── API publique ─────────────────────────────────────────────────────────
-
     public void Heal(float amount)
     {
         if (isDead) return;
@@ -45,23 +41,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     }
 
     public float GetCurrentHP() => currentHP;
-    public float GetMaxHP()     => stats.GetStat(StatType.HP);
-    public float GetHPRatio()   => currentHP / stats.GetStat(StatType.HP);
-
-    // ─── Mort ────────────────────────────────────────────────────────────────
-
-    void Die()
-    {
-        if (isDead) return;
-
-        isDead = true;
-        onDeath?.Invoke();
-
-        // Tu peux ajouter ici : animation de mort, désactiver les inputs, etc.
-        gameObject.SetActive(false);
-    }
-
-    // ─── Unity ───────────────────────────────────────────────────────────────
+    public float GetMaxHP()     => stats != null ? stats.GetStat(StatType.HP) : 100f;
+    public float GetHPRatio()   => currentHP / GetMaxHP();
 
     void Awake()
     {
@@ -71,6 +52,20 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     void Start()
     {
         currentHP = stats.GetStat(StatType.HP);
-        onHealthChanged?.Invoke(currentHP, currentHP);
+        // Petit délai pour s'assurer que HealthBarUI est bien initialisé
+        Invoke(nameof(BroadcastHP), 0.1f);
+    }
+
+    void BroadcastHP()
+    {
+        onHealthChanged?.Invoke(currentHP, stats.GetStat(StatType.HP));
+    }
+
+    void Die()
+    {
+        if (isDead) return;
+        isDead = true;
+        onDeath?.Invoke();
+        gameObject.SetActive(false);
     }
 }

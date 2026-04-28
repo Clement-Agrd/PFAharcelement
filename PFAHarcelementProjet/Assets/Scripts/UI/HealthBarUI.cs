@@ -2,28 +2,27 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections;
 
 public class HealthBarUI : MonoBehaviour
 {
     [Header("Barres")]
-    public Image   barFill;          // barre principale
-    public Image   barGhost;         // barre fantôme (effet LoL)
-    public Image   barBackground;
+    public Image barFill;
+    public Image barGhost;
+    public Image barBackground;
 
     [Header("Checkpoints")]
-    public Transform   checkpointContainer; // parent des traits de checkpoint
-    public GameObject  checkpointPrefab;    // prefab du trait vertical
-    public int         hpPerCheckpoint = 50; // un trait tous les X HP
+    public Transform  checkpointContainer;
+    public GameObject checkpointPrefab;
+    public int        hpPerCheckpoint = 50;
 
     [Header("Texte")]
     public TextMeshProUGUI hpText;
 
     [Header("Paramètres")]
-    public float maxBarWidth      = 400f; // largeur max de la barre
-    public float minBarWidth      = 100f; // largeur au départ (1er niveau)
-    public float ghostDelay       = 1f;   // délai avant que le fantôme suive
-    public float ghostSpeed       = 3f;   // vitesse du fantôme
+    public float maxBarWidth  = 400f;
+    public float minBarWidth  = 100f;
+    public float ghostDelay   = 1f;
+    public float ghostSpeed   = 3f;
 
     private PlayerHealth playerHealth;
     private float        currentFill;
@@ -31,8 +30,9 @@ public class HealthBarUI : MonoBehaviour
     private float        lastDamageTime;
     private float        currentBarWidth;
 
-    void Start()
+    void Awake()
     {
+        // Cherche PlayerHealth dès Awake pour être sûr
         playerHealth = FindObjectOfType<PlayerHealth>();
 
         if (playerHealth == null)
@@ -41,22 +41,30 @@ public class HealthBarUI : MonoBehaviour
             return;
         }
 
-        // Branche l'événement de changement de HP
         playerHealth.onHealthChanged.AddListener(OnHealthChanged);
+    }
 
-        // Initialise avec les HP de base
+    void Start()
+    {
+        if (playerHealth == null) return;
+
+        // Force une première mise à jour
         float maxHP = playerHealth.GetMaxHP();
         UpdateBarWidth(maxHP);
         UpdateCheckpoints(maxHP);
 
         currentFill = 1f;
         ghostFill   = 1f;
-        UpdateVisuals(playerHealth.GetCurrentHP(), maxHP);
+
+        if (barFill  != null) barFill.fillAmount  = 1f;
+        if (barGhost != null) barGhost.fillAmount = 1f;
+
+        if (hpText != null)
+            hpText.text = $"{Mathf.CeilToInt(playerHealth.GetCurrentHP())} / {Mathf.CeilToInt(maxHP)}";
     }
 
     void Update()
     {
-        // Effet fantôme — suit la barre après un délai
         if (Time.time > lastDamageTime + ghostDelay)
         {
             ghostFill = Mathf.Lerp(ghostFill, currentFill, ghostSpeed * Time.deltaTime);
@@ -65,28 +73,20 @@ public class HealthBarUI : MonoBehaviour
         }
     }
 
-    //  Appelé par PlayerHealth.onHealthChanged 
-
     void OnHealthChanged(float current, float max)
     {
         UpdateBarWidth(max);
         UpdateCheckpoints(max);
         UpdateVisuals(current, max);
-
         lastDamageTime = Time.time;
     }
 
-    // Largeur dynamique de la barre
-
     void UpdateBarWidth(float maxHP)
     {
-        // La barre grandit en fonction des HP max
-        // Elle commence à minBarWidth et grandit jusqu'à maxBarWidth
-        float baseHP    = 100f; // HP de départ
+        float baseHP    = 100f;
         float ratio     = Mathf.Clamp01((maxHP - baseHP) / (1000f - baseHP));
         currentBarWidth = Mathf.Lerp(minBarWidth, maxBarWidth, ratio);
 
-        // Applique la largeur au background et aux barres
         SetWidth(barBackground, currentBarWidth);
         SetWidth(barFill,       currentBarWidth);
         SetWidth(barGhost,      currentBarWidth);
@@ -94,7 +94,8 @@ public class HealthBarUI : MonoBehaviour
         if (checkpointContainer != null)
         {
             RectTransform rt = checkpointContainer.GetComponent<RectTransform>();
-            if (rt != null) rt.sizeDelta = new Vector2(currentBarWidth, rt.sizeDelta.y);
+            if (rt != null)
+                rt.sizeDelta = new Vector2(currentBarWidth, rt.sizeDelta.y);
         }
     }
 
@@ -106,21 +107,16 @@ public class HealthBarUI : MonoBehaviour
             rt.sizeDelta = new Vector2(width, rt.sizeDelta.y);
     }
 
-    //  Traits de checkpoint 
-
     void UpdateCheckpoints(float maxHP)
     {
         if (checkpointContainer == null || checkpointPrefab == null) return;
 
-        // Supprime les anciens traits
         foreach (Transform child in checkpointContainer)
             Destroy(child.gameObject);
 
-        // Ne montre les checkpoints que si la barre est à taille max
         if (currentBarWidth < maxBarWidth - 1f) return;
 
         int checkpointCount = Mathf.FloorToInt(maxHP / hpPerCheckpoint) - 1;
-
         for (int i = 1; i <= checkpointCount; i++)
         {
             float ratio = (i * hpPerCheckpoint) / maxHP;
@@ -133,26 +129,24 @@ public class HealthBarUI : MonoBehaviour
         }
     }
 
-    //  Visuels 
-
     void UpdateVisuals(float current, float max)
     {
         currentFill = max > 0 ? current / max : 0f;
 
-        if (barFill  != null) barFill.fillAmount  = currentFill;
-        if (barGhost != null && Time.time < lastDamageTime + 0.1f)
-            barGhost.fillAmount = ghostFill;
+        if (barFill != null)
+        {
+            barFill.fillAmount = currentFill;
+
+            if      (currentFill > 0.5f)  barFill.color = new Color(0f,   0.8f, 0f);
+            else if (currentFill > 0.25f) barFill.color = new Color(1f,   0.8f, 0f);
+            else                          barFill.color = new Color(0.8f, 0f,   0f);
+        }
+
+        if (barGhost != null)
+            barGhost.fillAmount = Mathf.Max(ghostFill, currentFill);
 
         if (hpText != null)
             hpText.text = $"{Mathf.CeilToInt(current)} / {Mathf.CeilToInt(max)}";
-
-        // Couleur de la barre selon le % de vie
-        if (barFill != null)
-        {
-            if      (currentFill > 0.5f) barFill.color = Color.green;
-            else if (currentFill > 0.25f) barFill.color = Color.yellow;
-            else                          barFill.color = Color.red;
-        }
     }
 
     void OnDestroy()
