@@ -73,7 +73,7 @@ public class HealthBarUI : MonoBehaviour
         }
     }
 
-    void OnHealthChanged(float current, float max)
+   public void OnHealthChanged(float current, float max)
     {
         UpdateBarWidth(max);
         UpdateCheckpoints(max);

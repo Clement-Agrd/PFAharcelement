@@ -1,5 +1,4 @@
-﻿// Scripts/UI/CheckpointTrait.cs
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class CheckpointTrait : MonoBehaviour
