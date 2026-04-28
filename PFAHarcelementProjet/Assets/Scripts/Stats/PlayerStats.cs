@@ -9,19 +9,29 @@ public class PlayerStats : MonoBehaviour
 
     // ─── API publique ─────────────────────────────────────────────────────────
 
-    public void AddModifier(StatModifier modifier)    => modifiers.Add(modifier);
-    public void RemoveModifier(StatModifier modifier) => modifiers.Remove(modifier);
-    public void ClearAllModifiers()                   => modifiers.Clear();
+
+    public void AddModifier(StatModifier modifier)
+    {
+        modifiers.Add(modifier);
+        OnStatsChanged?.Invoke();
+    }
+
+    public void RemoveModifier(StatModifier modifier)
+    {
+        modifiers.Remove(modifier);
+        OnStatsChanged?.Invoke();
+    }
+
+    public void ClearAllModifiers()
+    {
+        modifiers.Clear();
+        OnStatsChanged?.Invoke();
+    }
     
+
     public void ApplyBuff(BuffPickupData buff)
     {
-        if (buff == null)
-        {
-            Debug.LogWarning("[PlayerStats] BuffPickupData null");
-            return;
-        }
-
-        Debug.Log($"[PlayerStats] Apply buff : {buff.buffName}");
+        if (buff == null) return;
 
         foreach (StatModifierData data in buff.modifiers)
         {
@@ -33,6 +43,8 @@ public class PlayerStats : MonoBehaviour
 
             AddModifier(modifier);
         }
+
+        OnStatsChanged?.Invoke();
     }
 
     public float GetStat(StatType stat)
@@ -86,4 +98,6 @@ public class PlayerStats : MonoBehaviour
                 return 0f;
         }
     }
+    
+    public System.Action OnStatsChanged;
 }
