@@ -19,6 +19,8 @@ MonoBehaviour:
   - choices:
     - roomType: 2
       rewardType: 0
+    - roomType: 3
+      rewardType: 0
   - choices:
     - roomType: 0
       rewardType: 2

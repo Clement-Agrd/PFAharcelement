@@ -4923,7 +4923,7 @@ MonoBehaviour:
   lifeStealRatio: 0
   detectRadius: 5
   minTurnSpeed: 0.5
-  maxTurnSpeed: 10
+  maxTurnSpeed: 90
   lifetime: 5
 --- !u!135 &-3906904214049009032
 SphereCollider:
