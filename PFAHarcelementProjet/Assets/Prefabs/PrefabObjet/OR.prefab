@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4477176482649833033}
   - component: {fileID: 414550204783855377}
   - component: {fileID: 7395906122566501102}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: OR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,6 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0ded18dd1cf4805b8e68f4a78d8fe74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RewardPickup
-  rewardType: 1
   buffData: {fileID: 11400000, guid: 396a4d740db284f428847a3514afa1b6, type: 2}
-  goldAmount: 100
+  pickupMode: 0
+  interactionRange: 3
+  price: 0

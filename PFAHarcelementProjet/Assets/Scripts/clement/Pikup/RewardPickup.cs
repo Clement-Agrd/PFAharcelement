@@ -5,14 +5,23 @@ public class RewardPickup : MonoBehaviour
 {
     [Header("Common")]
     public BuffPickupData buffData;
-    public PickupMode     pickupMode = PickupMode.Reward;
-
+    public PickupMode pickupMode = PickupMode.Reward;
+    
+    public float interactionRange = 10f;
+    
     [Header("Shop Only")]
     public int price = 0;
 
     private bool picked = false;
-
-    void OnTriggerEnter(Collider other)
+    
+    public static System.Action<RewardPickup> OnPickupConsumed;
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, interactionRange);
+    }
+    
+    private void OnTriggerEnter(Collider other)
     {
         if (picked) return;
         if (!other.CompareTag("Player")) return;
@@ -44,23 +53,23 @@ public class RewardPickup : MonoBehaviour
             stats.ApplyBuff(buffData);
 
         StageManager.Instance.SpawnRoomChoices();
+
+        OnPickupConsumed?.Invoke(this);
         Destroy(gameObject);
     }
 
-    // ─── Shop ─────────────────────────────────────────────────────────────────
+    // 🛒 Shop
 
     void TryBuy(GameObject player)
     {
         if (XPManager.Instance.GetGold() < price)
-        {
-            Debug.Log($"❌ Pas assez d'or (coût : {price})");
             return;
-        }
 
         picked = true;
 
         XPManager.Instance.AddGold(-price);
 
+        OnPickupConsumed?.Invoke(this);
         PlayerStats stats = player.GetComponent<PlayerStats>();
         if (stats != null && buffData != null)
             stats.ApplyBuff(buffData);

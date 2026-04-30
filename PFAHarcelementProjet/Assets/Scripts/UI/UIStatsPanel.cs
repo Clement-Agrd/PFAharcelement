@@ -6,6 +6,17 @@ public class UIStatsPanel : MonoBehaviour
     public PlayerStats playerStats;
     public StatUIRow rowPrefab;
     public Transform contentRoot;
+    
+    
+
+    public static UIStatsPanel Instance;
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+
 
     [System.Serializable]
     public class StatIcon
@@ -37,16 +48,59 @@ public class UIStatsPanel : MonoBehaviour
         if (playerStats != null)
             playerStats.OnStatsChanged -= UpdateAll;
     }
+    public void PreviewBuff(BuffPickupData buff)
+    {
+        foreach (var pair in rows)
+        {
+            StatType statType = pair.Key;
+
+            float current = playerStats.GetStat(statType);
+            float preview = current;
+
+            foreach (var mod in buff.modifiers)
+            {
+                if (mod.statType != statType) continue;
+
+                preview = ApplyModifierSimulation(preview, mod);
+            }
+
+            pair.Value.Set(
+                GetSprite(statType),
+                current,
+                preview,
+                statType
+            );
+        }
+    }
+    
+    float ApplyModifierSimulation(float baseValue, StatModifierData mod)
+    {
+        return mod.modifierType switch
+        {
+            ModifierType.Flat       => baseValue + mod.value,
+            ModifierType.Percent    => baseValue * (1f + mod.value),
+            _ => baseValue
+        };
+    }
+    
+    public void ClearPreview()
+    {
+        UpdateAll();
+    }
+
+
 
     void UpdateAll()
     {
         foreach (var pair in rows)
         {
-            float value = playerStats.GetStat(pair.Key);
-            pair.Value.Set(
-                GetSprite(pair.Key),
+            StatType stat = pair.Key;
+            float value = playerStats.GetStat(stat);
+
+            pair.Value.SetNormal(
+                GetSprite(stat),
                 value,
-                pair.Key
+                stat
             );
         }
     }

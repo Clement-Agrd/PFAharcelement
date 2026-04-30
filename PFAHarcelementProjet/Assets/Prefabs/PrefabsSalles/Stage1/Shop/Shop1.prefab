@@ -4318,8 +4318,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7961988599270410312}
   - component: {fileID: 6085835681077032397}
-  - component: {fileID: 167085159912925141}
   - component: {fileID: 8186549652933131464}
+  - component: {fileID: 8995002489141491627}
   m_Layer: 0
   m_Name: Shop1
   m_TagString: Untagged
@@ -4361,18 +4361,6 @@ MonoBehaviour:
   choiceSpawnPoints:
   - {fileID: 8062178761739396104}
   - {fileID: 5316399819813885155}
---- !u!114 &167085159912925141
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2414791124861247200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e92d849090104d6bad8b77976afc6fc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CombatRoomEndTrigger
 --- !u!114 &8186549652933131464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4386,6 +4374,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoomVisualRoot
   visualsRoot: {fileID: 2971440828581022424}
+--- !u!114 &8995002489141491627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2414791124861247200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 815d10f520b84118a3493b3f815e98ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShopRoomEndTrigger
 --- !u!1 &2578889502457715989
 GameObject:
   m_ObjectHideFlags: 0

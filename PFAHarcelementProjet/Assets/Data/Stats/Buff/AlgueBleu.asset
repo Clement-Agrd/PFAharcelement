@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b8d3cbd19db411bb071c0d8120d5b89, type: 3}
   m_Name: AlgueBleu
   m_EditorClassIdentifier: Assembly-CSharp::BuffPickupData
-  buffName: Algue bien douce
-  description: Rajoute des points de vie au personnage
-  icon: {fileID: 0}
+  buffName: Algue bleu qui est bordeaux
+  description: Piew piew
+  icon: {fileID: 21300000, guid: 895230a6e67c1364ba976132e3211aa5, type: 3}
   modifiers:
   - statType: 5
     modifierType: 0

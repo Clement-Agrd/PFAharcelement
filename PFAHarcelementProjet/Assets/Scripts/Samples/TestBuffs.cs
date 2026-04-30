@@ -16,7 +16,7 @@ public class TestBuff : MonoBehaviour
         }
 
         Debug.Log("=== STATS DE BASE ===");
-        Debug.Log($"HP              : {playerStats.GetStat(StatType.HP)}");
+        Debug.Log($"HP              : {playerStats.GetStat(StatType.MaxHealth)}");
         Debug.Log($"MoveSpeed       : {playerStats.GetStat(StatType.MoveSpeed)}");
         Debug.Log($"MeleeDamage     : {playerStats.GetStat(StatType.MeleeDamage)}");
         Debug.Log($"RangedDamage    : {playerStats.GetStat(StatType.RangedDamage)}");
@@ -58,9 +58,9 @@ public class TestBuff : MonoBehaviour
         // I : buff HP
         if (Input.GetKeyDown(KeyCode.I))
         {
-            playerStats.AddModifier(new StatModifier(StatType.HP, ModifierType.Flat, 50f));
+            playerStats.AddModifier(new StatModifier(StatType.MaxHealth, ModifierType.Flat, 50f));
             Debug.Log("✅ [I] Buff HP +50 appliqué");
-            Debug.Log($"HP maintenant : {playerStats.GetStat(StatType.HP)}");
+            Debug.Log($"HP maintenant : {playerStats.GetStat(StatType.MaxHealth)}");
         }
 
         // R : reset tous les buffs
@@ -71,7 +71,7 @@ public class TestBuff : MonoBehaviour
             Debug.Log($"MeleeDamage  : {playerStats.GetStat(StatType.MeleeDamage)}");
             Debug.Log($"RangedDamage : {playerStats.GetStat(StatType.RangedDamage)}");
             Debug.Log($"MoveSpeed    : {playerStats.GetStat(StatType.MoveSpeed)}");
-            Debug.Log($"HP           : {playerStats.GetStat(StatType.HP)}");
+            Debug.Log($"HP           : {playerStats.GetStat(StatType.MaxHealth)}");
         }
     }
 }

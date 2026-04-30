@@ -84,7 +84,7 @@ public class PlayerStats : MonoBehaviour
     {
         switch (stat)
         {
-            case StatType.HP:                return baseData.hp;
+            case StatType.MaxHealth:                return baseData.maxHealth;
             case StatType.Tankiness:         return baseData.tankiness;
             case StatType.MeleeDamage:       return baseData.meleeDamage;
             case StatType.RangedDamage:      return baseData.rangedDamage;

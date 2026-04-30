@@ -1,136 +1,202 @@
-﻿// Scripts/Player/PlayerMelee.cs
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class PlayerMelee : MonoBehaviour
 {
+    public bool IsAttacking { get; private set; }
+
     [Header("Détection")]
-    public float detectionRange = 6f;  // grande zone de détection
-    public float stopDistance   = 1f;  // distance à laquelle on arrête le dash
+    public float hitRange  = 1.5f;
+    public float coneAngle = 60f;
+
+    [Header("Dash")]
+    public float dashDistance = 3f;
+    public float dashSpeed    = 12f;
+    public float returnSpeed  = 10f;
+
+    [Header("Timing")]
+    public float pauseAtPeak = 0.3f;
 
     [Header("Références")]
     public Animator animator;
 
-    private PlayerStats      stats;
-    private PlayerController controller;
-    private float            nextAttack;
+    private PlayerStats        stats;
+    private PlayerController   controller;
+    private PlayerInputHandler input;
+    private CharacterController cc;
+
+    private float nextAttack;
 
     void Awake()
     {
         stats      = GetComponent<PlayerStats>();
         controller = GetComponent<PlayerController>();
+        input      = GetComponent<PlayerInputHandler>();
+        cc         = GetComponent<CharacterController>();
     }
+
+    // ─────────────────────────────────────────
+    // API PUBLIQUE
+    // ─────────────────────────────────────────
 
     public void TryAttack()
     {
+        if (!controller.CanAct || IsAttacking)
+            return;
+
+        if (controller.IsDashing)
+            return;
+
         float attackSpeed       = stats.GetStat(StatType.AttackSpeed);
         float cooldownReduction = stats.GetStat(StatType.CooldownReduction);
-        float attackCooldown    = (1f / attackSpeed) * (1f - Mathf.Clamp01(cooldownReduction));
+        float cooldown = (1f / attackSpeed) * (1f - Mathf.Clamp01(cooldownReduction));
 
-        if (Time.time < nextAttack) return;
-        if (controller.IsDashing) return;
+        if (Time.time < nextAttack)
+            return;
 
-        Transform closestEnemy = FindClosestEnemy();
+        Vector3 direction = GetMouseAimDirection();
+        if (direction == Vector3.zero)
+            return;
 
-        if (closestEnemy != null)
-        {
-            Vector3 direction = closestEnemy.position - transform.position;
-            direction.y = 0;
-            transform.rotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.LookRotation(direction);
 
-            if (animator != null)
-            {
-                animator.ResetTrigger("Attack");
-                animator.SetTrigger("Attack");
-            }
+        animator?.SetTrigger("Attack");
+        StartCoroutine(MeleeRoutine(direction));
 
-            StartCoroutine(DashToEnemy(closestEnemy));
-        }
-
-        nextAttack = Time.time + attackCooldown;
+        nextAttack = Time.time + cooldown;
     }
 
-    IEnumerator DashToEnemy(Transform enemy)
+    /// <summary>
+    /// Appelé par RoomLoader ou autre système global
+    /// </summary>
+    public void CancelAttack()
     {
-        float elapsed     = 0f;
-        float dashDuration = controller.dashDuration;
-        float dashSpeed    = controller.dashSpeed;
+        StopAllCoroutines();
+        IsAttacking = false;
+    }
 
-        while (elapsed < dashDuration)
+    // ─────────────────────────────────────────
+    // CORE
+    // ─────────────────────────────────────────
+
+    IEnumerator MeleeRoutine(Vector3 direction)
+    {
+        IsAttacking = true;
+        controller.SetActions(false);
+        controller.SetMovement(false);
+
+        bool wasMoving = input.MoveInput.magnitude > 0.1f;
+        float traveled = 0f;
+
+        // ▶ DASH AVANT
+        while (traveled < dashDistance)
         {
-            if (enemy == null) break;
+            float step = dashSpeed * Time.deltaTime;
+            cc.Move(direction * step);
+            traveled += step;
 
-            float dist = Vector3.Distance(transform.position, enemy.position);
-            if (dist <= stopDistance) break;
-
-            // Recalcule la direction à chaque frame pour suivre l'ennemi
-            Vector3 direction = enemy.position - transform.position;
-            direction.y = 0;
-            direction.Normalize();
-
-            // Oriente le joueur en continu pendant le dash
-            transform.rotation = Quaternion.LookRotation(direction);
-
-            controller.StartDash(direction);
-
-            elapsed += Time.deltaTime;
+            CheckConeDamage(direction);
             yield return null;
         }
 
-        // Applique les dégâts à la fin du dash
-        Attack(enemy);
-    }
+        // ⏸ PAUSE AU PIC
+        if (pauseAtPeak > 0f)
+            yield return new WaitForSeconds(pauseAtPeak);
 
-    void Attack(Transform enemy)
-    {
-        if (enemy == null) return;
-
-        float damage = stats.GetStat(StatType.MeleeDamage);
-
-        IDamageable target = enemy.GetComponent<IDamageable>();
-        if (target != null)
+        // ◀ DASH RETOUR (SEULEMENT SI IMMOBILE)
+        if (!wasMoving)
         {
-            target.TakeDamage(damage);
-
-            float lifeSteal = stats.GetStat(StatType.LifeSteal);
-            if (lifeSteal > 0f)
+            float returned = 0f;
+            while (returned < dashDistance)
             {
-                PlayerHealth playerHealth = GetComponent<PlayerHealth>();
-                if (playerHealth != null)
-                    playerHealth.Heal(damage * lifeSteal);
+                float step = returnSpeed * Time.deltaTime;
+                cc.Move(-direction * step);
+                returned += step;
+                yield return null;
             }
         }
+
+        controller.SetMovement(true);
+        controller.SetActions(true);
+        IsAttacking = false;
     }
 
-    Transform FindClosestEnemy()
-    {
-        Transform closestEnemy = null;
-        float     closestDist  = Mathf.Infinity;
+    // ─────────────────────────────────────────
+    // DAMAGE
+    // ─────────────────────────────────────────
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, detectionRange);
+    void CheckConeDamage(Vector3 forward)
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, hitRange);
+
         foreach (Collider hit in hits)
         {
-            if (!hit.CompareTag("Enemy")) continue;
+            // Ignore joueur
+            if (hit.transform.root == transform.root)
+                continue;
 
-            float dist = Vector3.Distance(transform.position, hit.transform.position);
-            if (dist < closestDist)
+            IDamageable dmg = hit.GetComponent<IDamageable>();
+            if (dmg == null)
+                continue;
+
+            Vector3 toTarget = (hit.transform.position - transform.position).normalized;
+            float angle = Vector3.Angle(forward, toTarget);
+
+            if (angle <= coneAngle * 0.5f)
             {
-                closestDist  = dist;
-                closestEnemy = hit.transform;
+                ApplyDamage(dmg);
+                break; // une seule cible
             }
         }
-
-        return closestEnemy;
     }
 
+    void ApplyDamage(IDamageable target)
+    {
+        float damage = stats.GetStat(StatType.MeleeDamage);
+        target.TakeDamage(damage);
+
+        float lifeSteal = stats.GetStat(StatType.LifeSteal);
+        if (lifeSteal > 0f)
+        {
+            GetComponent<PlayerHealth>()?.Heal(damage * lifeSteal);
+        }
+    }
+
+    // ─────────────────────────────────────────
+    // AIM (SOURIS)
+    // ─────────────────────────────────────────
+
+    Vector3 GetMouseAimDirection()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Plane ground = new Plane(Vector3.up, transform.position);
+
+        if (ground.Raycast(ray, out float distance))
+        {
+            Vector3 point = ray.GetPoint(distance);
+            Vector3 dir = point - transform.position;
+            dir.y = 0f;
+            return dir.sqrMagnitude > 0.001f ? dir.normalized : Vector3.zero;
+        }
+
+        return Vector3.zero;
+    }
+
+#if UNITY_EDITOR
+    // ─────────────────────────────────────────
+    // DEBUG
+    // ─────────────────────────────────────────
     void OnDrawGizmosSelected()
     {
-        // Zone de détection en rouge
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
+        Gizmos.DrawWireSphere(transform.position, hitRange);
 
-        // Distance d'arrêt en jaune
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, stopDistance);
+        Vector3 left  = Quaternion.Euler(0, -coneAngle * 0.5f, 0) * transform.forward;
+        Vector3 right = Quaternion.Euler(0,  coneAngle * 0.5f, 0) * transform.forward;
+
+        Gizmos.DrawLine(transform.position, transform.position + left  * hitRange);
+        Gizmos.DrawLine(transform.position, transform.position + right * hitRange);
     }
+#endif
 }

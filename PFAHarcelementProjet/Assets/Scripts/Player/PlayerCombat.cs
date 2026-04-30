@@ -9,6 +9,7 @@ public class PlayerCombat : MonoBehaviour
     public PlayerMelee melee;
     public float rotationSpeed = 15f;
     public PlayerDash dash;
+    private PlayerController controller;
     
     Quaternion targetRotation;
 
@@ -18,6 +19,7 @@ public class PlayerCombat : MonoBehaviour
 
     void Awake()
     {
+        controller = GetComponent<PlayerController>();
         if (dash == null)
             dash = GetComponent<PlayerDash>();
         input = GetComponent<PlayerInputHandler>();
@@ -48,6 +50,14 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
+        // 🔒 Verrou global (transition, stun, etc.)
+        if (controller != null && !controller.CanAct)
+            return;
+
+        // 🔒 Mêlée en cours
+        if (melee != null && melee.IsAttacking)
+            return;
+
         Vector3 aimDirection  = GetAimDirection();
         Vector3 moveDirection = GetMoveDirection();
 
@@ -57,7 +67,7 @@ public class PlayerCombat : MonoBehaviour
 
         bool isShooting = input.ShootPressed || mobileAutoShoot;
 
-        // ROTATION
+        // ROTATION + SHOOT
         if (isShooting && aimDirection != Vector3.zero)
         {
             RotateTowards(aimDirection);
@@ -68,21 +78,19 @@ public class PlayerCombat : MonoBehaviour
             RotateTowards(moveDirection);
         }
 
-        // Mêlée
+        // MÊLÉE
         if (input.MeleePressed && melee != null)
             melee.TryAttack();
-        
-        
-        bool dashPressed = input.DashPressed; // clavier / manette / mobile
 
+        // DASH
+        bool dashPressed = input.DashPressed;
         if (dashPressed && dash != null && dash.CanDash)
         {
             Vector3 dashDir = GetDashDirection(aimDirection, moveDirection, isShooting);
             dash.StartDash(dashDir);
         }
-
     }
-
+    
     Vector3 GetAimDirection()
     {
         Vector2 aim = input.AimInput;

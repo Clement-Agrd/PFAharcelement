@@ -16,6 +16,10 @@ public class CameraFollow : MonoBehaviour
     public float zoomSpeed = 3f;
     private float currentZoom = 15f;
 
+    [Header("Offset Z dynamique")]
+    public float minZOffset = -6f;
+    public float maxZOffset = -15f;
+
     private Camera cam;
 
     void Awake()
@@ -61,18 +65,31 @@ public class CameraFollow : MonoBehaviour
         if (Mathf.Abs(scroll) > 0.01f)
             currentZoom -= scroll * zoomSpeed * 10f;
 
-        // 🎮 Manette — gâchettes L2/R2 (axe 3 par défaut)
-        float triggerZoom = UnityEngine.Input.GetAxis("Fire2");
+        // 🎮 Manette — gâchettes
+        float triggerZoom = UnityEngine.Input.GetAxis("Fire3");
         if (Mathf.Abs(triggerZoom) > 0.1f)
             currentZoom += triggerZoom * zoomSpeed * Time.deltaTime * 20f;
 
         currentZoom = Mathf.Clamp(currentZoom, minZoom, maxZoom);
 
-        // Caméra orthographique
+        // -------- ZOOM CAMERA --------
         if (cam != null && cam.orthographic)
-            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, currentZoom, Time.deltaTime * zoomSpeed);
-        // Caméra perspective
+        {
+            cam.orthographicSize = Mathf.Lerp(
+                cam.orthographicSize,
+                currentZoom,
+                Time.deltaTime * zoomSpeed
+            );
+        }
         else
+        {
             offset.y = Mathf.Lerp(offset.y, currentZoom, Time.deltaTime * zoomSpeed);
+        }
+
+        // -------- OFFSET Z DYNAMIQUE --------
+        float zoomT = Mathf.InverseLerp(minZoom, maxZoom, currentZoom);
+        float targetZ = Mathf.Lerp(minZOffset, maxZOffset, zoomT);
+
+        offset.z = Mathf.Lerp(offset.z, targetZ, Time.deltaTime * zoomSpeed);
     }
 }

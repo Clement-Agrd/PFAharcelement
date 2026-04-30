@@ -1,11 +1,12 @@
 ﻿// Scripts/Stats/PlayerBaseData.cs
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "PlayerBaseData", menuName = "Roguelike/Player Base Data")]
 public class PlayerBaseData : ScriptableObject
 {
-    [Header("Survie")]
-    public float hp                 = 100f;
+    [FormerlySerializedAs("hp")] [Header("Survie")]
+    public float maxHealth                 = 100f;
     public float tankiness          = 0f;
     public float lifeSteal          = 0f;
 

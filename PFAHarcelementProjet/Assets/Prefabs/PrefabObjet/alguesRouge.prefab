@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6834531331318117659}
   - component: {fileID: 1842965106386798193}
   - component: {fileID: -3305709758102202019}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: alguesRouge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,4 +127,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RewardPickup
   buffData: {fileID: 11400000, guid: 511bc1c7b92788f42bf57e95af44d960, type: 2}
   pickupMode: 0
+  interactionRange: 10
   price: 0

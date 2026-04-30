@@ -1,7 +1,7 @@
 
 public enum StatType
 {
-    HP,
+    MaxHealth,
     Tankiness,
     MeleeDamage,      
     RangedDamage,     

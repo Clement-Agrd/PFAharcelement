@@ -1,4 +1,3 @@
-
 using System.Collections;
 using UnityEngine;
 
@@ -6,32 +5,35 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float rotationSpeed = 15f;
-    public float gravity       = -20f;
+    public float gravity = -20f;
 
     [Header("Dash mêlée")]
-    public float dashSpeed    = 18f;
+    public float dashSpeed = 18f;
     public float dashDuration = 0.12f;
 
     private CharacterController controller;
-    private PlayerInputHandler  input;
-    private PlayerStats         stats;
-    private float               verticalVelocity;
+    private PlayerInputHandler input;
+    private PlayerStats stats;
+    private float verticalVelocity;
 
-    private bool    isDashing;
-    private Vector3 dashDirection;
+    private bool isDashing;
+
+    // ✅ VERROUS GLOBAUX
+    public bool CanMove { get; private set; } = true;
+    public bool CanAct  { get; private set; } = true;
 
     void Awake()
     {
         controller = GetComponent<CharacterController>();
-        input      = GetComponent<PlayerInputHandler>();
-        stats      = GetComponent<PlayerStats>();
+        input = GetComponent<PlayerInputHandler>();
+        stats = GetComponent<PlayerStats>();
     }
 
     void Update()
     {
         ApplyGravity();
 
-        if (!isDashing)
+        if (CanMove && !isDashing)
             Move();
     }
 
@@ -48,17 +50,19 @@ public class PlayerController : MonoBehaviour
         float moveSpeed = stats.GetStat(StatType.MoveSpeed);
 
         Vector2 moveInput = input.MoveInput;
-        Vector3 move      = new Vector3(moveInput.x, 0, moveInput.y);
-
+        Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
         move.y = verticalVelocity;
+
         controller.Move(move * moveSpeed * Time.deltaTime);
     }
 
-    // ─── Dash appelé par PlayerMelee ─────────────────────────────────────────
+    // ─── DASH ───────────────────────────────────────────────
 
     public void StartDash(Vector3 direction)
     {
-        if (isDashing) return;
+        if (!CanAct || isDashing)
+            return;
+
         StartCoroutine(DashCoroutine(direction));
     }
 
@@ -81,9 +85,17 @@ public class PlayerController : MonoBehaviour
 
     public bool IsDashing => isDashing;
 
-    public void SetMovement(bool enabled)
+    // ─── VERROU API ──────────────────────────────────────────
+
+    public void SetMovement(bool value)
     {
-        verticalVelocity = -2f;
-        this.enabled = enabled;
+        CanMove = value;
+        if (!value)
+            verticalVelocity = -2f;
+    }
+
+    public void SetActions(bool value)
+    {
+        CanAct = value;
     }
 }

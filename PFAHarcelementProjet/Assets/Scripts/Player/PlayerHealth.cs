@@ -1,4 +1,4 @@
-﻿// Scripts/Player/PlayerHealth.cs
+// Scripts/Player/PlayerHealth.cs
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -64,7 +64,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         currentHP -= finalDamage;
         currentHP  = Mathf.Max(currentHP, 0f);
 
-        onHealthChanged?.Invoke(currentHP, stats.GetStat(StatType.HP));
+        onHealthChanged?.Invoke(currentHP, stats.GetStat(StatType.MaxHealth));
 
         if (currentHP <= 0f)
             Die();
@@ -76,14 +76,14 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         if (isDead) return;
 
-        float maxHP = stats.GetStat(StatType.HP);
+        float maxHP = stats.GetStat(StatType.MaxHealth);
         currentHP   = Mathf.Min(currentHP + amount, maxHP);
 
         onHealthChanged?.Invoke(currentHP, maxHP);
     }
 
     public float GetCurrentHP() => currentHP;
-    public float GetMaxHP()     => stats != null ? stats.GetStat(StatType.HP) : 100f;
+    public float GetMaxHP()     => stats != null ? stats.GetStat(StatType.MaxHealth) : 100f;
     public float GetHPRatio()   => currentHP / GetMaxHP();
 
     // ─── Unity ───────────────────────────────────────────────────────────────
@@ -95,13 +95,14 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     void Start()
     {
-        currentHP = stats.GetStat(StatType.HP);
+        currentHP = stats.GetStat(StatType.MaxHealth);
+        // Petit délai pour s'assurer que HealthBarUI est bien initialisé
         Invoke(nameof(BroadcastHP), 0.1f);
     }
 
     void BroadcastHP()
     {
-        onHealthChanged?.Invoke(currentHP, stats.GetStat(StatType.HP));
+        onHealthChanged?.Invoke(currentHP, stats.GetStat(StatType.MaxHealth));
     }
 
     void Die()

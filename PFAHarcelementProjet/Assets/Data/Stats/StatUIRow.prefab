@@ -35,7 +35,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 136.7056, y: 57.3976}
+  m_SizeDelta: {x: 276.915, y: 15.9487}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9171366968076543147
 CanvasRenderer:
@@ -92,14 +92,14 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 29.75
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 13.4
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -131,7 +131,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 26.289612, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -164,7 +164,7 @@ RectTransform:
   m_GameObject: {fileID: 5077604402348552673}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5807015, y: 1.5807015, z: 1.5807015}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9193163903015983146}
@@ -248,8 +248,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 47.7816, y: -5.8629}
-  m_SizeDelta: {x: 195.5632, y: 88.2741}
+  m_AnchoredPosition: {x: 61.49608, y: -5.8629}
+  m_SizeDelta: {x: 222.9921, y: 88.2741}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7922761850261336646
 MonoBehaviour:
@@ -265,6 +265,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StatUIRow
   icon: {fileID: 3890332094929182019}
   valueText: {fileID: 3541645205316410030}
+  positiveColor: {r: 0, g: 1, b: 0, a: 1}
+  negativeColor: {r: 1, g: 0, b: 0, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &3553585718245094811
 MonoBehaviour:
   m_ObjectHideFlags: 0
