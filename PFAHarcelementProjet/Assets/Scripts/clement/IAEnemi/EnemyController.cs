@@ -6,8 +6,8 @@ public abstract class EnemyController : MonoBehaviour
     [Header("Stats")]
     public float maxHealth   = 100f;
     public float moveSpeed   = 3f;
-    public float attackRange = 1.5f;
-    public float chaseRange  = 8f;
+    public float attackRange = 8f;
+    public float chaseRange  = 20f;
     public float attackCooldown = 1.2f;
     public float stopChaseRange = 4f; // Distance à laquelle l'ennemi arrête de chase
     

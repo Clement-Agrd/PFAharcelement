@@ -48,21 +48,41 @@ public class UIStatsPanel : MonoBehaviour
         if (playerStats != null)
             playerStats.OnStatsChanged -= UpdateAll;
     }
+    
     public void PreviewBuff(BuffPickupData buff)
     {
         foreach (var pair in rows)
         {
             StatType statType = pair.Key;
 
-            float current = playerStats.GetStat(statType);
-            float preview = current;
+            float baseValue    = playerStats.GetBaseStatValue(statType);
+            float flatBonus    = 0f;
+            float percentBonus = 0f;
 
+            // Buffs déjà actifs
+            foreach (var mod in playerStats.GetActiveModifiers())
+            {
+                if (mod.targetStat != statType) continue;
+
+                if (mod.modifierType == ModifierType.Flat)
+                    flatBonus += mod.value;
+                else
+                    percentBonus += mod.value;
+            }
+
+            // Buff en preview
             foreach (var mod in buff.modifiers)
             {
                 if (mod.statType != statType) continue;
 
-                preview = ApplyModifierSimulation(preview, mod);
+                if (mod.modifierType == ModifierType.Flat)
+                    flatBonus += mod.value;
+                else
+                    percentBonus += mod.value;
             }
+
+            float current = playerStats.GetStat(statType);
+            float preview = (baseValue + flatBonus) * (1f + percentBonus);
 
             pair.Value.Set(
                 GetSprite(statType),
@@ -73,15 +93,6 @@ public class UIStatsPanel : MonoBehaviour
         }
     }
     
-    float ApplyModifierSimulation(float baseValue, StatModifierData mod)
-    {
-        return mod.modifierType switch
-        {
-            ModifierType.Flat       => baseValue + mod.value,
-            ModifierType.Percent    => baseValue * (1f + mod.value),
-            _ => baseValue
-        };
-    }
     
     public void ClearPreview()
     {

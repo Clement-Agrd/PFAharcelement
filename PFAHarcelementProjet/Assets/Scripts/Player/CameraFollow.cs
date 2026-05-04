@@ -6,30 +6,50 @@ public class CameraFollow : MonoBehaviour
     [Header("Cible")]
     public Transform target;
 
+    [Header("Zoom initial")]
+    public float startZoom = 6f;
+
     [Header("Position")]
-    public Vector3 offset      = new Vector3(0, 15, -10);
+    public Vector3 offset      = new Vector3(0, 4, -4);
     public float   smoothSpeed = 10f;
 
     [Header("Zoom")]
-    public float minZoom = 10f;
-    public float maxZoom = 25f;
+    public float minZoom = 4f;
+    public float maxZoom = 14f;
     public float zoomSpeed = 3f;
-    private float currentZoom = 15f;
+    private float currentZoom = 6f;
 
     [Header("Offset Z dynamique")]
-    public float minZOffset = -6f;
-    public float maxZOffset = -15f;
+    public float minZOffset = -4f;
+    public float maxZOffset = -12f;
 
     private Camera cam;
 
+
     void Awake()
     {
-        cam = GetComponent<Camera>();
-        if (cam != null)
-            currentZoom = cam.orthographicSize > 0
-                ? cam.orthographicSize
-                : offset.y;
+        cam = GetComponentInChildren<Camera>();
     }
+
+    
+   
+    void Start()
+    {
+        if (target == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+                target = player.transform;
+        }
+
+        if (cam != null && cam.orthographic)
+        {
+            currentZoom = startZoom;
+            cam.orthographicSize = startZoom; // ✅ PAS DE LERP
+        }
+    }
+
+
 
     void LateUpdate()
     {

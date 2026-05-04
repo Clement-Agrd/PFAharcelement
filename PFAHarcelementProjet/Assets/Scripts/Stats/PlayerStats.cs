@@ -98,6 +98,15 @@ public class PlayerStats : MonoBehaviour
                 return 0f;
         }
     }
+    public float GetBaseStatValue(StatType stat)
+    {
+        return GetBaseValue(stat);
+    }
+
+    public IEnumerable<StatModifier> GetActiveModifiers()
+    {
+        return modifiers;
+    }
     
     public System.Action OnStatsChanged;
 }

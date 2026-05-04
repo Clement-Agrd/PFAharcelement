@@ -6,16 +6,15 @@ public class ProjectileEnemy : MonoBehaviour
     public float speed = 10f;
     public float lifeTime = 5f;
     public int damage = 10;
+
     int playerHitboxLayer;
-    
     Rigidbody rb;
-    
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         playerHitboxLayer = LayerMask.NameToLayer("PlayerHitbox");
     }
-
 
     void Start()
     {
@@ -24,13 +23,18 @@ public class ProjectileEnemy : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // ✅ HITBOX JOUEUR (pas le CharacterController)
+        // ✅ HITBOX JOUEUR
         if (other.gameObject.layer == playerHitboxLayer)
         {
-            Debug.Log("💥 Player hit (hitbox)");
+            // 🔥 On remonte jusqu'au PlayerHealth
+            PlayerHealth playerHealth =
+                other.GetComponentInParent<PlayerHealth>();
 
-            // Exemple plus tard :
-            // other.GetComponentInParent<PlayerHealth>()?.TakeDamage(damage);
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damage);
+                Debug.Log($"💥 Player hit for {damage} damage");
+            }
 
             Destroy(gameObject);
             return;

@@ -103,6 +103,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         lastMaxHealth = maxHP;
 
         Invoke(nameof(BroadcastHP), 0.1f);
+        
     }
 
 

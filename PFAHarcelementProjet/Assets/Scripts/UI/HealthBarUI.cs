@@ -168,9 +168,9 @@ public class HealthBarUI : MonoBehaviour
         {
             barFill.fillAmount = currentFill;
 
-            if      (currentFill > 0.5f)  barFill.color = new Color(0f,   0.8f, 0f);
-            else if (currentFill > 0.25f) barFill.color = new Color(1f,   0.8f, 0f);
-            else                          barFill.color = new Color(0.8f, 0f,   0f);
+            if      (currentFill > 0.5f)  barFill.color = new Color(0.7f,   1f, 0.8f);
+            else if (currentFill > 0.25f) barFill.color = new Color(1f,   0.9f, 0.7f);
+            else                          barFill.color = new Color(1f, 0.7f,   0.7f);
         }
 
         if (barGhost != null)
