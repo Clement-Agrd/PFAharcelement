@@ -8,8 +8,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public UnityEvent<float, float> onHealthChanged;
     public UnityEvent               onDeath;
 
+
     private PlayerStats stats;
-    private float       currentHP;
+    private float lastMaxHealth;
+    private float       currentHealth;
     private bool        isDead;
     private bool        isInvincible = false;
     private bool        isMirror     = false;
@@ -64,9 +66,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         currentHP -= finalDamage;
         currentHP  = Mathf.Max(currentHP, 0f);
 
-        onHealthChanged?.Invoke(currentHP, stats.GetStat(StatType.MaxHealth));
+        onHealthChanged?.Invoke(currentHealth, stats.GetStat(StatType.MaxHealth));
 
-        if (currentHP <= 0f)
+        if (currentHealth <= 0f)
             Die();
     }
 
@@ -77,14 +79,14 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (isDead) return;
 
         float maxHP = stats.GetStat(StatType.MaxHealth);
-        currentHP   = Mathf.Min(currentHP + amount, maxHP);
+        currentHealth   = Mathf.Min(currentHealth + amount, maxHP);
 
-        onHealthChanged?.Invoke(currentHP, maxHP);
+        onHealthChanged?.Invoke(currentHealth, maxHP);
     }
 
-    public float GetCurrentHP() => currentHP;
+    public float GetCurrentHP() => currentHealth;
     public float GetMaxHP()     => stats != null ? stats.GetStat(StatType.MaxHealth) : 100f;
-    public float GetHPRatio()   => currentHP / GetMaxHP();
+    public float GetHPRatio()   => currentHealth / GetMaxHP();
 
     // ─── Unity ───────────────────────────────────────────────────────────────
 
@@ -93,16 +95,20 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         stats = GetComponent<PlayerStats>();
     }
 
+
     void Start()
     {
-        currentHP = stats.GetStat(StatType.MaxHealth);
-        // Petit délai pour s'assurer que HealthBarUI est bien initialisé
+        float maxHP = stats.GetStat(StatType.MaxHealth);
+        currentHealth = maxHP;
+        lastMaxHealth = maxHP;
+
         Invoke(nameof(BroadcastHP), 0.1f);
     }
 
+
     void BroadcastHP()
     {
-        onHealthChanged?.Invoke(currentHP, stats.GetStat(StatType.MaxHealth));
+        onHealthChanged?.Invoke(currentHealth, stats.GetStat(StatType.MaxHealth));
     }
 
     void Die()
@@ -112,4 +118,37 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         onDeath?.Invoke();
         gameObject.SetActive(false);
     }
+    
+    void OnEnable()
+    {
+        stats = GetComponent<PlayerStats>();
+        if (stats != null)
+            stats.OnStatsChanged += HandleStatsChanged;
+    }
+
+    void OnDisable()
+    {
+        if (stats != null)
+            stats.OnStatsChanged -= HandleStatsChanged;
+    }
+    void HandleStatsChanged()
+    {
+        float previousMaxHP = lastMaxHealth;
+        float newMaxHP = stats.GetStat(StatType.MaxHealth);
+
+        float delta = newMaxHP - previousMaxHP;
+
+        // ✅ Roguelike-friendly : la vie augmente avec le max
+        if (delta > 0)
+            currentHealth += delta;
+
+        // ✅ Clamp de sécurité
+        currentHealth = Mathf.Min(currentHealth, newMaxHP);
+
+        lastMaxHealth = newMaxHP;
+
+        // ✅ Notify l’UI
+        onHealthChanged?.Invoke(currentHealth, newMaxHP);
+    }
+
 }

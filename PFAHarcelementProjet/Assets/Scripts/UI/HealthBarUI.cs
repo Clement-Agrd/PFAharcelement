@@ -5,15 +5,26 @@ using TMPro;
 
 public class HealthBarUI : MonoBehaviour
 {
+    
+    [Header("Visual Scale")]
+    [Tooltip("Multiplie la largeur visuelle de la barre sans affecter les HP")]
+    public float visualScale = 1.5f;
+
     [Header("Barres")]
     public Image barFill;
     public Image barGhost;
     public Image barBackground;
+    public float backgroundPadding = 20f;
 
     [Header("Checkpoints")]
     public Transform  checkpointContainer;
     public GameObject checkpointPrefab;
-    public int        hpPerCheckpoint = 50;
+
+    [Header("HP Scale")]
+    public int   hpPerCheckpoint = 100;
+    public float baseHP          = 100f;
+    public float maxVisualHP     = 1000f; // À partir de là, la barre n’augmente plus
+
 
     [Header("Texte")]
     public TextMeshProUGUI hpText;
@@ -29,6 +40,8 @@ public class HealthBarUI : MonoBehaviour
     private float        ghostFill;
     private float        lastDamageTime;
     private float        currentBarWidth;
+    
+    
 
     void Awake()
     {
@@ -83,13 +96,24 @@ public class HealthBarUI : MonoBehaviour
 
     void UpdateBarWidth(float maxHP)
     {
-        float baseHP    = 100f;
-        float ratio     = Mathf.Clamp01((maxHP - baseHP) / (1000f - baseHP));
-        currentBarWidth = Mathf.Lerp(minBarWidth, maxBarWidth, ratio);
+        float clampedHP = Mathf.Min(maxHP, maxVisualHP);
 
-        SetWidth(barBackground, currentBarWidth);
-        SetWidth(barFill,       currentBarWidth);
-        SetWidth(barGhost,      currentBarWidth);
+        float ratio = Mathf.InverseLerp(
+            baseHP,
+            maxVisualHP,
+            clampedHP
+        );
+
+
+        currentBarWidth =
+            Mathf.Lerp(minBarWidth, maxBarWidth, ratio) * visualScale;
+
+
+     
+        SetWidth(barFill, currentBarWidth);
+        SetWidth(barGhost, currentBarWidth);
+        SetWidth(barBackground, currentBarWidth + backgroundPadding);
+
 
         if (checkpointContainer != null)
         {
@@ -109,26 +133,33 @@ public class HealthBarUI : MonoBehaviour
 
     void UpdateCheckpoints(float maxHP)
     {
-        if (checkpointContainer == null || checkpointPrefab == null) return;
+        if (checkpointContainer == null || checkpointPrefab == null)
+            return;
 
         foreach (Transform child in checkpointContainer)
             Destroy(child.gameObject);
 
-        if (currentBarWidth < maxBarWidth - 1f) return;
+        int checkpointCount = Mathf.FloorToInt(maxHP / hpPerCheckpoint);
 
-        int checkpointCount = Mathf.FloorToInt(maxHP / hpPerCheckpoint) - 1;
-        for (int i = 1; i <= checkpointCount; i++)
+        // Pas assez de checkpoints pour afficher quelque chose
+        if (checkpointCount <= 1)
+            return;
+
+        for (int i = 1; i < checkpointCount; i++)
         {
-            float ratio = (i * hpPerCheckpoint) / maxHP;
+            // ✅ Répartition uniforme sur toute la barre
+            float ratio = (float)i / checkpointCount;
             float posX  = (ratio - 0.5f) * currentBarWidth;
 
-            GameObject trait = Instantiate(checkpointPrefab, checkpointContainer);
-            RectTransform rt = trait.GetComponent<RectTransform>();
+            GameObject tick = Instantiate(checkpointPrefab, checkpointContainer);
+            RectTransform rt = tick.GetComponent<RectTransform>();
+
             if (rt != null)
                 rt.anchoredPosition = new Vector2(posX, 0f);
         }
     }
 
+    
     void UpdateVisuals(float current, float max)
     {
         currentFill = max > 0 ? current / max : 0f;
