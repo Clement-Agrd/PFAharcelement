@@ -1,10 +1,12 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMelee : MonoBehaviour
 {
     public bool IsAttacking { get; private set; }
+    HashSet<IDamageable> hitTargets = new HashSet<IDamageable>();
 
     [Header("Détection")]
     public float hitRange  = 1.5f;
@@ -82,9 +84,14 @@ public class PlayerMelee : MonoBehaviour
 
     IEnumerator MeleeRoutine(Vector3 direction)
     {
+
         IsAttacking = true;
+
+        hitTargets.Clear(); // ✅ reset à chaque attaque
+
         controller.SetActions(false);
         controller.SetMovement(false);
+
 
         bool wasMoving = input.MoveInput.magnitude > 0.1f;
         float traveled = 0f;
@@ -132,12 +139,16 @@ public class PlayerMelee : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            // Ignore joueur
+            // Ignore le joueur
             if (hit.transform.root == transform.root)
                 continue;
 
             IDamageable dmg = hit.GetComponent<IDamageable>();
             if (dmg == null)
+                continue;
+
+            // ✅ Déjà touché pendant cette attaque
+            if (hitTargets.Contains(dmg))
                 continue;
 
             Vector3 toTarget = (hit.transform.position - transform.position).normalized;
@@ -146,7 +157,8 @@ public class PlayerMelee : MonoBehaviour
             if (angle <= coneAngle * 0.5f)
             {
                 ApplyDamage(dmg);
-                break; // une seule cible
+
+                hitTargets.Add(dmg); // ✅ marqué comme touché
             }
         }
     }
