@@ -8,41 +8,53 @@ public class PlayerDash : MonoBehaviour
     public float dashCooldown = 1f;
 
     [Header("Style")]
-    public float spinZSpeed = 720f; // degrés par seconde
+    public float spinZSpeed = 720f;
+
+    [Header("Rotation")]
+    public float alignDuration = 0.06f;
+
+    [Header("Aim Restore")]
+    public float restoreAimDuration = 0.12f;
 
     CharacterController controller;
 
     float dashTime;
     float nextDash;
     bool isDashing;
+
     Vector3 dashDirection;
-    
-    
-    [Header("Rotation")]
-    public float alignDuration = 0.06f; // temps de rotation douce au début
+    Vector3 lockedAimDirection;
+
+    // Alignement début dash
     float alignTime;
     Quaternion alignStartRot;
     Quaternion alignTargetRot;
     bool aligning;
-    
 
+    // Spin
+    float spinAngle;
 
-    float spinAngle; // ✅ ACCUMULATEUR DE SPIN
+    // Restauration visée
+    Quaternion restoreStartRot;
+    Quaternion restoreTargetRot;
+    float restoreTime;
+    bool restoringAim;
 
     void Awake()
     {
         controller = GetComponent<CharacterController>();
     }
 
-    public bool CanDash => Time.time >= nextDash && !isDashing;
+    public bool CanDash => Time.time >= nextDash && !isDashing && !restoringAim;
 
-    public void StartDash(Vector3 direction)
+    public void StartDash(Vector3 direction, Vector3 aimDirection)
     {
         if (!CanDash) return;
 
         dashDirection = direction.normalized;
+        lockedAimDirection = aimDirection.normalized;
 
-        // 🔁 Prépare l'alignement smooth
+        // Alignement vers la direction du dash
         alignStartRot  = transform.rotation;
         alignTargetRot = Quaternion.LookRotation(dashDirection);
         alignTime = 0f;
@@ -56,11 +68,29 @@ public class PlayerDash : MonoBehaviour
 
     void Update()
     {
+        // 🔁 RESTAURATION DE LA VISÉE (SMOOTH)
+        if (restoringAim)
+        {
+            restoreTime += Time.deltaTime;
+            float t = restoreTime / restoreAimDuration;
+
+            transform.rotation = Quaternion.Slerp(
+                restoreStartRot,
+                restoreTargetRot,
+                t
+            );
+
+            if (t >= 1f)
+                restoringAim = false;
+
+            return;
+        }
+
         if (!isDashing) return;
 
         dashTime -= Time.deltaTime;
 
-        // 🔄 ALIGNEMENT SMOOTH AU DÉBUT
+        // 🔄 ALIGN AU DÉBUT
         if (aligning)
         {
             alignTime += Time.deltaTime;
@@ -77,21 +107,26 @@ public class PlayerDash : MonoBehaviour
         }
         else
         {
-            // 🔥 SPIN Z APRÈS ALIGNEMENT
+            // 🔥 SPIN
             spinAngle += spinZSpeed * Time.deltaTime;
 
             Quaternion baseRot = Quaternion.LookRotation(dashDirection);
             Quaternion roll = Quaternion.AngleAxis(spinAngle, Vector3.forward);
-
             transform.rotation = baseRot * roll;
         }
 
         controller.Move(dashDirection * dashSpeed * Time.deltaTime);
 
+        // ✅ FIN DU DASH → RESTORE AIM
         if (dashTime <= 0f)
         {
             isDashing = false;
-            transform.rotation = Quaternion.LookRotation(dashDirection);
+
+            restoreStartRot  = transform.rotation;
+            restoreTargetRot = Quaternion.LookRotation(lockedAimDirection);
+
+            restoreTime = 0f;
+            restoringAim = true;
         }
     }
 }

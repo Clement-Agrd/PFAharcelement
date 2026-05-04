@@ -11,6 +11,11 @@ public class PlayerMelee : MonoBehaviour
     [Header("Détection")]
     public float hitRange  = 1.5f;
     public float coneAngle = 60f;
+    
+    [Header("Rotation")]
+    public float attackRotateSpeed = 720f; // degrés / seconde
+    public float maxRotateTime = 0.15f;    // sécurité
+
 
     [Header("Dash")]
     public float dashDistance = 3f;
@@ -29,6 +34,8 @@ public class PlayerMelee : MonoBehaviour
     private CharacterController cc;
 
     private float nextAttack;
+    
+
 
     void Awake()
     {
@@ -57,14 +64,13 @@ public class PlayerMelee : MonoBehaviour
         if (Time.time < nextAttack)
             return;
 
-        Vector3 direction = GetMouseAimDirection();
+        Vector3 direction = GetAttackDirection();
         if (direction == Vector3.zero)
             return;
 
-        transform.rotation = Quaternion.LookRotation(direction);
-
         animator?.SetTrigger("Attack");
-        StartCoroutine(MeleeRoutine(direction));
+        StartCoroutine(RotateAndAttack(direction));
+
 
         nextAttack = Time.time + cooldown;
     }
@@ -81,12 +87,34 @@ public class PlayerMelee : MonoBehaviour
     // ─────────────────────────────────────────
     // CORE
     // ─────────────────────────────────────────
-
-    IEnumerator MeleeRoutine(Vector3 direction)
+    IEnumerator RotateAndAttack(Vector3 direction)
     {
-
         IsAttacking = true;
 
+        Quaternion startRot  = transform.rotation;
+        Quaternion targetRot = Quaternion.LookRotation(direction);
+
+        float angle = Quaternion.Angle(startRot, targetRot);
+        float timeNeeded = angle / attackRotateSpeed;
+        timeNeeded = Mathf.Min(timeNeeded, maxRotateTime);
+
+        float t = 0f;
+
+        while (t < timeNeeded)
+        {
+            transform.rotation = Quaternion.Slerp(startRot, targetRot, t / timeNeeded);
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.rotation = targetRot;
+
+        // ✅ Lancement réel de l'attaque
+        StartCoroutine(MeleeRoutine(direction));
+    }
+    
+    IEnumerator MeleeRoutine(Vector3 direction)
+    {
         hitTargets.Clear(); // ✅ reset à chaque attaque
 
         controller.SetActions(false);
@@ -179,8 +207,19 @@ public class PlayerMelee : MonoBehaviour
     // AIM (SOURIS)
     // ─────────────────────────────────────────
 
-    Vector3 GetMouseAimDirection()
+    Vector3 GetAttackDirection()
     {
+        // 🎮 PRIORITÉ MANETTE
+        Vector2 aim = input.AimInput;
+        if (aim.magnitude > 0.3f)
+            return new Vector3(aim.x, 0f, aim.y).normalized;
+
+        // 🎮 MANETTE SANS VISÉE → direction du regard
+        if (UnityEngine.InputSystem.Gamepad.current != null)
+            return transform.forward;
+
+
+        // 🖱️ SOURIS UNIQUEMENT SI PAS DE MANETTE
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Plane ground = new Plane(Vector3.up, transform.position);
 
@@ -189,11 +228,14 @@ public class PlayerMelee : MonoBehaviour
             Vector3 point = ray.GetPoint(distance);
             Vector3 dir = point - transform.position;
             dir.y = 0f;
-            return dir.sqrMagnitude > 0.001f ? dir.normalized : Vector3.zero;
+
+            if (dir.sqrMagnitude > 0.001f)
+                return dir.normalized;
         }
 
-        return Vector3.zero;
+        return transform.forward;
     }
+
 
 #if UNITY_EDITOR
     // ─────────────────────────────────────────
