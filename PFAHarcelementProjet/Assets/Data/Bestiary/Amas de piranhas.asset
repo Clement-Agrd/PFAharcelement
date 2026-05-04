@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e5438792bca4db8aa5ad02d9e6fbc20, type: 3}
   m_Name: Amas de piranhas
   m_EditorClassIdentifier: Assembly-CSharp::BestiaryEntry
-  creatureName: 
-  description: 
-  image: {fileID: 0}
-  id: 0
+  creatureName: Amas de piranhas
+  description: 'Beaucoup de piranhas mange tes pieds
+
+'
+  image: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  id: 1

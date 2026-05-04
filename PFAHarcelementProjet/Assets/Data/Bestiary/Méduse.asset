@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e5438792bca4db8aa5ad02d9e6fbc20, type: 3}
   m_Name: "M\xE9duse"
   m_EditorClassIdentifier: Assembly-CSharp::BestiaryEntry
-  creatureName: 
-  description: 
-  image: {fileID: 0}
+  creatureName: "M\xE9duse"
+  description: "Une m\xE9duse qui tire a distance\n"
+  image: {fileID: 21300000, guid: 9cf79b2450f6a6644a9e71f52aee463d, type: 3}
   id: 0
