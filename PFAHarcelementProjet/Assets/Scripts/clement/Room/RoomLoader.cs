@@ -87,13 +87,19 @@
             player.SetMovement(false);
             player.SetActions(false);
 
+            CharacterController chac = player.GetComponent<CharacterController>();
+            if (chac != null)
+                chac.enabled = false;
+
             
 
-            PlayerMelee melee = player.GetComponent<PlayerMelee>();
-            if (melee != null)
+
+            PlayerCombat combat = player.GetComponent<PlayerCombat>();
+            if (combat != null)
             {
-                melee.CancelAttack();
+                combat.CancelCombat();
             }
+
 
 
             // SORTIE DE L'ANCIENNE SALLE
@@ -135,8 +141,14 @@
             }
 
 
+
+            CharacterController cc = player.GetComponent<CharacterController>();
+            if (cc != null)
+                cc.enabled = true;
+
             player.SetMovement(true);
             player.SetActions(true);
+
 
         }
 

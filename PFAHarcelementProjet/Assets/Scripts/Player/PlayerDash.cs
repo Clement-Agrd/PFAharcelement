@@ -17,6 +17,7 @@ public class PlayerDash : MonoBehaviour
     public float restoreAimDuration = 0.12f;
 
     CharacterController controller;
+    PlayerCombat combat;
 
     float dashTime;
     float nextDash;
@@ -43,6 +44,7 @@ public class PlayerDash : MonoBehaviour
     void Awake()
     {
         controller = GetComponent<CharacterController>();
+        combat = GetComponent<PlayerCombat>();
     }
 
     public bool CanDash => Time.time >= nextDash && !isDashing && !restoringAim;
@@ -118,7 +120,7 @@ public class PlayerDash : MonoBehaviour
         controller.Move(dashDirection * dashSpeed * Time.deltaTime);
 
         // ✅ FIN DU DASH → RESTORE AIM
-        if (dashTime <= 0f)
+        if (dashTime <= 0f && combat.isShooting)
         {
             isDashing = false;
 
@@ -127,6 +129,15 @@ public class PlayerDash : MonoBehaviour
 
             restoreTime = 0f;
             restoringAim = true;
+        }
+        else if(dashTime <= 0f)
+        {
+            isDashing = false;
+
+            restoreStartRot  = transform.rotation;
+            restoreTargetRot = Quaternion.LookRotation(lockedAimDirection);
+
+            restoreTime = 0f;
         }
     }
 }

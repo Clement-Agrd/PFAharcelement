@@ -24,7 +24,8 @@ public class PlayerCombat : MonoBehaviour
     public PlayerMelee melee;
     public float rotationSpeed = 15f;
     public PlayerDash dash;
-
+    public bool isShooting = false;
+        
     PlayerController   controller;
     PlayerInputHandler input;
     PlayerStats        stats;
@@ -56,7 +57,7 @@ public class PlayerCombat : MonoBehaviour
         Vector3 aimDirection  = GetAimDirection();
         Vector3 moveDirection = GetMoveDirection();
 
-        bool isShooting =
+        isShooting =
             input.ShootPressed ||
             (input.aimJoystick != null && input.aimJoystick.Input.magnitude > 0.3f);
 
@@ -66,20 +67,22 @@ public class PlayerCombat : MonoBehaviour
             RotateTowards(aimDirection);
             Shoot(aimDirection);
         }
+        else if (input.AimInput.magnitude > 0.3f)
+        {
+            RotateTowards(aimDirection);
+        }
         else if (moveDirection != Vector3.zero)
         {
             RotateTowards(moveDirection);
         }
-        else if (aimDirection != transform.forward)
-        {
-            RotateTowards(aimDirection);
-        }
 
         // 🗡️ MÊLÉE
+
         if (input.MeleePressed && melee != null)
         {
-            melee.TryAttack();
+            melee.TryAttack(aimDirection);
         }
+
 
         // 💨 DASH
         if (input.DashPressed && dash != null && dash.CanDash)
@@ -197,5 +200,23 @@ public class PlayerCombat : MonoBehaviour
         Quaternion target = Quaternion.LookRotation(direction);
         transform.rotation =
             Quaternion.Slerp(transform.rotation, target, rotationSpeed * Time.deltaTime);
+    }
+    public void TriggerMelee()
+    {
+        if (melee == null)
+            return;
+
+        Vector3 aimDirection = GetAimDirection();
+        melee.TryAttack(aimDirection);
+    }
+    
+    public void CancelCombat()
+    {
+        // Annule le shoot
+        nextFire = 0f;
+
+        // Annule la mêlée si active
+        if (melee != null)
+            melee.CancelAttack();
     }
 }

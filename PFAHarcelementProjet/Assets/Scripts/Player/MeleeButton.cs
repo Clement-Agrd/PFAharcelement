@@ -3,10 +3,10 @@ using UnityEngine.EventSystems;
 
 public class MeleeButton : MonoBehaviour, IPointerDownHandler
 {
-    public PlayerMelee playerMelee;
+    public PlayerCombat playerCombat;
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        playerMelee.TryAttack();
+        playerCombat.TriggerMelee();
     }
 }

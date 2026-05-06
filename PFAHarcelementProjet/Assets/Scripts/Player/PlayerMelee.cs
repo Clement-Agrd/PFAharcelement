@@ -6,55 +6,69 @@ using UnityEngine;
 public class PlayerMelee : MonoBehaviour
 {
     public bool IsAttacking { get; private set; }
+
     HashSet<IDamageable> hitTargets = new HashSet<IDamageable>();
 
     [Header("Détection")]
-    public float hitRange  = 1.5f;
+    public float hitRange = 1.5f;
     public float coneAngle = 60f;
-    
+
     [Header("Rotation")]
-    public float attackRotateSpeed = 720f; // degrés / seconde
-    public float maxRotateTime = 0.15f;    // sécurité
+    public float attackRotateSpeed = 720f;
+    public float maxRotateTime = 0.15f;
 
-
-    [Header("Dash")]
+    [Header("Dash (premier coup seulement)")]
     public float dashDistance = 3f;
-    public float dashSpeed    = 12f;
-    public float returnSpeed  = 10f;
+    public float dashSpeed = 12f;
 
     [Header("Timing")]
-    public float pauseAtPeak = 0.3f;
+    public float pauseAtPeak = 0.2f;
+
+    [Header("Combo")]
+    public float comboBufferTime = 0.25f;
+
+    bool comboQueued;
+    float comboTimer;
+    bool hasDashedThisChain;
 
     [Header("Références")]
     public Animator animator;
 
-    private PlayerStats        stats;
-    private PlayerController   controller;
-    private PlayerInputHandler input;
-    private CharacterController cc;
+    PlayerStats stats;
+    PlayerController controller;
+    CharacterController cc;
 
-    private float nextAttack;
-    
-
+    float nextAttack;
 
     void Awake()
     {
         stats      = GetComponent<PlayerStats>();
         controller = GetComponent<PlayerController>();
-        input      = GetComponent<PlayerInputHandler>();
         cc         = GetComponent<CharacterController>();
     }
 
-    // ─────────────────────────────────────────
-    // API PUBLIQUE
-    // ─────────────────────────────────────────
-
-    public void TryAttack()
+    void Update()
     {
-        if (!controller.CanAct || IsAttacking)
-            return;
+        if (comboQueued)
+        {
+            comboTimer -= Time.deltaTime;
+            if (comboTimer <= 0f)
+                comboQueued = false;
+        }
+    }
 
-        if (controller.IsDashing)
+    // ✅ Appelé par PlayerCombat avec la direction déjà calculée
+    public void TryAttack(Vector3 attackDirection)
+    {
+        // ✅ Auto‑combo si on maintient le bouton
+        if (IsAttacking)
+        {
+            comboQueued = true;
+            comboTimer = comboBufferTime;
+            return;
+        }
+
+        if (!controller.CanAct || controller.IsDashing)
             return;
 
         float attackSpeed       = stats.GetStat(StatType.AttackSpeed);
@@ -64,102 +78,82 @@ public class PlayerMelee : MonoBehaviour
         if (Time.time < nextAttack)
             return;
 
-        Vector3 direction = GetAttackDirection();
-        if (direction == Vector3.zero)
+        if (attackDirection == Vector3.zero)
             return;
 
-        animator?.SetTrigger("Attack");
-        StartCoroutine(RotateAndAttack(direction));
+        animator?.CrossFade("Armature|Attaque", 0.05f, 0, 0f);
 
+        bool withDash = !hasDashedThisChain;
+        hasDashedThisChain = true;
 
+        StartCoroutine(RotateAndAttack(attackDirection.normalized, withDash));
         nextAttack = Time.time + cooldown;
     }
 
-    /// <summary>
-    /// Appelé par RoomLoader ou autre système global
-    /// </summary>
-    public void CancelAttack()
-    {
-        StopAllCoroutines();
-        IsAttacking = false;
-    }
-
-    // ─────────────────────────────────────────
-    // CORE
-    // ─────────────────────────────────────────
-    IEnumerator RotateAndAttack(Vector3 direction)
+    IEnumerator RotateAndAttack(Vector3 direction, bool withDash)
     {
         IsAttacking = true;
+        hitTargets.Clear();
 
         Quaternion startRot  = transform.rotation;
         Quaternion targetRot = Quaternion.LookRotation(direction);
 
         float angle = Quaternion.Angle(startRot, targetRot);
-        float timeNeeded = angle / attackRotateSpeed;
-        timeNeeded = Mathf.Min(timeNeeded, maxRotateTime);
+        float tMax = Mathf.Min(angle / attackRotateSpeed, maxRotateTime);
 
         float t = 0f;
-
-        while (t < timeNeeded)
+        while (t < tMax)
         {
-            transform.rotation = Quaternion.Slerp(startRot, targetRot, t / timeNeeded);
+            transform.rotation = Quaternion.Slerp(startRot, targetRot, t / tMax);
             t += Time.deltaTime;
             yield return null;
         }
 
         transform.rotation = targetRot;
-
-        // ✅ Lancement réel de l'attaque
-        StartCoroutine(MeleeRoutine(direction));
+        StartCoroutine(MeleeRoutine(direction, withDash));
     }
-    
-    IEnumerator MeleeRoutine(Vector3 direction)
-    {
-        hitTargets.Clear(); // ✅ reset à chaque attaque
 
+    IEnumerator MeleeRoutine(Vector3 direction, bool withDash)
+    {
         controller.SetActions(false);
         controller.SetMovement(false);
 
-
-        bool wasMoving = input.MoveInput.magnitude > 0.1f;
-        float traveled = 0f;
-
-        // ▶ DASH AVANT
-        while (traveled < dashDistance)
+        if (withDash)
         {
-            float step = dashSpeed * Time.deltaTime;
-            cc.Move(direction * step);
-            traveled += step;
-
-            CheckConeDamage(direction);
-            yield return null;
-        }
-
-        // ⏸ PAUSE AU PIC
-        if (pauseAtPeak > 0f)
-            yield return new WaitForSeconds(pauseAtPeak);
-
-        // ◀ DASH RETOUR (SEULEMENT SI IMMOBILE)
-        if (!wasMoving)
-        {
-            float returned = 0f;
-            while (returned < dashDistance)
+            float traveled = 0f;
+            while (traveled < dashDistance)
             {
-                float step = returnSpeed * Time.deltaTime;
-                cc.Move(-direction * step);
-                returned += step;
+                float step = dashSpeed * Time.deltaTime;
+                cc.Move(direction * step);
+                traveled += step;
+
+                CheckConeDamage(direction);
                 yield return null;
             }
         }
+        else
+        {
+            CheckConeDamage(direction);
+            yield return new WaitForSeconds(0.05f);
+        }
+
+        if (pauseAtPeak > 0f)
+            yield return new WaitForSeconds(pauseAtPeak);
 
         controller.SetMovement(true);
         controller.SetActions(true);
         IsAttacking = false;
-    }
 
-    // ─────────────────────────────────────────
-    // DAMAGE
-    // ─────────────────────────────────────────
+        if (comboQueued)
+        {
+            comboQueued = false;
+            StartCoroutine(RotateAndAttack(direction, false));
+        }
+        else
+        {
+            hasDashedThisChain = false; // ✅ fin de chaîne
+        }
+    }
 
     void CheckConeDamage(Vector3 forward)
     {
@@ -167,16 +161,11 @@ public class PlayerMelee : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            // Ignore le joueur
             if (hit.transform.root == transform.root)
                 continue;
 
             IDamageable dmg = hit.GetComponent<IDamageable>();
-            if (dmg == null)
-                continue;
-
-            // ✅ Déjà touché pendant cette attaque
-            if (hitTargets.Contains(dmg))
+            if (dmg == null || hitTargets.Contains(dmg))
                 continue;
 
             Vector3 toTarget = (hit.transform.position - transform.position).normalized;
@@ -185,8 +174,7 @@ public class PlayerMelee : MonoBehaviour
             if (angle <= coneAngle * 0.5f)
             {
                 ApplyDamage(dmg);
-
-                hitTargets.Add(dmg); // ✅ marqué comme touché
+                hitTargets.Add(dmg);
             }
         }
     }
@@ -198,59 +186,18 @@ public class PlayerMelee : MonoBehaviour
 
         float lifeSteal = stats.GetStat(StatType.LifeSteal);
         if (lifeSteal > 0f)
-        {
             GetComponent<PlayerHealth>()?.Heal(damage * lifeSteal);
-        }
     }
 
-    // ─────────────────────────────────────────
-    // AIM (SOURIS)
-    // ─────────────────────────────────────────
-
-    Vector3 GetAttackDirection()
+    public void CancelAttack()
     {
-        // 🎮 PRIORITÉ MANETTE
-        Vector2 aim = input.AimInput;
-        if (aim.magnitude > 0.3f)
-            return new Vector3(aim.x, 0f, aim.y).normalized;
+        StopAllCoroutines();
+        hitTargets.Clear();
+        comboQueued = false;
+        hasDashedThisChain = false;
+        IsAttacking = false;
 
-        // 🎮 MANETTE SANS VISÉE → direction du regard
-        if (UnityEngine.InputSystem.Gamepad.current != null)
-            return transform.forward;
-
-
-        // 🖱️ SOURIS UNIQUEMENT SI PAS DE MANETTE
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Plane ground = new Plane(Vector3.up, transform.position);
-
-        if (ground.Raycast(ray, out float distance))
-        {
-            Vector3 point = ray.GetPoint(distance);
-            Vector3 dir = point - transform.position;
-            dir.y = 0f;
-
-            if (dir.sqrMagnitude > 0.001f)
-                return dir.normalized;
-        }
-
-        return transform.forward;
+        controller.SetMovement(true);
+        controller.SetActions(true);
     }
-
-
-#if UNITY_EDITOR
-    // ─────────────────────────────────────────
-    // DEBUG
-    // ─────────────────────────────────────────
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, hitRange);
-
-        Vector3 left  = Quaternion.Euler(0, -coneAngle * 0.5f, 0) * transform.forward;
-        Vector3 right = Quaternion.Euler(0,  coneAngle * 0.5f, 0) * transform.forward;
-
-        Gizmos.DrawLine(transform.position, transform.position + left  * hitRange);
-        Gizmos.DrawLine(transform.position, transform.position + right * hitRange);
-    }
-#endif
 }

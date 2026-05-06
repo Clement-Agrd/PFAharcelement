@@ -29,21 +29,32 @@ public class PlayerController : MonoBehaviour
         stats = GetComponent<PlayerStats>();
     }
 
+
     void Update()
     {
+        // ⛔ Le CharacterController est désactivé (transition, load…)
+        if (!controller.enabled)
+            return;
+
         ApplyGravity();
 
         if (CanMove && !isDashing)
             Move();
     }
 
+
+
     void ApplyGravity()
     {
+        if (!controller.enabled)
+            return;
+
         if (controller.isGrounded)
             verticalVelocity = -2f;
         else
             verticalVelocity += gravity * Time.deltaTime * 0.1f;
     }
+
 
     void Move()
     {
