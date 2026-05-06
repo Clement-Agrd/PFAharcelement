@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef6c6df566a144aa9d5448d070a5b5e4, type: 3}
   m_Name: PlayerBaseData
   m_EditorClassIdentifier: Assembly-CSharp::PlayerBaseData
-  hp: 100
+  maxHealth: 100
   tankiness: 0
   lifeSteal: 0
   meleeDamage: 20
   rangedDamage: 10
-  attackSpeed: 0.69
+  attackSpeed: 3
   projectileSpeed: 15
   cooldownReduction: 0
   moveSpeed: 6
