@@ -43,9 +43,13 @@ public class BossZoneState : EnemyStateBase
 
     private void SpawnZoneAt(Vector3 worldPos)
     {
-        // Projette au sol via raycast
-        if (Physics.Raycast(worldPos + Vector3.up * 5f, Vector3.down,
-                out RaycastHit hit, 20f))
+        // Layer mask — ne touche que le sol, ignore ennemis et joueur
+        int mask = ~LayerMask.GetMask("Player", "Enemy", "PlayerHitbox");
+
+        // Part de haut pour ne jamais taper un personnage
+        Vector3 rayOrigin = new Vector3(worldPos.x, 20f, worldPos.z);
+
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 40f, mask))
             worldPos = hit.point;
 
         Object.Instantiate(boss.ZonePrefab, worldPos, Quaternion.identity);

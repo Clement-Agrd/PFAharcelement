@@ -20,12 +20,6 @@ public class BossController : EnemyController
     public Transform  FirePoint;
     public GameObject ProjectilePrefab;
     public GameObject ZonePrefab;
-
-    // ── VFX ───────────────────────────────────────────────────────────
-    [Header("VFX")]
-    public ParticleSystem SpinVFX;
-    public ParticleSystem ExpandVFX;
-
     // ── Spin ──────────────────────────────────────────────────────────
     [Header("Spin Attack")]
     public float SpinSpeed     = 360f;

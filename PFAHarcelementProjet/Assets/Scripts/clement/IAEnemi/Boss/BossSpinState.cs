@@ -8,6 +8,7 @@ public class BossSpinState : EnemyStateBase
     private enum Phase { Telegraph, Spinning, Expanding }
     private Phase phase;
     private float timer;
+    private float initialEmissionRate;
 
     // Valeurs initiales du swarm pour pouvoir les reset au Exit
     private float initialSwarmRadius;
@@ -30,11 +31,12 @@ public class BossSpinState : EnemyStateBase
             initialSwarmRadius    = boss.PiranaSwarm.shape.radius;
             initialSwarmSpeed     = boss.PiranaSwarm.main.startSpeed.constant;
             initialNoiseStrength  = boss.PiranaSwarm.noise.strength.constant;
+            initialEmissionRate = boss.PiranaSwarm.emission.rateOverTimeMultiplier;
         }
 
         StartTelegraph();
     }
-
+    
     // ── Update ────────────────────────────────────────────────────────
     public override void Update()
     {
@@ -85,7 +87,6 @@ public class BossSpinState : EnemyStateBase
             timer = 0f;
             phase = Phase.Spinning;
             boss.TelegraphVFX?.Stop();
-            boss.SpinVFX?.Play();
             enemy.PlayAnim("Spin");
         }
     }
@@ -100,7 +101,7 @@ public class BossSpinState : EnemyStateBase
         {
             float t     = timer / boss.SpinDuration;
             var   shape = boss.PiranaSwarm.shape;
-            shape.radius = Mathf.Lerp(initialSwarmRadius * 0.3f,
+            shape.radius = Mathf.Lerp(initialSwarmRadius * 0.7f,
                                       initialSwarmRadius, t);
         }
 
@@ -108,8 +109,6 @@ public class BossSpinState : EnemyStateBase
         {
             timer = 0f;
             phase = Phase.Expanding;
-            boss.SpinVFX?.Stop();
-            boss.ExpandVFX?.Play();
             enemy.PlayAnim("Expand");
         }
     }
@@ -119,29 +118,37 @@ public class BossSpinState : EnemyStateBase
     {
         float t = timer / boss.ExpandDuration;
 
-        // Le swarm explose vers l'extérieur visuellement
         if (boss.PiranaSwarm != null)
         {
-            var shape      = boss.PiranaSwarm.shape;
-            var main       = boss.PiranaSwarm.main;
-            var noise      = boss.PiranaSwarm.noise;
+            var shape = boss.PiranaSwarm.shape;
 
-            shape.radius                 = Mathf.Lerp(initialSwarmRadius,
-                                                      boss.AoERadius, t);
-            main.startSpeedMultiplier    = Mathf.Lerp(0f, 4f, t);
-            noise.strengthMultiplier     = Mathf.Lerp(boss.TelegraphNoiseStrength,
-                                                      0.1f, t); // moins d'agitation quand ils s'éparpillent
+            if (t <= 0.5f)
+            {
+                // Première moitié → radius explose + spin ultra rapide
+                float expandT  = t / 0.4f;
+                shape.radius   = Mathf.Lerp(initialSwarmRadius, boss.AoERadius,
+                    Mathf.SmoothStep(0f, 1f, expandT));
+
+                enemy.transform.Rotate(Vector3.up, boss.SpinSpeed * 3f * Time.deltaTime);
+            }
+            else
+            {
+                // Deuxième moitié → radius revient, spin ralentit
+                float retractT = (t - 0.5f) / 0.5f;
+                shape.radius   = Mathf.Lerp(boss.AoERadius, initialSwarmRadius,
+                    Mathf.SmoothStep(0f, 1f, retractT));
+
+                enemy.transform.Rotate(Vector3.up, boss.SpinSpeed * 3f
+                                                                  * (1f - retractT) * Time.deltaTime);
+            }
         }
 
-        // Dégâts continus dans le rayon croissant
-        float currentRadius = Mathf.Lerp(0f, boss.AoERadius, t);
-        DamageInRadius(currentRadius);
+        // Dégâts seulement pendant l'expansion
+        if (t <= 0.5f)
+            DamageInRadius(Mathf.Lerp(0f, boss.AoERadius, t / 0.5f));
 
         if (timer >= boss.ExpandDuration)
-        {
-            boss.ExpandVFX?.Stop();
             stateMachine.ChangeState(boss.GetRecoveryState());
-        }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────
@@ -162,8 +169,6 @@ public class BossSpinState : EnemyStateBase
         enemy.transform.rotation = Quaternion.identity;
 
         boss.TelegraphVFX?.Stop();
-        boss.SpinVFX?.Stop();
-        boss.ExpandVFX?.Stop();
 
         // Reset le swarm à ses valeurs initiales
         if (boss.PiranaSwarm != null)
@@ -176,7 +181,7 @@ public class BossSpinState : EnemyStateBase
             shape.radius                    = initialSwarmRadius;
             main.startSpeedMultiplier       = initialSwarmSpeed;
             noise.strengthMultiplier        = initialNoiseStrength;
-            emission.rateOverTimeMultiplier = 30f; // ta valeur de base
+            emission.rateOverTimeMultiplier = initialEmissionRate; // ✅ au lieu de 30f
         }
     }
 }
