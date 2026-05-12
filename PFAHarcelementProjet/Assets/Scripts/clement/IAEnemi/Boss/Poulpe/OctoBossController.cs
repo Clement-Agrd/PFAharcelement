@@ -1,7 +1,79 @@
-namespace clement.IAEnemi.Boss.Poulpe
+using UnityEngine;
+
+public class OctoBossController : EnemyController
 {
-    public class OctoBossController
+    // ── Pattern 1 — Tentacules ────────────────────────────────────────
+    [Header("Tentacle Pattern")]
+    public GameObject TentaclePrefab;
+    public float      TentacleSpawnRadius = 7f;
+    public float      WaveInterval        = 2.5f; // temps entre les 2 vagues
+
+    // ── Pattern 2 — Ink ───────────────────────────────────────────────
+    [Header("Ink Pattern")]
+    public GameObject   InkProjectilePrefab;
+    public Transform[]  InkFirePoints;        // 2 points de tir sur le boss
+    public int          InkProjectileCount  = 16; // projectiles répartis à 360°
+    public float        InkFireInterval     = 0.08f;
+
+    // ── Pattern 3 — Sweep ─────────────────────────────────────────────
+    [Header("Sweep Pattern")]
+    public GameObject   SweepTentaclePrefab;
+    public OctoSweepLine[] SweepLines;        // lignes prédéfinies dans l'Inspector
+    public float        SweepStaggerDelay  = 0.15f; // délai entre chaque tentacule
+    public float        SweepTotalDuration = 3f;    // durée totale du glissement
+
+    // ── Recovery ──────────────────────────────────────────────────────
+    [Header("Recovery")]
+    public float RecoveryDuration = 1.5f;
+
+    // ── States ────────────────────────────────────────────────────────
+    private EnemyStateBase tentacleState;
+    private EnemyStateBase inkState;
+    private EnemyStateBase sweepState;
+    private EnemyStateBase recoveryState;
+
+    public EnemyStateBase GetRecoveryState() => recoveryState;
+
+    private Pattern lastPattern;
+    private enum Pattern { Tentacle, Ink, Sweep }
+
+    protected override void InitStates()
     {
-        
+        chaseRange  = 999f;
+        attackRange = 999f;
+
+        tentacleState = new OctoTentacleState(this, StateMachine);
+        inkState      = new OctoInkState(this, StateMachine);
+        sweepState    = new OctoSweepState(this, StateMachine);
+        recoveryState = new BossRecoveryState(this, StateMachine,
+            RecoveryDuration, SelectNextPattern);
+        hurtState     = new HurtState(this, StateMachine, 0.1f);
+        deathState    = new DeathState(this, StateMachine);
+
+        idleState = recoveryState;
+    }
+
+    public override void PerformAttack() { }
+
+    public void SelectNextPattern()
+    {
+        Pattern next;
+        do { next = (Pattern)Random.Range(0, 3); }
+        while (next == lastPattern);
+
+        lastPattern = next;
+
+        switch (next)
+        {
+            case Pattern.Tentacle: StateMachine.ChangeState(tentacleState); break;
+            case Pattern.Ink:      StateMachine.ChangeState(inkState);      break;
+            case Pattern.Sweep:    StateMachine.ChangeState(sweepState);    break;
+        }
+    }
+
+    public override void Die()
+    {
+        Debug.Log("Pieuvre morte !");
+        base.Die();
     }
 }

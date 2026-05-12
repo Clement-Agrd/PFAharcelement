@@ -4,7 +4,7 @@ public class BossController : EnemyController
 {
     [Header("Swarm")]
     public ParticleSystem PiranaSwarm;          // l'amas principal
-    public ParticleSystem TelegraphVFX;         // ring / glow au sol avant chaque attaque
+    public VFXPlayer TelegraphVFX;    // ring / glow au sol avant chaque attaque
 
     [Header("Telegraph")]
     public float TelegraphDuration     = 1.2f;  // durée de l'indication
@@ -60,7 +60,8 @@ public class BossController : EnemyController
         spinState     = new BossSpinState(this, StateMachine);
         zoneState     = new BossZoneState(this, StateMachine);
         burstState    = new BossBurstState(this, StateMachine);
-        recoveryState = new BossRecoveryState(this, StateMachine);
+        recoveryState = new BossRecoveryState(this, StateMachine,
+            RecoveryDuration, SelectNextPattern);
         hurtState     = new HurtState(this, StateMachine, 0.1f);
         deathState    = new DeathState(this, StateMachine);
 

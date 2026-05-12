@@ -86,8 +86,8 @@ public class BossSpinState : EnemyStateBase
         {
             timer = 0f;
             phase = Phase.Spinning;
-            boss.TelegraphVFX?.Stop();
             enemy.PlayAnim("Spin");
+            boss.TelegraphVFX?.Stop();
         }
     }
 

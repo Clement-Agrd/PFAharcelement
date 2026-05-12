@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4678495993288184051}
   - component: {fileID: 6955861689819880598}
   - component: {fileID: 4822146951705683452}
+  - component: {fileID: 6958147282558906334}
   m_Layer: 0
   m_Name: VFXStar hit
   m_TagString: Untagged
@@ -51,7 +52,7 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 0
-  looping: 1
+  looping: 0
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
@@ -4906,6 +4907,18 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
+--- !u!114 &6958147282558906334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1869360691026864468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d22cac7330504ecd86eb479cb9f985c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VFXPlayer
 --- !u!1 &3383744549653123609
 GameObject:
   m_ObjectHideFlags: 0

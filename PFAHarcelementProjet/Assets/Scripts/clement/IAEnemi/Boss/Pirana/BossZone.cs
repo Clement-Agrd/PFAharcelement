@@ -13,40 +13,29 @@ public class BossZone : MonoBehaviour
     public int   piranaCount = 3;
 
     [Header("Refs")]
-    public GameObject piranaPrefab;      // prefab pirana qui monte vers le haut
-    public ParticleSystem warningVFX;    // cercle au sol qui pulse
-    public ParticleSystem damageVFX;     // explosion de piranhas
-    
-    private ParticleSystem[] allVFX;
-    private void Awake()
-    {
-        // Récupère tous les PS du prefab (racine + enfants)
-        allVFX = GetComponentsInChildren<ParticleSystem>();
-    }
+    public VFXPlayer warningVFX;
+    public VFXPlayer damageVFX;
+    public GameObject piranaPrefab;
+
     private void Start()
     {
         StartCoroutine(ZoneRoutine());
     }
 
+
     private IEnumerator ZoneRoutine()
     {
-        // Phase warning
-        foreach (var ps in allVFX) ps.Play();
+        warningVFX?.Play();
         yield return new WaitForSeconds(warningDuration);
 
-        // Phase dégâts
-        foreach (var ps in allVFX) ps.Stop();
+        warningVFX?.Stop();
         damageVFX?.Play();
 
-        // Dégâts sur le joueur
         Collider[] hits = Physics.OverlapSphere(transform.position, radius);
         foreach (var hit in hits)
-        {
             if (hit.CompareTag("Player"))
                 hit.GetComponent<PlayerHealth>()?.TakeDamage(damage);
-        }
 
-        // Spawn piranhas qui montent
         for (int i = 0; i < piranaCount; i++)
         {
             Vector3 offset = Random.insideUnitSphere * (radius * 0.5f);
