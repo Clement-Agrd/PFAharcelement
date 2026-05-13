@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1896380747540556557
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8351340270645142412}
+  - component: {fileID: 6427058924558206847}
+  m_Layer: 0
+  m_Name: TentaculeZonePrefab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8351340270645142412
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896380747540556557}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.4515381, y: 0, z: 13.816895}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3409799527341029967}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6427058924558206847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896380747540556557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9949bd789689457d9ed85dc4adaa4d79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TentacleZone
+  warningDuration: 1.2
+  riseSpeed: 6
+  holdDuration: 0.4
+  retractSpeed: 4
+  damage: 20
+  radius: 1
+  warningVFX: {fileID: 6538642826666709938}
+--- !u!1001 &9190508876641182668
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8351340270645142412}
+    m_Modifications:
+    - target: {fileID: 5825746674268592515, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.605957
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825746674268592515, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825746674268592515, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.4013672
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825746674268592515, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825746674268592515, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825746674268592515, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825746674268592515, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825746674268592515, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825746674268592515, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825746674268592515, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7464060107038248413, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+      propertyPath: m_Name
+      value: VFXzoneTentacule
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+--- !u!4 &3409799527341029967 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5825746674268592515, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+  m_PrefabInstance: {fileID: 9190508876641182668}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &6538642826666709938 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 2681561666078224510, guid: 391822dc5a8ce894bb75cf0ecdeaebd6, type: 3}
+  m_PrefabInstance: {fileID: 9190508876641182668}
+  m_PrefabAsset: {fileID: 0}

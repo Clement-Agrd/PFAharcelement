@@ -58,10 +58,16 @@ public abstract class EnemyController : MonoBehaviour
     {
         if (Anim == null) return;
         if (!Anim.isActiveAndEnabled) return;
-
-        // Vérifie que le state existe avant de jouer (évite le warning Unity)
         if (Anim.HasState(0, Animator.StringToHash(stateName)))
             Anim.Play(stateName);
+    }
+
+// ✅ Ajoute ici
+    public void TriggerAnim(string triggerName)
+    {
+        if (Anim == null) return;
+        if (!Anim.isActiveAndEnabled) return;
+        Anim.SetTrigger(triggerName);
     }
 
     protected virtual void Update()       => StateMachine.Update();

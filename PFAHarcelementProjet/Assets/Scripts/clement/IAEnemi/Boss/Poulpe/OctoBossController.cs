@@ -6,21 +6,26 @@ public class OctoBossController : EnemyController
     [Header("Tentacle Pattern")]
     public GameObject TentaclePrefab;
     public float      TentacleSpawnRadius = 7f;
-    public float      WaveInterval        = 2.5f; // temps entre les 2 vagues
+    public float      WaveInterval        = 2.5f;
 
     // ── Pattern 2 — Ink ───────────────────────────────────────────────
     [Header("Ink Pattern")]
-    public GameObject   InkProjectilePrefab;
-    public Transform[]  InkFirePoints;        // 2 points de tir sur le boss
-    public int          InkProjectileCount  = 16; // projectiles répartis à 360°
-    public float        InkFireInterval     = 0.08f;
+    public GameObject  InkProjectilePrefab;
+    public Transform[] InkFirePoints;
+    public int         InkProjectileCount = 16;
+    public float       InkFireInterval    = 0.08f;
 
     // ── Pattern 3 — Sweep ─────────────────────────────────────────────
     [Header("Sweep Pattern")]
-    public GameObject   SweepTentaclePrefab;
-    public OctoSweepLine[] SweepLines;        // lignes prédéfinies dans l'Inspector
-    public float        SweepStaggerDelay  = 0.15f; // délai entre chaque tentacule
-    public float        SweepTotalDuration = 3f;    // durée totale du glissement
+    public GameObject    SweepTentaclePrefab;
+    public OctoSweepLine[] SweepLines;
+    public float         SweepStaggerDelay  = 0.15f;
+    public float         SweepTotalDuration = 3f;
+
+    // ── Telegraph ─────────────────────────────────────────────────────
+    [Header("Telegraph")]
+    public VFXPlayer TelegraphVFX;          // VFX d'indication avant chaque pattern
+    public float     TelegraphDuration = 1f; // durée de l'anim Attack avant le pattern
 
     // ── Recovery ──────────────────────────────────────────────────────
     [Header("Recovery")]
@@ -32,7 +37,10 @@ public class OctoBossController : EnemyController
     private EnemyStateBase sweepState;
     private EnemyStateBase recoveryState;
 
-    public EnemyStateBase GetRecoveryState() => recoveryState;
+    public EnemyStateBase GetRecoveryState()   => recoveryState;
+    public EnemyStateBase GetTentacleState()   => tentacleState;
+    public EnemyStateBase GetInkState()        => inkState;
+    public EnemyStateBase GetSweepState()      => sweepState;
 
     private Pattern lastPattern;
     private enum Pattern { Tentacle, Ink, Sweep }
@@ -46,7 +54,7 @@ public class OctoBossController : EnemyController
         inkState      = new OctoInkState(this, StateMachine);
         sweepState    = new OctoSweepState(this, StateMachine);
         recoveryState = new BossRecoveryState(this, StateMachine,
-            RecoveryDuration, SelectNextPattern);
+                            RecoveryDuration, SelectNextPattern);
         hurtState     = new HurtState(this, StateMachine, 0.1f);
         deathState    = new DeathState(this, StateMachine);
 
@@ -63,7 +71,13 @@ public class OctoBossController : EnemyController
 
         lastPattern = next;
 
-        switch (next)
+        // Passe d'abord par le telegraph avant chaque pattern
+        StateMachine.ChangeState(new OctoTelegraphState(this, StateMachine, next));
+    }
+
+    public void LaunchPattern(int patternIndex)
+    {
+        switch ((Pattern)patternIndex)
         {
             case Pattern.Tentacle: StateMachine.ChangeState(tentacleState); break;
             case Pattern.Ink:      StateMachine.ChangeState(inkState);      break;
