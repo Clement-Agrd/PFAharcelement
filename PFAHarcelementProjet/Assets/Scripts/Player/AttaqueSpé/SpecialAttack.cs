@@ -1,6 +1,7 @@
 ﻿// Scripts/Player/SpecialAttack.cs
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class SpecialAttack : MonoBehaviour
 {
@@ -8,64 +9,104 @@ public class SpecialAttack : MonoBehaviour
     public GameObject explosionVFX;
     public float      explosionRadius = 5f;
     public float      baseCooldown    = 8f;
+    public float      baseDamage      = 30f;
 
     [Header("Visée")]
-    public GameObject aimIndicator;  // glisse l'objet AimIndicator de la scène ici
-    public float      maxRange = 15f;
+    public GameObject aimIndicator;
+    public float      maxRange        = 15f;
+    public float      gamepadAimSpeed = 25f;
+    public float      gamepadDeadzone = 0.15f;
 
-    private PlayerStats        stats;
-    private PlayerInputHandler input;
-    private float              lastUseTime = -99f;
-    private bool               isAiming    = false;
-    private Vector3            aimPosition;
+    [Header("Déblocage")]
+    public bool startUnlocked = false; // coché = débloquée dès le départ
+
+    // ─── État ─────────────────────────────────────────────────────────────────
+    public bool IsUnlocked { get; private set; } = false;
+
+    private PlayerStats    stats;
+    private PlayerControls controls;
+    private float          lastUseTime = -99f;
+    private bool           isAiming    = false;
+    private Vector3        aimPosition;
 
     void Awake()
     {
-        stats = GetComponent<PlayerStats>();
-        input = GetComponent<PlayerInputHandler>();
+        stats    = GetComponent<PlayerStats>();
+        controls = new PlayerControls();
 
-        // S'assure que l'indicateur est caché au départ
-        if (aimIndicator != null)
-            aimIndicator.SetActive(false);
+        // Si startUnlocked est coché dans l'Inspector on débloque direct
+        if (startUnlocked)
+            Unlock();
+    }
+
+    void OnEnable()
+    {
+        controls.Player.Enable();
+        controls.Player.SpecialAttack.performed += OnSpecialInput;
+    }
+
+    void OnDisable()
+    {
+        controls.Player.SpecialAttack.performed -= OnSpecialInput;
+        controls.Player.Disable();
+    }
+
+    // ─── Déblocage ────────────────────────────────────────────────────────────
+
+    public void Unlock()
+    {
+        IsUnlocked = true;
+        Debug.Log("🔓 Attaque spéciale débloquée !");
+
+        // Notifie l'UI si elle existe
+        SpecialAttackUI ui = FindObjectOfType<SpecialAttackUI>();
+        if (ui != null)
+            ui.OnUnlock();
+    }
+
+    // ─── Input ────────────────────────────────────────────────────────────────
+
+    void OnSpecialInput(InputAction.CallbackContext ctx)
+    {
+        if (!IsUnlocked)
+        {
+            Debug.Log("🔒 Attaque spéciale non débloquée");
+            return;
+        }
+
+        if (!isAiming) ToggleAim();
+        else           Launch();
     }
 
     void Update()
     {
-        HandleAiming();
-        HandleInput();
+        if (!IsUnlocked) return;
+        if (!isAiming)   return;
+
+        Vector2 stick = Vector2.zero;
+        if (Gamepad.current != null)
+            stick = Gamepad.current.leftStick.ReadValue();
+
+        if (stick.magnitude > gamepadDeadzone)
+            HandleGamepadAim(stick);
+        else
+            HandleMouseAim();
+
+        UpdateIndicator();
     }
 
-    public float GetCooldownReduction()  => Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction));
-    public float GetFinalCooldown()      => baseCooldown * (1f - GetCooldownReduction());
-    public float GetCooldownRemaining()  => Mathf.Max(0f, GetFinalCooldown() - (Time.time - lastUseTime));
-    public float GetCooldownRatio()      => GetCooldownRemaining() / GetFinalCooldown();
-    public bool  IsReady()               => GetCooldownRemaining() <= 0f;
+    // ─── Cooldown ─────────────────────────────────────────────────────────────
 
-    void HandleInput()
+    public float GetFinalCooldown()     => baseCooldown * (1f - Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction)));
+    public float GetCooldownRemaining() => Mathf.Max(0f, GetFinalCooldown() - (Time.time - lastUseTime));
+    public float GetCooldownRatio()     => GetCooldownRemaining() / GetFinalCooldown();
+    public bool  IsReady()              => IsUnlocked && GetCooldownRemaining() <= 0f;
+
+    // ─── Visée souris ─────────────────────────────────────────────────────────
+
+    void HandleMouseAim()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-            ToggleAim();
-
-        if (isAiming && Input.GetMouseButtonDown(0))
-            Launch();
-
-        if (Input.GetKeyDown(KeyCode.JoystickButton3))
-        {
-            if (isAiming) Launch();
-            else          ToggleAim();
-        }
-
-        if (isAiming && (Input.GetKeyDown(KeyCode.Escape) ||
-                         Input.GetMouseButtonDown(1)))
-            CancelAim();
-    }
-
-    void HandleAiming()
-    {
-        if (!isAiming) return;
-
-        // 🖱️ Souris
-        Ray   ray    = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray   ray    = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         Plane ground = new Plane(Vector3.up, transform.position);
 
         if (ground.Raycast(ray, out float dist))
@@ -77,36 +118,39 @@ public class SpecialAttack : MonoBehaviour
                 point = transform.position + direction.normalized * maxRange;
 
             aimPosition = point;
-
-            // Met à jour la position de l'indicateur
-            if (aimIndicator != null)
-            {
-                aimIndicator.transform.position = new Vector3(
-                    aimPosition.x,
-                    transform.position.y + 0.1f, // légèrement au-dessus du sol
-                    aimPosition.z
-                );
-            }
-        }
-
-        // 🎮 Manette
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
-        if (Mathf.Abs(h) > 0.1f || Mathf.Abs(v) > 0.1f)
-        {
-            Vector3 dir = new Vector3(h, 0, v).normalized;
-            aimPosition = transform.position + dir * maxRange;
-
-            if (aimIndicator != null)
-            {
-                aimIndicator.transform.position = new Vector3(
-                    aimPosition.x,
-                    transform.position.y + 0.1f,
-                    aimPosition.z
-                );
-            }
         }
     }
+
+    // ─── Visée manette ────────────────────────────────────────────────────────
+
+    void HandleGamepadAim(Vector2 stick)
+    {
+        Vector3 direction = new Vector3(stick.x, 0f, stick.y);
+        Vector3 target    = transform.position + direction.normalized * maxRange;
+
+        aimPosition = Vector3.MoveTowards(
+            aimPosition,
+            target,
+            gamepadAimSpeed * Time.deltaTime
+        );
+
+        Vector3 offset = aimPosition - transform.position;
+        if (offset.magnitude > maxRange)
+            aimPosition = transform.position + offset.normalized * maxRange;
+    }
+
+    void UpdateIndicator()
+    {
+        if (aimIndicator == null) return;
+
+        aimIndicator.transform.position = new Vector3(
+            aimPosition.x,
+            transform.position.y + 0.1f,
+            aimPosition.z
+        );
+    }
+
+    // ─── Actions ──────────────────────────────────────────────────────────────
 
     void ToggleAim()
     {
@@ -116,19 +160,16 @@ public class SpecialAttack : MonoBehaviour
             return;
         }
 
-        isAiming = !isAiming;
+        isAiming    = true;
+        aimPosition = transform.position + transform.forward * 3f;
 
         if (aimIndicator != null)
-            aimIndicator.SetActive(isAiming);
-
-        if (isAiming)
-            aimPosition = transform.position + transform.forward * 3f;
+            aimIndicator.SetActive(true);
     }
 
     void CancelAim()
     {
         isAiming = false;
-
         if (aimIndicator != null)
             aimIndicator.SetActive(false);
     }
@@ -144,6 +185,12 @@ public class SpecialAttack : MonoBehaviour
 
     public void OnSpecialButtonPressed()
     {
+        if (!IsUnlocked)
+        {
+            Debug.Log("🔒 Attaque spéciale non débloquée");
+            return;
+        }
+
         if (!isAiming) ToggleAim();
         else           Launch();
     }
@@ -156,7 +203,7 @@ public class SpecialAttack : MonoBehaviour
 
     void Explode()
     {
-        float damage = stats.GetStat(StatType.RangedDamage) * 1.5f;
+        float damage = baseDamage + stats.GetStat(StatType.RangedDamage);
 
         if (explosionVFX != null)
         {
@@ -191,7 +238,6 @@ public class SpecialAttack : MonoBehaviour
     {
         Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
         Gizmos.DrawSphere(isAiming ? aimPosition : transform.position, explosionRadius);
-
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, maxRange);
     }

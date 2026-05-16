@@ -1,5 +1,6 @@
 public enum PickupMode
 {
     Reward,
-    Shop
+    Shop,
+    SpecialAttackUnlock
 }

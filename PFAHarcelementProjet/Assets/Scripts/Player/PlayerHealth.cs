@@ -1,5 +1,4 @@
-﻿// Scripts/Player/PlayerHealth.cs
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
@@ -13,10 +12,19 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private bool        isDead;
 
     public bool IsDead => isDead;
+    
+    private bool isInvincible = false;
+    
+    public void SetInvincible(bool value)
+    {
+        isInvincible = value;
+        Debug.Log($"🛡️ Invincible : {value}");
+    }
 
     public void TakeDamage(float amount)
     {
         if (isDead) return;
+        if (isInvincible)  return;
 
         float tankiness   = stats.GetStat(StatType.Tankiness);
         float finalDamage = amount * (1f - Mathf.Clamp01(tankiness));
