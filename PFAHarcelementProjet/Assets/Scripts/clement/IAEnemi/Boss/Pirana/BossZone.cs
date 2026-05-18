@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class BossZone : MonoBehaviour
 {
+    
+    int playerHitboxLayer;
+    int mask;
+
     [Header("Timing")]
     public float warningDuration = 1.8f; // temps pendant lequel la zone est visible
     public float damageDuration  = 0.4f; // durée du flash de dégâts
@@ -17,10 +21,15 @@ public class BossZone : MonoBehaviour
     public VFXPlayer damageVFX;
     public GameObject piranaPrefab;
 
+
     private void Start()
     {
+        playerHitboxLayer = LayerMask.NameToLayer("PlayerHitbox");
+        mask = 1 << playerHitboxLayer;
+
         StartCoroutine(ZoneRoutine());
     }
+
 
 
     private IEnumerator ZoneRoutine()
@@ -31,10 +40,11 @@ public class BossZone : MonoBehaviour
         warningVFX?.Stop();
         damageVFX?.Play();
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, radius);
+        Collider[] hits = Physics.OverlapSphere(transform.position, radius, mask);
         foreach (var hit in hits)
-            if (hit.CompareTag("Player"))
-                hit.GetComponent<PlayerHealth>()?.TakeDamage(damage);
+        {
+            hit.GetComponentInParent<PlayerHealth>()?.TakeDamage(damage);
+        }
 
         for (int i = 0; i < piranaCount; i++)
         {

@@ -43,27 +43,32 @@ public class OctoTentacleState : EnemyStateBase
         if (enemy.PlayerTransform != null)
             SpawnAt(enemy.PlayerTransform.position, faster);
 
-        // 7 zones aléatoires autour du boss
-        for (int i = 0; i < 7; i++)
+        // 7 zones aléatoires autour du joueur
+        if (enemy.PlayerTransform != null)
         {
-            Vector2 rand   = Random.insideUnitCircle * octo.TentacleSpawnRadius;
-            Vector3 offset = new Vector3(rand.x, 0f, rand.y);
-            SpawnAt(enemy.transform.position + offset, faster);
+            for (int i = 0; i < 7; i++)
+            {
+                Vector2 rand   = Random.insideUnitCircle * octo.TentacleSpawnRadius;
+                Vector3 offset = new Vector3(rand.x, 0f, rand.y);
+                SpawnAt(enemy.PlayerTransform.position + offset, faster);
+            }
         }
     }
 
     private void SpawnAt(Vector3 worldPos, bool faster)
     {
-        int mask = ~LayerMask.GetMask("Player", "Enemy", "Boss");
+        int mask = LayerMask.GetMask("Ground");
         Vector3 origin = new Vector3(worldPos.x, 20f, worldPos.z);
 
-        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 40f, mask))
-            worldPos = hit.point;
+        if (!Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 40f, mask))
+        {
+            Debug.Log("SpawnTentacle annulé — pas de sol détecté");
+            return; // ← ne spawn pas si pas de Ground
+        }
 
         GameObject go = Object.Instantiate(
-            octo.TentaclePrefab, worldPos, Quaternion.identity);
+            octo.TentaclePrefab, hit.point, Quaternion.identity);
 
-        // Deuxième vague plus rapide
         if (faster)
         {
             var tz = go.GetComponent<TentacleZone>();

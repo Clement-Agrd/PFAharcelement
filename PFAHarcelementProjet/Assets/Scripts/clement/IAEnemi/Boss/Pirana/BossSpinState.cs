@@ -4,6 +4,10 @@ using UnityEngine;
 public class BossSpinState : EnemyStateBase
 {
     private BossController boss;
+    
+    int playerHitboxLayer;
+    int mask;
+
 
     private enum Phase { Telegraph, Spinning, Expanding }
     private Phase phase;
@@ -19,11 +23,16 @@ public class BossSpinState : EnemyStateBase
         : base(boss, sm) => this.boss = boss;
 
     // ── Enter ─────────────────────────────────────────────────────────
+
     public override void Enter()
     {
         timer = 0f;
         phase = Phase.Telegraph;
         enemy.PlayAnim("Idle");
+
+        playerHitboxLayer = LayerMask.NameToLayer("PlayerHitbox");
+        mask = 1 << playerHitboxLayer;
+
 
         // Sauvegarde les valeurs initiales du swarm
         if (boss.PiranaSwarm != null)
@@ -154,12 +163,13 @@ public class BossSpinState : EnemyStateBase
     // ── Helpers ───────────────────────────────────────────────────────
     private void DamageInRadius(float radius)
     {
-        Collider[] hits = Physics.OverlapSphere(enemy.transform.position, radius);
+        Collider[] hits =
+            Physics.OverlapSphere(enemy.transform.position, radius, mask);
+
         foreach (var hit in hits)
         {
-            if (hit.CompareTag("Player"))
-                hit.GetComponent<PlayerHealth>()
-                   ?.TakeDamage(boss.AoEDamagePerSecond * Time.deltaTime);
+            hit.GetComponentInParent<PlayerHealth>()
+                ?.TakeDamage(boss.AoEDamagePerSecond * Time.deltaTime);
         }
     }
 

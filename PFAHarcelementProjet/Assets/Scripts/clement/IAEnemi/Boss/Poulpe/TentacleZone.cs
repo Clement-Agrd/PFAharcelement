@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class TentacleZone : MonoBehaviour
 {
+    int playerHitboxLayer;
+    
     [Header("Timing")]
     public float warningDuration = 1.2f;
     public float riseSpeed       = 6f;
@@ -14,59 +16,64 @@ public class TentacleZone : MonoBehaviour
     public float radius = 1f;
 
     [Header("Refs")]
-    public ParticleSystem warningVFX;
+    public Transform meshRoot; // ← glisse "meshtentaculezone" ici dans l'Inspector
 
     private Vector3 hiddenPos;
     private Vector3 targetPos;
-
     private ParticleSystem[] allVFX;
 
     void Awake()
     {
-        allVFX = GetComponentsInChildren<ParticleSystem>();
+        playerHitboxLayer = LayerMask.NameToLayer("PlayerHitbox");
 
-        // Le tentacule commence sous le sol
-        hiddenPos = transform.position + Vector3.down * 3f;
-        targetPos = transform.position;
-        transform.position = hiddenPos;
+        allVFX = GetComponentsInChildren<ParticleSystem>(true);
+
+        targetPos = meshRoot.position;
+        hiddenPos = targetPos + Vector3.down * 6f;
+        meshRoot.position = hiddenPos;
     }
+
 
     void Start() => StartCoroutine(TentacleRoutine());
 
     private IEnumerator TentacleRoutine()
     {
-        // Warning — VFX au sol
-        foreach (var ps in allVFX) ps.Play();
+        // VFX reste au sol pendant le warning
+        foreach (var ps in allVFX) ps.Play(true);
         yield return new WaitForSeconds(warningDuration);
 
-        // Montée rapide
-        yield return StartCoroutine(Move(hiddenPos, targetPos, riseSpeed));
+        // Le mesh monte
+        yield return StartCoroutine(MoveMesh(hiddenPos, targetPos, riseSpeed));
 
         // Dégâts au contact
         Collider[] hits = Physics.OverlapSphere(targetPos, radius);
-        foreach (var hit in hits)
-            if (hit.CompareTag("Player"))
-                hit.GetComponent<PlayerHealth>()?.TakeDamage(damage);
 
-        // Maintien
+        foreach (var hit in hits)
+        {
+            if (hit.gameObject.layer == playerHitboxLayer)
+            {
+                hit.GetComponentInParent<PlayerHealth>()?.TakeDamage(damage);
+            }
+        }
+        
         yield return new WaitForSeconds(holdDuration);
 
-        // Rétractation
-        yield return StartCoroutine(Move(targetPos, hiddenPos, retractSpeed));
+        // Le mesh redescend
+        yield return StartCoroutine(MoveMesh(targetPos, hiddenPos, retractSpeed));
 
-        foreach (var ps in allVFX) ps.Stop();
+        foreach (var ps in allVFX) ps.Stop(true);
         Destroy(gameObject);
     }
 
-    private IEnumerator Move(Vector3 from, Vector3 to, float speed)
+    private IEnumerator MoveMesh(Vector3 from, Vector3 to, float speed)
     {
-        float t = 0f;
+        float t        = 0f;
         float duration = Vector3.Distance(from, to) / speed;
 
         while (t < 1f)
         {
             t += Time.deltaTime / duration;
-            transform.position = Vector3.Lerp(from, to, Mathf.SmoothStep(0f, 1f, t));
+            meshRoot.position = Vector3.Lerp(from, to, Mathf.SmoothStep(0f, 1f, t));
             yield return null;
         }
     }

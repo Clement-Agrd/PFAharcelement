@@ -1,8 +1,13 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public abstract class EnemyController : MonoBehaviour
+
+public abstract class EnemyController : MonoBehaviour, IDamageable
 {
+    
+    [Header("Bestiaire")]
+    public BestiaryEntry bestiaryEntry;
+
     [Header("Stats")]
     public float maxHealth   = 100f;
     public float moveSpeed   = 3f;
@@ -12,6 +17,8 @@ public abstract class EnemyController : MonoBehaviour
     public float stopChaseRange = 4f; // Distance à laquelle l'ennemi arrête de chase
     
     public abstract void PerformAttack();
+    
+    public bool IsDead { get; }
 
     // Runtime
     public float          CurrentHealth { get; private set; }
@@ -90,15 +97,30 @@ public abstract class EnemyController : MonoBehaviour
         if (StateMachine.CurrentState == deathState) return;
 
         CurrentHealth -= amount;
-        if (CurrentHealth <= 0)
-            StateMachine.ChangeState(deathState);
-        else
-            StateMachine.ChangeState(hurtState);
-    }
 
+        Debug.Log($"{gameObject.name} prend {amount} dégâts");
+
+        if (CurrentHealth <= 0)
+        {
+            CurrentHealth = 0;
+            StateMachine.ChangeState(deathState);
+        }
+        else
+        {
+            StateMachine.ChangeState(hurtState);
+        }
+    }
+    
     public virtual void Die()
     {
-        // Override pour loot, VFX supplémentaires...
+        Debug.Log($"{gameObject.name} est mort");
+
+        if (bestiaryEntry != null)
+        {
+            BestiaryManager.Instance.UnlockCreature(bestiaryEntry.id);
+        }
+
         Destroy(gameObject, 2f);
     }
+
 }

@@ -586,12 +586,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c606f6de597740b78b5685b9bf045a0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
+  mouseAimTimeout: 0.1
   firePoint: {fileID: 532493851647202573}
   projectile: {fileID: 3381772053132140057, guid: 673dd86dc0590e84a976de2f8dc35a63, type: 3}
-  fireRate: 0.25
   melee: {fileID: 660074231745534552}
   rotationSpeed: 15
   dash: {fileID: 578442995725811264}
+  isShooting: 0
 --- !u!114 &660074231745534552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -606,10 +607,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMelee
   hitRange: 3
   coneAngle: 90
+  attackRotateSpeed: 720
+  maxRotateTime: 0.15
   dashDistance: 2
   dashSpeed: 8
-  returnSpeed: 6
   pauseAtPeak: 0.3
+  comboBufferTime: 0.25
   animator: {fileID: 902042026439437748}
 --- !u!114 &9194477231620863410
 MonoBehaviour:
@@ -657,8 +660,11 @@ MonoBehaviour:
   dashSpeed: 18
   dashDuration: 0.3
   dashCooldown: 1
+  damageHitbox: {fileID: 4403451101511325989}
+  postDashIFrames: 0.15
   spinZSpeed: 1300
   alignDuration: 0.06
+  restoreAimDuration: 0.12
 --- !u!114 &775410004666437173
 MonoBehaviour:
   m_ObjectHideFlags: 0

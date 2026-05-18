@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class SweepTentacle : MonoBehaviour
 {
+    int playerHitboxLayer;
+    
     [Header("Timings")]
     public float fallDelay    = 0f;   // décalage entre les tentacules d'une même ligne
     public float fallDuration = 0.3f;
@@ -13,20 +15,28 @@ public class SweepTentacle : MonoBehaviour
     public float   slideDistance  = 20f;
 
     [Header("Stats")]
-    public float damage = 15f;
-    public float hitRadius = 0.8f;
+    public float damage     = 20f;
+    public float hitRadius  = 0.8f;
+    public float hitHeight  = 3f;
 
     private bool  isActive  = false;
+    private bool  hasHitPlayer = false; // ← ajoute ça
     private float slideTimer;
 
-    void Start() => StartCoroutine(SweepRoutine());
+
+    void Start()
+    {
+        playerHitboxLayer = LayerMask.NameToLayer("PlayerHitbox");
+        StartCoroutine(SweepRoutine());
+    }
+
 
     private IEnumerator SweepRoutine()
     {
         yield return new WaitForSeconds(fallDelay);
 
         // Tombe du haut
-        Vector3 startPos  = transform.position + Vector3.up * 8f;
+        Vector3 startPos  = transform.position + Vector3.up * hitHeight;
         Vector3 landPos   = transform.position;
         transform.position = startPos;
 
@@ -34,6 +44,7 @@ public class SweepTentacle : MonoBehaviour
 
         // Impact — caméra shake léger si tu en as un
         isActive = true;
+        hasHitPlayer = false; // ← reset au début du slide
 
         // Glisse à travers l'arène
         Vector3 slideTarget = landPos + slideDirection.normalized * slideDistance;
@@ -45,14 +56,21 @@ public class SweepTentacle : MonoBehaviour
 
     void Update()
     {
-        if (!isActive) return;
+        if (!isActive || hasHitPlayer) return;
 
-        // Dégâts continus pendant le glissement
-        Collider[] hits = Physics.OverlapSphere(transform.position, hitRadius);
+        Vector3 bottom = transform.position;
+        Vector3 top    = transform.position + Vector3.right * hitHeight;
+
+        Collider[] hits = Physics.OverlapCapsule(bottom, top, hitRadius);
         foreach (var hit in hits)
-            if (hit.CompareTag("Player"))
-                hit.GetComponent<PlayerHealth>()
-                   ?.TakeDamage(damage * Time.deltaTime);
+        {
+            if (hit.gameObject.layer == playerHitboxLayer)
+            {
+                hit.GetComponentInParent<PlayerHealth>()?.TakeDamage(damage);
+                hasHitPlayer = true;
+                break;
+            }
+        }
     }
 
     private IEnumerator Move(Vector3 from, Vector3 to, float duration)
@@ -71,7 +89,7 @@ public class SweepTentacle : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, hitRadius);
-        Gizmos.DrawRay(transform.position,
-                       slideDirection.normalized * slideDistance);
+        Gizmos.DrawWireSphere(transform.position + Vector3.right * hitHeight, hitRadius);
+        Gizmos.DrawRay(transform.position, slideDirection.normalized * slideDistance);
     }
 }

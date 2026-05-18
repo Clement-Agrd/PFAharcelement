@@ -14,6 +14,9 @@ public class OctoBossController : EnemyController
     public Transform[] InkFirePoints;
     public int         InkProjectileCount = 16;
     public float       InkFireInterval    = 0.08f;
+    public float InkConeAngle = 90f;     // largeur du cône
+    public float InkSweepSpeed = 0.05f;  // vitesse d'aller-retour
+
 
     // ── Pattern 3 — Sweep ─────────────────────────────────────────────
     [Header("Sweep Pattern")]

@@ -43,15 +43,15 @@ public class BossZoneState : EnemyStateBase
 
     private void SpawnZoneAt(Vector3 worldPos)
     {
-        // Layer mask — ne touche que le sol, ignore ennemis et joueur
-        int mask = ~LayerMask.GetMask("Player", "Enemy", "PlayerHitbox");
-
-        // Part de haut pour ne jamais taper un personnage
+        int mask = LayerMask.GetMask("Ground");
         Vector3 rayOrigin = new Vector3(worldPos.x, 20f, worldPos.z);
 
-        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 40f, mask))
-            worldPos = hit.point;
+        if (!Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 40f, mask))
+        {
+            Debug.Log("SpawnZone annulé — pas de sol détecté");
+            return; // ← ne spawn pas si pas de Ground
+        }
 
-        Object.Instantiate(boss.ZonePrefab, worldPos, Quaternion.identity);
+        Object.Instantiate(boss.ZonePrefab, hit.point, Quaternion.identity);
     }
 }
