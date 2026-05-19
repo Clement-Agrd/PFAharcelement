@@ -7,9 +7,9 @@ public class SwarmAlly : MonoBehaviour
     private float     damage;
     private float     lifetime;
     private float     elapsed;
-    private float     orbitRadius  = 3f;
-    private float     orbitSpeed   = 90f;
-    private float     attackRange  = 2f;
+    private float     orbitRadius    = 3f;
+    private float     orbitSpeed     = 90f;
+    private float     attackRange    = 2f;
     private float     attackCooldown = 1f;
     private float     nextAttack;
     private float     angle;
@@ -20,6 +20,11 @@ public class SwarmAlly : MonoBehaviour
         damage   = dmg;
         lifetime = life;
         angle    = Random.Range(0f, 360f);
+
+        // Ajoute le VFX sur l'allié
+        SwarmAllyVFX vfx = GetComponent<SwarmAllyVFX>();
+        if (vfx == null)
+            vfx = gameObject.AddComponent<SwarmAllyVFX>();
     }
 
     void Update()
@@ -33,9 +38,8 @@ public class SwarmAlly : MonoBehaviour
             return;
         }
 
-        // Orbite autour du joueur
         angle += orbitSpeed * Time.deltaTime;
-        float rad = angle * Mathf.Deg2Rad;
+        float rad      = angle * Mathf.Deg2Rad;
         Vector3 orbitPos = target.position + new Vector3(
             Mathf.Cos(rad) * orbitRadius,
             0f,
@@ -48,7 +52,6 @@ public class SwarmAlly : MonoBehaviour
             target.position.z
         ));
 
-        // Attaque les ennemis proches
         if (Time.time >= nextAttack)
             AttackNearestEnemy();
     }

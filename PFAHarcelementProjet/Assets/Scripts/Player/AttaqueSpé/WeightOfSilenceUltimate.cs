@@ -81,6 +81,7 @@ public class WeightOfSilenceUltimate : MonoBehaviour
     {
         isActive = true;
 
+        // Instancie le VFX
         if (silenceVFXPrefab != null)
         {
             GameObject vfx = Instantiate(
@@ -88,11 +89,10 @@ public class WeightOfSilenceUltimate : MonoBehaviour
                 transform.position,
                 Quaternion.identity
             );
-            Destroy(vfx, silenceDuration + 1f);
+            Destroy(vfx, silenceDuration + 2f);
         }
 
-        // Ralentit tous les ennemis dans le rayon
-        Collider[] hits    = Physics.OverlapSphere(transform.position, silenceRadius);
+        Collider[] hits = Physics.OverlapSphere(transform.position, silenceRadius);
         List<EnemySlowed> slowedEnemies = new List<EnemySlowed>();
 
         foreach (Collider hit in hits)

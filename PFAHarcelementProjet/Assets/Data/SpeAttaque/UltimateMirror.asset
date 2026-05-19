@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c1045d518134561976d2ca48c2aa55d, type: 3}
   m_Name: UltimateMirror
   m_EditorClassIdentifier: Assembly-CSharp::UltimateData
-  ultimateName: 
-  description: 
+  ultimateName: Retour de Flamme
+  description: "Renvoyer la violence \xE0 son exp\xE9diteur"
   icon: {fileID: 0}
-  type: 0
+  type: 5
   specialDamage: 30
   specialRadius: 5
   specialCooldown: 8

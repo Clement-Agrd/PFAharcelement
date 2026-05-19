@@ -13,14 +13,15 @@ public class RegenerationUltimate : MonoBehaviour
 
     public bool IsUnlocked { get; private set; } = false;
 
-    private float          regenPercent;
-    private float          regenDuration;
-    private float          regenCooldown;
-    private float          lastUseTime = -99f;
-    private bool           isActive    = false;
-    private PlayerControls controls;
-    private PlayerHealth   playerHealth;
-    private PlayerStats    stats;
+    private float           regenPercent;
+    private float           regenDuration;
+    private float           regenCooldown;
+    private float           lastUseTime = -99f;
+    private bool            isActive    = false;
+    private PlayerControls  controls;
+    private PlayerHealth    playerHealth;
+    private PlayerStats     stats;
+    private RegenerationVFX vfxInstance;
 
     public bool  IsActive           => isActive;
     public float GetRemaining()     => Mathf.Max(0f, regenCooldown - (Time.time - lastUseTime));
@@ -82,21 +83,21 @@ public class RegenerationUltimate : MonoBehaviour
     {
         isActive = true;
 
-        GameObject regenVFXInstance = null;
+        // Instancie le VFX
         if (regenVFXPrefab != null)
         {
-            regenVFXInstance = Instantiate(
+            GameObject vfxGO = Instantiate(
                 regenVFXPrefab,
                 transform.position,
                 Quaternion.identity,
                 transform
             );
-            regenVFXInstance.transform.localPosition = Vector3.zero;
+            vfxGO.transform.localPosition = Vector3.zero;
+            vfxInstance = vfxGO.GetComponent<RegenerationVFX>();
         }
 
         float maxHP       = stats.GetStat(StatType.HP);
         float totalHeal   = maxHP * regenPercent;
-        float healPerTick = totalHeal / regenDuration;
         float elapsed     = 0f;
 
         Debug.Log($"💚 Régénération : +{totalHeal:F0} HP sur {regenDuration}s");
@@ -105,12 +106,12 @@ public class RegenerationUltimate : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             if (playerHealth != null)
-                playerHealth.Heal(healPerTick * Time.deltaTime);
+                playerHealth.Heal((totalHeal / regenDuration) * Time.deltaTime);
             yield return null;
         }
 
-        if (regenVFXInstance != null)
-            Destroy(regenVFXInstance);
+        if (vfxInstance != null)
+            Destroy(vfxInstance.gameObject);
 
         isActive = false;
         Debug.Log("💚 Régénération terminée");

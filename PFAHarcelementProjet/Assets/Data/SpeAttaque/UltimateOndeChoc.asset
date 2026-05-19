@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c1045d518134561976d2ca48c2aa55d, type: 3}
   m_Name: UltimateOndeChoc
   m_EditorClassIdentifier: Assembly-CSharp::UltimateData
-  ultimateName: 
-  description: 
+  ultimateName: Brise le Silence
+  description: Rompre le silence face au menace
   icon: {fileID: 0}
-  type: 0
+  type: 4
   specialDamage: 30
   specialRadius: 5
   specialCooldown: 8

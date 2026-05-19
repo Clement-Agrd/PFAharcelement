@@ -5,16 +5,20 @@ using UnityEngine.InputSystem;
 
 public class InvisibilityUltimate : MonoBehaviour
 {
+    [Header("VFX")]
+    public GameObject invisibilityVFXPrefab;
+
     [Header("Déblocage")]
     public bool startUnlocked = false;
 
     public bool IsUnlocked { get; private set; } = false;
 
-    private float          invisibilityDuration;
-    private float          invisibilityCooldown;
-    private float          lastUseTime = -99f;
-    private bool           isActive    = false;
-    private PlayerControls controls;
+    private float            invisibilityDuration;
+    private float            invisibilityCooldown;
+    private float            lastUseTime = -99f;
+    private bool             isActive    = false;
+    private PlayerControls   controls;
+    private InvisibilityVFX  vfxInstance;
 
     public bool  IsActive           => isActive;
     public float GetRemaining()     => Mathf.Max(0f, invisibilityCooldown - (Time.time - lastUseTime));
@@ -73,32 +77,37 @@ public class InvisibilityUltimate : MonoBehaviour
     {
         isActive = true;
 
-        // Rend le joueur transparent
-        Renderer[] renderers = GetComponentsInChildren<Renderer>();
-        foreach (Renderer r in renderers)
+        // Instancie le VFX
+        if (invisibilityVFXPrefab != null)
         {
-            Color c = r.material.color;
-            c.a = 0.2f;
-            r.material.color = c;
+            GameObject vfxGO = Instantiate(
+                invisibilityVFXPrefab,
+                transform.position,
+                Quaternion.identity,
+                transform
+            );
+            vfxGO.transform.localPosition = Vector3.zero;
+            vfxInstance = vfxGO.GetComponent<InvisibilityVFX>();
         }
 
-        // Désactive la détection par les ennemis
-        gameObject.layer = LayerMask.NameToLayer("Invisible");
+        // Fade out — devient invisible
+        if (vfxInstance != null)
+            vfxInstance.FadeOut();
+
+        // Change le layer pour que les ennemis ignorent le joueur
+        int originalLayer   = gameObject.layer;
+        gameObject.layer    = LayerMask.NameToLayer("Invisible");
 
         Debug.Log($"👻 Invisibilité active {invisibilityDuration}s");
 
         yield return new WaitForSeconds(invisibilityDuration);
 
-        // Remet le joueur visible
-        foreach (Renderer r in renderers)
-        {
-            if (r == null) continue;
-            Color c = r.material.color;
-            c.a = 1f;
-            r.material.color = c;
-        }
+        // Remet le layer original
+        gameObject.layer = originalLayer;
 
-        gameObject.layer = LayerMask.NameToLayer("Player");
+        // Fade in — redevient visible
+        if (vfxInstance != null)
+            vfxInstance.FadeIn();
 
         isActive = false;
         Debug.Log("👻 Invisibilité terminée");
