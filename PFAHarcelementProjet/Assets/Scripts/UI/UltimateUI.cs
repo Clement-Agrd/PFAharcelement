@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿// Scripts/UI/UltimateUI.cs
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -11,7 +12,7 @@ public class UltimateUI : MonoBehaviour
     public Button          ultimateButton;
     public Image           buttonImage;
     public GameObject      lockIcon;
-    public GameObject      activeGlow; // effet visuel quand actif
+    public GameObject      activeGlow;
 
     [Header("Couleurs")]
     public Color readyColor    = new Color(1f,   0.7f, 0f);
@@ -23,16 +24,22 @@ public class UltimateUI : MonoBehaviour
 
     void Start()
     {
-        if (lockIcon != null)   lockIcon.SetActive(true);
+        if (lockIcon   != null) lockIcon.SetActive(true);
         if (activeGlow != null) activeGlow.SetActive(false);
+
         if (ultimateButton != null)
+        {
             ultimateButton.onClick.AddListener(OnButtonClicked);
+            ultimateButton.interactable = false;
+        }
+
+        if (buttonImage != null)
+            buttonImage.color = lockedColor;
     }
 
     void Update()
     {
         if (currentData == null) return;
-
         UpdateCooldownUI();
     }
 
@@ -43,11 +50,12 @@ public class UltimateUI : MonoBehaviour
         if (ultimateIcon != null && data.icon != null)
             ultimateIcon.sprite = data.icon;
 
-        if (lockIcon != null)
-            lockIcon.SetActive(false);
+        RefreshLockState();
+    }
 
-        if (buttonImage != null)
-            buttonImage.color = readyColor;
+    public void OnUnlock()
+    {
+        RefreshLockState();
     }
 
     public void OnActivate()
@@ -57,6 +65,50 @@ public class UltimateUI : MonoBehaviour
 
         if (buttonImage != null)
             buttonImage.color = activeColor;
+    }
+
+    void RefreshLockState()
+    {
+        if (currentData == null) return;
+
+        bool unlocked = IsCurrentUltimateUnlocked();
+
+        if (lockIcon != null)
+            lockIcon.SetActive(!unlocked);
+
+        if (buttonImage != null)
+            buttonImage.color = unlocked ? readyColor : lockedColor;
+
+        if (ultimateButton != null)
+            ultimateButton.interactable = unlocked;
+
+        if (cooldownText != null)
+            cooldownText.text = unlocked ? "" : "🔒";
+    }
+
+    bool IsCurrentUltimateUnlocked()
+    {
+        if (currentData == null) return false;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null) return false;
+
+        switch (currentData.type)
+        {
+            case UltimateType.SpecialAttack:
+                SpecialAttack sa = player.GetComponent<SpecialAttack>();
+                return sa != null && sa.IsUnlocked;
+
+            case UltimateType.StatBoost:
+                StatBoostUltimate sb = player.GetComponent<StatBoostUltimate>();
+                return sb != null && sb.IsUnlocked;
+
+            case UltimateType.Shield:
+                ShieldUltimate sh = player.GetComponent<ShieldUltimate>();
+                return sh != null && sh.IsUnlocked;
+        }
+
+        return false;
     }
 
     void UpdateCooldownUI()
@@ -117,9 +169,9 @@ public class UltimateUI : MonoBehaviour
 
         if (buttonImage != null)
         {
-            if (isActive)      buttonImage.color = activeColor;
-            else if (isReady)  buttonImage.color = readyColor;
-            else               buttonImage.color = cooldownColor;
+            if (isActive)     buttonImage.color = activeColor;
+            else if (isReady) buttonImage.color = readyColor;
+            else              buttonImage.color = cooldownColor;
         }
 
         if (ultimateButton != null)

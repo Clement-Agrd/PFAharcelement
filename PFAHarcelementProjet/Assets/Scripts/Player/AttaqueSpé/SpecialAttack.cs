@@ -233,6 +233,7 @@ public class SpecialAttack : MonoBehaviour
             }
         }
     }
+    
 
     void OnDrawGizmosSelected()
     {

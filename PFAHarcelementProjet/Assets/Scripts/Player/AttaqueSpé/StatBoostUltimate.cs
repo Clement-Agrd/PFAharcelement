@@ -6,6 +6,14 @@ using UnityEngine.InputSystem;
 
 public class StatBoostUltimate : MonoBehaviour
 {
+    [Header("VFX")]
+    public GameObject statBoostVFXPrefab;
+
+    [Header("Déblocage")]
+    public bool startUnlocked = false;
+
+    public bool IsUnlocked { get; private set; } = false;
+
     private float          boostPercent;
     private float          boostDuration;
     private float          cooldown;
@@ -13,20 +21,22 @@ public class StatBoostUltimate : MonoBehaviour
     private bool           isActive    = false;
     private PlayerStats    stats;
     private PlayerControls controls;
+    private StatBoostVFX   vfxInstance;
 
-    // Garde les modificateurs actifs pour pouvoir les retirer
     private List<StatModifier> activeModifiers = new List<StatModifier>();
 
     public bool  IsActive           => isActive;
     public float GetCooldown()      => cooldown;
     public float GetRemaining()     => Mathf.Max(0f, cooldown - (Time.time - lastUseTime));
-    public float GetCooldownRatio() => GetRemaining() / cooldown;
-    public bool  IsReady()          => GetRemaining() <= 0f && !isActive;
+    public float GetCooldownRatio() => cooldown > 0 ? GetRemaining() / cooldown : 0f;
+    public bool  IsReady()          => IsUnlocked && GetRemaining() <= 0f && !isActive;
 
     void Awake()
     {
         stats    = GetComponent<PlayerStats>();
         controls = new PlayerControls();
+
+        if (startUnlocked) Unlock();
     }
 
     void OnEnable()
@@ -41,15 +51,30 @@ public class StatBoostUltimate : MonoBehaviour
         controls.Player.Disable();
     }
 
+    public void Unlock()
+    {
+        IsUnlocked = true;
+        Debug.Log("🔓 StatBoost débloqué");
+
+        UltimateUI ui = FindObjectOfType<UltimateUI>();
+        if (ui != null) ui.OnUnlock();
+    }
+
     public void Setup(float percent, float duration)
     {
         boostPercent  = percent;
         boostDuration = duration;
-        cooldown      = duration * 3f; // cooldown = 3x la durée
+        cooldown      = duration * 3f;
     }
 
     void OnInput(InputAction.CallbackContext ctx)
     {
+        if (!IsUnlocked)
+        {
+            Debug.Log("🔒 StatBoost non débloqué");
+            return;
+        }
+
         if (IsReady()) Activate();
     }
 
@@ -67,8 +92,21 @@ public class StatBoostUltimate : MonoBehaviour
     {
         isActive = true;
 
-        // Applique le buff sur toutes les stats sauf HP
+        if (statBoostVFXPrefab != null)
+        {
+            GameObject vfxGO = Instantiate(
+                statBoostVFXPrefab,
+                transform.position,
+                Quaternion.identity,
+                transform
+            );
+            vfxGO.transform.localPosition = Vector3.zero;
+            vfxInstance = vfxGO.GetComponent<StatBoostVFX>();
+            if (vfxInstance != null) vfxInstance.Activate();
+        }
+
         activeModifiers.Clear();
+
         StatType[] statsToBoost = {
             StatType.MeleeDamage,
             StatType.RangedDamage,
@@ -87,17 +125,19 @@ public class StatBoostUltimate : MonoBehaviour
             stats.AddModifier(mod);
         }
 
-        Debug.Log($"⚡ StatBoost actif pendant {boostDuration}s");
+        Debug.Log($"⚡ StatBoost actif {boostDuration}s");
 
         yield return new WaitForSeconds(boostDuration);
 
-        // Retire les buffs
         foreach (StatModifier mod in activeModifiers)
             stats.RemoveModifier(mod);
 
         activeModifiers.Clear();
-        isActive = false;
 
+        if (vfxInstance != null)
+            vfxInstance.Deactivate();
+
+        isActive = false;
         Debug.Log("⚡ StatBoost terminé");
     }
 }

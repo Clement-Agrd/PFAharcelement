@@ -1,7 +1,13 @@
 ﻿// Scripts/Ultimates/UltimateType.cs
 public enum UltimateType
 {
-    SpecialAttack,  // l'explosion qu'on a déjà faite
-    StatBoost,      // buff de toutes les stats sauf HP
-    Shield          // bouclier autour du requin
+    SpecialAttack,
+    StatBoost,
+    Shield,
+    SwarmOfPredators,  // Essaim de Prédateurs
+    SonicShockwave,    // Onde de Choc Sonore
+    Mirror,            // Miroir
+    Invisibility,      // Invisibilité
+    WeightOfSilence,   // Poids du Silence
+    Regeneration       // Régénération
 }

@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c1045d518134561976d2ca48c2aa55d, type: 3}
+  m_Name: UltimateMirror
+  m_EditorClassIdentifier: Assembly-CSharp::UltimateData
+  ultimateName: 
+  description: 
+  icon: {fileID: 0}
+  type: 0
+  specialDamage: 30
+  specialRadius: 5
+  specialCooldown: 8
+  statBoostPercent: 0.3
+  statBoostDuration: 10
+  shieldDuration: 5
+  shieldCooldown: 20
+  swarmCount: 5
+  swarmDamage: 15
+  swarmDuration: 8
+  swarmCooldown: 20
+  swarmPrefab: {fileID: 0}
+  shockwaveRadius: 8
+  shockwaveDuration: 3
+  shockwaveCooldown: 15
+  mirrorDuration: 6
+  mirrorCooldown: 18
+  invisibilityDuration: 5
+  invisibilityCooldown: 20
+  silenceRadius: 10
+  silenceSlowness: 0.8
+  silenceDuration: 5
+  silenceCooldown: 18
+  regenPercent: 0.3
+  regenDuration: 8
+  regenCooldown: 25
