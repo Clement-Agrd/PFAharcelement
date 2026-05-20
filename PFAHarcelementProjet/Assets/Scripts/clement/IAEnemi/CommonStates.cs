@@ -57,13 +57,6 @@ public class ChaseState : EnemyStateBase
 
         Vector3 lookDir = enemy.PlayerTransform.position - enemy.transform.position;
         lookDir.y = 0f;
-
-        if (lookDir != Vector3.zero)
-            enemy.transform.rotation = Quaternion.Slerp(
-                enemy.transform.rotation,
-                Quaternion.LookRotation(lookDir),
-                Time.deltaTime * 10f
-            );
     }
 }
 
@@ -74,11 +67,13 @@ public class AttackState : EnemyStateBase
 
     public AttackState(EnemyController e, StateMachine sm) : base(e, sm) { }
 
+
     public override void Enter()
     {
         timer = 0f;
-        enemy.PlayAnim("Attack");
+        enemy.TriggerAnim("Attack"); // ✅ trigger
     }
+
 
     public override void Update()
     {
@@ -119,7 +114,7 @@ public class HurtState : EnemyStateBase
     public override void Enter()
     {
         timer = 0f;
-        enemy.PlayAnim("Hurt");
+        enemy.TriggerAnim("Hurt");
     }
 
     public override void Update()
