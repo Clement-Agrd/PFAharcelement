@@ -10,7 +10,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public UnityEvent<float, float> onHealthChanged;
     public UnityEvent               onDeath;
 
-
+    public static System.Action OnPlayerDamaged;
     private PlayerStats stats;
     private float lastMaxHealth;
     private float       currentHealth;
@@ -65,8 +65,13 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             return; // Ne prend pas les dégâts
         }
         
+
         currentHealth -= finalDamage;
         currentHealth  = Mathf.Max(currentHealth, 0f);
+
+        // ✅ AJOUT ICI
+        OnPlayerDamaged?.Invoke();
+
         
         onHealthChanged?.Invoke(currentHealth, stats.GetStat(StatType.MaxHealth));
 
