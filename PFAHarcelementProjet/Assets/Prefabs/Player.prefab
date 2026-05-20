@@ -662,7 +662,7 @@ MonoBehaviour:
   dashCooldown: 1
   damageHitbox: {fileID: 4403451101511325989}
   postDashIFrames: 0.15
-  spinZSpeed: 1300
+  spinZSpeed: 1500
   alignDuration: 0.06
   restoreAimDuration: 0.12
 --- !u!114 &775410004666437173

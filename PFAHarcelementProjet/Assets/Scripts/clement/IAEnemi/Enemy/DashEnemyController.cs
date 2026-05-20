@@ -33,7 +33,7 @@ public class DashEnemyController : EnemyController
         attackRange = DashTriggerRange;
         chaseRange  = 12f;
     }
-
+    
     public override void PerformAttack() { } // géré directement par DashAttackState
 
     public override void Die()

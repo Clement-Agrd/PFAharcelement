@@ -4,6 +4,10 @@
 
 public abstract class EnemyController : MonoBehaviour, IDamageable
 {
+    public bool AllowRotation = true;
+    
+    [Header("Rotation")]
+    public float rotationSpeed = 10f;
     
     [Header("Bestiaire")]
     public BestiaryEntry bestiaryEntry;
@@ -18,7 +22,7 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
     
     public abstract void PerformAttack();
     
-    public bool IsDead { get; }
+    public bool IsDead => CurrentHealth <= 0f;
 
     // Runtime
     public float          CurrentHealth { get; private set; }
@@ -76,8 +80,7 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
         if (!Anim.isActiveAndEnabled) return;
         Anim.SetTrigger(triggerName);
     }
-
-    protected virtual void Update()       => StateMachine.Update();
+    
     protected virtual void FixedUpdate()  => StateMachine.FixedUpdate();
 
     // Chaque ennemi crée ses propres états ici
@@ -120,7 +123,31 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
             BestiaryManager.Instance.UnlockCreature(bestiaryEntry.id);
         }
 
+        gameObject.SetActive(false); // ✅ important
         Destroy(gameObject, 2f);
     }
+    protected virtual void Update()
+    {
+        StateMachine.Update();
 
+        RotateTowardsPlayer();
+    }
+    protected virtual void RotateTowardsPlayer()
+    {
+        if (!AllowRotation) return;
+        if (PlayerTransform == null) return;
+        if (IsDead) return;
+
+        Vector3 dir = PlayerTransform.position - transform.position;
+        dir.y = 0f;
+
+        if (dir.sqrMagnitude < 0.01f) return;
+
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            targetRot,
+            rotationSpeed * Time.deltaTime
+        );
+    }
 }

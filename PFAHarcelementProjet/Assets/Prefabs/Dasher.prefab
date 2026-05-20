@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 1747445073281004808}
   - component: {fileID: 2826149216932110279}
   - component: {fileID: 2649765873307549280}
-  - component: {fileID: 5075337823125521728}
   - component: {fileID: 3937604329605600861}
   m_Layer: 0
   m_Name: Dasher
@@ -144,19 +143,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &5075337823125521728
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1262792258009639148}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 201ebcaed6b7456e94c69230c1d4fc2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHealth: 20
 --- !u!114 &3937604329605600861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,6 +155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c52239f5d6d43cb9b5625d0380e1c3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DashEnemyController
+  bestiaryEntry: {fileID: 0}
   maxHealth: 100
   moveSpeed: 3
   attackRange: 1.5

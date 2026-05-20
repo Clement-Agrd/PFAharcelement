@@ -113,9 +113,38 @@ public class HurtState : EnemyStateBase
     public override void Update()
     {
         timer += Time.deltaTime;
-        if (timer >= duration)
+
+        if (timer < duration)
+            return;
+
+        // ✅ Priorité logique
+        if (enemy.IsDead && enemy.GetDeathState() != null)
+        {
+            stateMachine.ChangeState(enemy.GetDeathState());
+            return;
+        }
+
+        if (enemy.IsPlayerInRange(enemy.attackRange) && enemy.GetAttackState() != null)
+        {
+            stateMachine.ChangeState(enemy.GetAttackState());
+            return;
+        }
+
+        if (enemy.IsPlayerInRange(enemy.chaseRange) && enemy.GetChaseState() != null)
+        {
             stateMachine.ChangeState(enemy.GetChaseState());
+            return;
+        }
+
+        if (enemy.GetIdleState() != null)
+        {
+            stateMachine.ChangeState(enemy.GetIdleState());
+            return;
+        }
+
+        Debug.LogError("❌ Aucun state valide après Hurt !");
     }
+
 }
 
 // ── DEATH ────────────────────────────────────────────────────────────

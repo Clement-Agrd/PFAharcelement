@@ -11,12 +11,20 @@ public class StateMachine
         CurrentState.Enter();
     }
 
+
     public void ChangeState(EnemyStateBase newState)
     {
+        if (newState == null)
+        {
+            Debug.LogError("⚠️ ChangeState appelé avec NULL !");
+            return;
+        }
+
         CurrentState?.Exit();
         CurrentState = newState;
         CurrentState.Enter();
     }
+
 
     public void Update()       => CurrentState?.Update();
     public void FixedUpdate()  => CurrentState?.FixedUpdate();
