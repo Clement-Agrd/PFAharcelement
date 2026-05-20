@@ -13,7 +13,7 @@ public class BossSummonState : EnemyStateBase
     public override void Enter()
     {
         done = false;
-        enemy.PlayAnim("Cast");
+        enemy.TriggerAnim("Alert");
         enemy.StartCoroutine(SummonRoutine());
     }
 

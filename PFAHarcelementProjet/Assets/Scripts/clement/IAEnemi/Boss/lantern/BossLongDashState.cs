@@ -17,7 +17,7 @@ public class BossLongDashState : EnemyStateBase
     {
         done   = false;
         hasHit = false;
-        enemy.PlayAnim("Dash");
+        enemy.TriggerAnim("Bite");
         enemy.StartCoroutine(LongDashRoutine());
     }
 

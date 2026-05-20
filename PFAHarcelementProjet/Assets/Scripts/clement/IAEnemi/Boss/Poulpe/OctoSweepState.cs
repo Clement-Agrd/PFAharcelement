@@ -12,7 +12,7 @@ public class OctoSweepState : EnemyStateBase
     public override void Enter()
     {
         done = false;
-        enemy.PlayAnim("Cast");
+        enemy.PlayAnim("Attack");
         enemy.StartCoroutine(SweepRoutine());
     }
 

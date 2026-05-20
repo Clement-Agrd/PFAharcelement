@@ -12,7 +12,7 @@ public class BossTripleDashState : EnemyStateBase
     public override void Enter()
     {
         done = false;
-        enemy.PlayAnim("Dash");
+        enemy.TriggerAnim("Bite");
         enemy.StartCoroutine(TripleDashRoutine());
     }
 

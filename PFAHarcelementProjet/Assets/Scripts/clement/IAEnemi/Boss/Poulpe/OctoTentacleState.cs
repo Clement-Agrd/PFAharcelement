@@ -14,7 +14,7 @@ public class OctoTentacleState : EnemyStateBase
     {
         timer = 0f;
         done  = false;
-        enemy.PlayAnim("Cast");
+        enemy.PlayAnim("Attack");
         enemy.StartCoroutine(SpawnWaves());
     }
 

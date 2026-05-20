@@ -1,4 +1,4 @@
-﻿// Scripts/Enemies/EnemyController.cs
+// Scripts/Enemies/EnemyController.cs
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -47,9 +47,9 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
 
     protected virtual void Awake()
     {
-        Rb            = GetComponent<Rigidbody>();
-        Anim          = GetComponent<Animator>();
-        StateMachine  = new StateMachine();
+        Rb           = GetComponent<Rigidbody>();
+        Anim = GetComponentInChildren<Animator>();
+        StateMachine = new StateMachine();
         CurrentHealth = maxHealth;
 
         var player = GameObject.FindWithTag("Player");

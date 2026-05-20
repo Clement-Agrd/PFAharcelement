@@ -15475,6 +15475,10 @@ PrefabInstance:
       propertyPath: m_Constraints
       value: 84
       objectReference: {fileID: 0}
+    - target: {fileID: 6826238452556548891, guid: f6d506ceb0f18ce40b4b44ded54641b8, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: b95247d392bc12844a1038f1936ba31c, type: 2}
     - target: {fileID: 7621299943098457849, guid: f6d506ceb0f18ce40b4b44ded54641b8, type: 3}
       propertyPath: m_Name
       value: BossLantern
