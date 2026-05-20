@@ -96,7 +96,7 @@ public class RegenerationUltimate : MonoBehaviour
             vfxInstance = vfxGO.GetComponent<RegenerationVFX>();
         }
 
-        float maxHP       = stats.GetStat(StatType.HP);
+        float maxHP       = stats.GetStat(StatType.MaxHealth);
         float totalHeal   = maxHP * regenPercent;
         float elapsed     = 0f;
 

@@ -1,4 +1,6 @@
 // Scripts/Player/PlayerHealth.cs
+
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -62,10 +64,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             }
             return; // Ne prend pas les dégâts
         }
-
-        currentHP -= finalDamage;
-        currentHP  = Mathf.Max(currentHP, 0f);
-
+        
+        currentHealth -= finalDamage;
+        currentHealth  = Mathf.Max(currentHealth, 0f);
+        
         onHealthChanged?.Invoke(currentHealth, stats.GetStat(StatType.MaxHealth));
 
         if (currentHealth <= 0f)
@@ -151,5 +153,5 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         // ✅ Notify l’UI
         onHealthChanged?.Invoke(currentHealth, newMaxHP);
     }
-
+    
 }

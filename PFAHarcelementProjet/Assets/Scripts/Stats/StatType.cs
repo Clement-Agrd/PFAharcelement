@@ -9,5 +9,5 @@ public enum StatType
     AttackSpeed,
     LifeSteal,
     MoveSpeed,
-    CooldownReduction
+    CooldownReduction,
 }
