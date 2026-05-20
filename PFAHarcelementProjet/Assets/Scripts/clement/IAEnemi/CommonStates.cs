@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 // ── IDLE ─────────────────────────────────────────────────────────────
 public class IdleState : EnemyStateBase
@@ -71,7 +71,6 @@ public class AttackState : EnemyStateBase
     public override void Enter()
     {
         timer = 0f;
-        Debug.Log("aalalalalalalalalalalal");
         enemy.TriggerAnim("Attack"); // ✅ trigger
     }
 
