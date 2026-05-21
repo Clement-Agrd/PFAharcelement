@@ -9876,6 +9876,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4932e96c2424729b9cd20797f05cf64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossController
+  AllowRotation: 1
+  rotationSpeed: 10
+  bestiaryEntry: {fileID: 0}
   maxHealth: 100
   moveSpeed: 3
   attackRange: 8
@@ -20045,8 +20048,8 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 2
-      minScalar: 1
+      scalar: 4
+      minScalar: 3
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -20428,8 +20431,8 @@ ParticleSystem:
     startRotationY:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0
-      minScalar: 6.283185
+      scalar: 2.0943952
+      minScalar: 4.1887903
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -20481,8 +20484,8 @@ ParticleSystem:
     startRotation:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0
-      minScalar: 0
+      scalar: 0.17453292
+      minScalar: -0.17453292
       maxCurve:
         serializedVersion: 2
         m_Curve:

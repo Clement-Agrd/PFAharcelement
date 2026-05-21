@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2649765873307549280}
   - component: {fileID: 3937604329605600861}
   m_Layer: 0
-  m_Name: Dasher
+  m_Name: Dasher 2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

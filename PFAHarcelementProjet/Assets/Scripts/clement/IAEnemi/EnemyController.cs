@@ -80,10 +80,43 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
 
     public void TriggerAnim(string triggerName)
     {
-        if (Anim == null) return;
-        if (!Anim.isActiveAndEnabled) return;
+        if (Anim == null)
+        {
+            Debug.LogError($"❌ Animator NULL sur {gameObject.name} !");
+            return;
+        }
+
+        if (!Anim.isActiveAndEnabled)
+        {
+            Debug.LogWarning($"⚠️ Animator désactivé sur {gameObject.name}");
+            return;
+        }
+
+        // Vérifie si le param existe
+        if (!HasParameter(triggerName))
+        {
+            Debug.LogError($"❌ Trigger '{triggerName}' n'existe PAS sur Animator de {gameObject.name}");
+            return;
+        }
+
+        Debug.Log($"✅ Trigger '{triggerName}' envoyé sur {gameObject.name}");
+
+        Anim.ResetTrigger(triggerName); // évite les blocages
         Anim.SetTrigger(triggerName);
     }
+    
+    bool HasParameter(string paramName)
+    {
+        foreach (var param in Anim.parameters)
+        {
+            if (param.name == paramName)
+                return true;
+        }
+        return false;
+    }
+
+
+    protected virtual void FixedUpdate()  => StateMachine.FixedUpdate();
 
     protected virtual void FixedUpdate() => StateMachine.FixedUpdate();
 

@@ -31,7 +31,7 @@ public class DashAttackState : EnemyStateBase
         if (dashDirection != Vector3.zero)
             enemy.transform.rotation = Quaternion.LookRotation(dashDirection);
 
-        enemy.PlayAnim("Windup");
+        enemy.TriggerAnim("Speed");
     }
 
     // ── Update ────────────────────────────────────────────────────────
@@ -64,7 +64,7 @@ public class DashAttackState : EnemyStateBase
 
         timer = 0f;
         phase = Phase.Dashing;
-        enemy.PlayAnim("Dash");
+        enemy.TriggerAnim("Attack");
 
         // Freeze la rotation pendant le dash
         enemy.Rb.freezeRotation = true;

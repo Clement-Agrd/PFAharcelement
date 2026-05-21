@@ -71,6 +71,7 @@ public class AttackState : EnemyStateBase
     public override void Enter()
     {
         timer = 0f;
+        Debug.Log("aalalalalalalalalalalal");
         enemy.TriggerAnim("Attack"); // ✅ trigger
     }
 
@@ -96,7 +97,9 @@ public class AttackState : EnemyStateBase
 
         if (timer >= enemy.attackCooldown)
         {
+            enemy.TriggerAnim("Attack"); // ✅ relancer l'anim ici
             enemy.PerformAttack();
+
             timer = 0f;
         }
     }
