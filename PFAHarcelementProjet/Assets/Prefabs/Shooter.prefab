@@ -104,11 +104,13 @@ MonoBehaviour:
   moveSpeed: 6
   attackRange: 10
   chaseRange: 50
-  attackCooldown: 0.5
+  attackCooldown: 2
   stopChaseRange: 7
   goldValue: 10
   projectilePrefab: {fileID: 2725591829447007800, guid: fc1227368a75dbe408c5a36a2c828230, type: 3}
   firePoint: {fileID: 1209730540548839449}
+  attackTiltAngle: -90
+  tiltSpeed: 2
 --- !u!1001 &9054807752288513501
 PrefabInstance:
   m_ObjectHideFlags: 0
