@@ -1,35 +1,35 @@
 ﻿// Scripts/Ultimates/SwarmAlly.cs
+using System.Collections;
 using UnityEngine;
 
 public class SwarmAlly : MonoBehaviour
 {
-    private Transform target;
-    private float     damage;
-    private float     lifetime;
-    private float     elapsed;
-    private float     orbitRadius    = 3f;
-    private float     orbitSpeed     = 90f;
-    private float     attackRange    = 2f;
-    private float     attackCooldown = 1f;
-    private float     nextAttack;
-    private float     angle;
+    private Transform   playerTransform;
+    private float       lifetime;
+    private float       elapsed;
+    private float       nextFire;
+    private int         index;
+    private int         totalCount;
+    private float       spacing         = 2.5f;
+    private GameObject  projectilePrefab;
+    private PlayerStats playerStats;
 
-    public void Setup(Transform playerTransform, float dmg, float life)
+    public void Setup(Transform player, float life,
+                      int idx, int total,
+                      GameObject projPrefab, PlayerStats stats)
     {
-        target   = playerTransform;
-        damage   = dmg;
-        lifetime = life;
-        angle    = Random.Range(0f, 360f);
-
-        // Ajoute le VFX sur l'allié
-        SwarmAllyVFX vfx = GetComponent<SwarmAllyVFX>();
-        if (vfx == null)
-            vfx = gameObject.AddComponent<SwarmAllyVFX>();
+        playerTransform  = player;
+        lifetime         = life;
+        index            = idx;
+        totalCount       = total;
+        projectilePrefab = projPrefab;
+        playerStats      = stats;
+        spacing          = 2.5f;
     }
 
     void Update()
     {
-        if (target == null) return;
+        if (playerTransform == null) return;
 
         elapsed += Time.deltaTime;
         if (elapsed >= lifetime)
@@ -38,46 +38,66 @@ public class SwarmAlly : MonoBehaviour
             return;
         }
 
-        angle += orbitSpeed * Time.deltaTime;
-        float rad      = angle * Mathf.Deg2Rad;
-        Vector3 orbitPos = target.position + new Vector3(
-            Mathf.Cos(rad) * orbitRadius,
-            0f,
-            Mathf.Sin(rad) * orbitRadius
-        );
-        transform.position = orbitPos;
-        transform.LookAt(new Vector3(
-            target.position.x,
-            transform.position.y,
-            target.position.z
-        ));
+        FollowFormation();
 
-        if (Time.time >= nextAttack)
-            AttackNearestEnemy();
+        // Cadence basée sur AttackSpeed + CooldownReduction du joueur
+        float attackSpeed       = playerStats != null
+            ? playerStats.GetStat(StatType.AttackSpeed)       : 4f;
+        float cooldownReduction = playerStats != null
+            ? playerStats.GetStat(StatType.CooldownReduction) : 0f;
+        float fireRate = (1f / attackSpeed) *
+                         (1f - Mathf.Clamp01(cooldownReduction));
+
+        if (Time.time >= nextFire)
+        {
+            Shoot();
+            nextFire = Time.time + fireRate;
+        }
     }
 
-    void AttackNearestEnemy()
+    void FollowFormation()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, attackRange);
-        foreach (Collider hit in hits)
+        float   side      = (index % 2 == 0) ? -1f : 1f;
+        float   offset    = Mathf.Ceil((index + 1) / 2f) * spacing;
+        Vector3 right     = playerTransform.right;
+        Vector3 targetPos = playerTransform.position + right * side * offset;
+
+        transform.position = Vector3.Lerp(
+            transform.position,
+            targetPos,
+            Time.deltaTime * 10f
+        );
+
+        transform.rotation = Quaternion.Lerp(
+            transform.rotation,
+            playerTransform.rotation,
+            Time.deltaTime * 10f
+        );
+    }
+
+    void Shoot()
+    {
+        if (projectilePrefab == null) return;
+
+        Vector3    dir      = playerTransform.forward;
+        Vector3    spawnPos = transform.position + dir * 1f;
+        Quaternion rot      = Quaternion.LookRotation(dir);
+
+        GameObject proj = Instantiate(projectilePrefab, spawnPos, rot);
+
+        Projectile projScript = proj.GetComponent<Projectile>();
+        if (projScript != null && playerStats != null)
         {
-            if (!hit.CompareTag("Enemy")) continue;
-
-            IDamageable target = hit.GetComponent<IDamageable>();
-            if (target != null)
-            {
-                target.TakeDamage(damage);
-                Debug.Log($"🦈 Allié attaque {hit.name} : {damage} dégâts");
-            }
-
-            nextAttack = Time.time + attackCooldown;
-            break;
+            // Utilise exactement les mêmes stats que le joueur
+            projScript.damage         = playerStats.GetStat(StatType.RangedDamage);
+            projScript.speed          = playerStats.GetStat(StatType.ProjectileSpeed);
+            projScript.lifeStealRatio = playerStats.GetStat(StatType.LifeSteal);
         }
     }
 
     void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, 0.5f);
     }
 }

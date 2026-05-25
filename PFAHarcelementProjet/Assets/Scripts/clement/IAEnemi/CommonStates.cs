@@ -9,6 +9,9 @@ public class IdleState : EnemyStateBase
 
     public override void Update()
     {
+        // Ne détecte pas le joueur invisible
+        if (enemy.IsPlayerInvisible()) return;
+
         if (enemy.IsPlayerInRange(enemy.chaseRange))
             stateMachine.ChangeState(enemy.GetChaseState());
     }
@@ -25,26 +28,30 @@ public class ChaseState : EnemyStateBase
     {
         if (enemy.PlayerTransform == null) return;
 
+        // Si le joueur devient invisible pendant la chase → retour idle
+        if (enemy.IsPlayerInvisible())
+        {
+            stateMachine.ChangeState(enemy.GetIdleState());
+            return;
+        }
+
         float dist = enemy.DistanceToPlayer();
 
-        // ❌ Trop loin → retour idle
         if (dist > enemy.chaseRange)
         {
             stateMachine.ChangeState(enemy.GetIdleState());
             return;
         }
 
-        // ✅ Assez proche → stop déplacement et attaque
         if (dist <= enemy.stopChaseRange)
         {
             stateMachine.ChangeState(enemy.GetAttackState());
             return;
         }
 
-        // 👉 Sinon → continuer à chase
         Vector3 dir = enemy.PlayerTransform.position - enemy.transform.position;
         dir.y = 0f;
-        dir = dir.normalized;
+        dir   = dir.normalized;
 
         enemy.Rb.MovePosition(enemy.Rb.position + dir * enemy.moveSpeed * Time.fixedDeltaTime);
 
@@ -77,16 +84,21 @@ public class AttackState : EnemyStateBase
     {
         timer += Time.deltaTime;
 
+        // Si le joueur devient invisible → arrête d'attaquer
+        if (enemy.IsPlayerInvisible())
+        {
+            stateMachine.ChangeState(enemy.GetIdleState());
+            return;
+        }
+
         float dist = enemy.DistanceToPlayer();
 
-        // ❌ Trop loin → revenir en chase
         if (dist > enemy.attackRange)
         {
             stateMachine.ChangeState(enemy.GetChaseState());
             return;
         }
 
-        // ✅ Attaque en boucle
         if (timer >= enemy.attackCooldown)
         {
             enemy.PerformAttack();
@@ -114,26 +126,28 @@ public class HurtState : EnemyStateBase
     {
         timer += Time.deltaTime;
 
-        if (timer < duration)
-            return;
+        if (timer < duration) return;
 
-        // ✅ Priorité logique
         if (enemy.IsDead && enemy.GetDeathState() != null)
         {
             stateMachine.ChangeState(enemy.GetDeathState());
             return;
         }
 
-        if (enemy.IsPlayerInRange(enemy.attackRange) && enemy.GetAttackState() != null)
+        // Ne reprend pas le combat si le joueur est invisible
+        if (!enemy.IsPlayerInvisible())
         {
-            stateMachine.ChangeState(enemy.GetAttackState());
-            return;
-        }
+            if (enemy.IsPlayerInRange(enemy.attackRange) && enemy.GetAttackState() != null)
+            {
+                stateMachine.ChangeState(enemy.GetAttackState());
+                return;
+            }
 
-        if (enemy.IsPlayerInRange(enemy.chaseRange) && enemy.GetChaseState() != null)
-        {
-            stateMachine.ChangeState(enemy.GetChaseState());
-            return;
+            if (enemy.IsPlayerInRange(enemy.chaseRange) && enemy.GetChaseState() != null)
+            {
+                stateMachine.ChangeState(enemy.GetChaseState());
+                return;
+            }
         }
 
         if (enemy.GetIdleState() != null)
@@ -144,7 +158,6 @@ public class HurtState : EnemyStateBase
 
         Debug.LogError("❌ Aucun state valide après Hurt !");
     }
-
 }
 
 // ── DEATH ────────────────────────────────────────────────────────────

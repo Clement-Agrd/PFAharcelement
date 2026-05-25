@@ -8,18 +8,18 @@ public class SwarmAllyVFX : MonoBehaviour
     public Color          auraColor = new Color(0f, 0.5f, 1f, 1f);
 
     [Header("Taille aléatoire")]
-    public float minScale = 0.4f;
-    public float maxScale = 1.2f;
+    public float minScale = 0.5f;
+    public float maxScale = 0.9f;
 
-    private Material auraMat;
-    private float    elapsed;
-    private float    pulseSpeed = 3f;
+    private float elapsed;
+    private float pulseSpeed = 3f;
+    private float baseScale;
 
     void Start()
     {
-        // Taille aléatoire
-        float scale = Random.Range(minScale, maxScale);
-        transform.localScale = Vector3.one * scale;
+        // Taille aléatoire mais plus petite que le joueur
+        baseScale            = Random.Range(minScale, maxScale);
+        transform.localScale = Vector3.one * baseScale;
 
         SetupAura();
     }
@@ -28,9 +28,9 @@ public class SwarmAllyVFX : MonoBehaviour
     {
         if (auraParticles == null) return;
 
-        var main = auraParticles.main;
+        var main        = auraParticles.main;
         main.startColor = auraColor;
-        main.startSize  = 0.3f * transform.localScale.x;
+        main.startSize  = 0.2f * baseScale;
         auraParticles.Play();
     }
 
@@ -39,8 +39,7 @@ public class SwarmAllyVFX : MonoBehaviour
         elapsed += Time.deltaTime;
 
         // Pulse de scale doux
-        float pulse = 1f + Mathf.Sin(elapsed * pulseSpeed) * 0.05f;
-        transform.localScale = transform.localScale.normalized *
-                               transform.localScale.magnitude * pulse;
+        float pulse = 1f + Mathf.Sin(elapsed * pulseSpeed) * 0.04f;
+        transform.localScale = Vector3.one * baseScale * pulse;
     }
 }

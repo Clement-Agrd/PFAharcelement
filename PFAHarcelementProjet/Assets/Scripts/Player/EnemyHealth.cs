@@ -1,55 +1,51 @@
-﻿using UnityEngine;
+﻿// Scripts/Enemies/EnemyHealth.cs
+using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour, IDamageable
 {
-    [Header("Health")]
+    [Header("Stats")]
     public float maxHealth = 100f;
 
-    [Header("Bestiaire")]
-    public BestiaryEntry bestiaryEntry;
+    private float   currentHealth;
+    private bool    isDead = false;
 
-    float currentHealth;
-    bool isDead = false;
+    public bool IsDead => isDead;
 
     void Start()
     {
         currentHealth = maxHealth;
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float amount)
     {
         if (isDead) return;
 
-        currentHealth -= damage;
+        currentHealth -= amount;
+        currentHealth  = Mathf.Max(currentHealth, 0f);
 
-        Debug.Log($"{gameObject.name} prend {damage} dégâts");
+        Debug.Log($"💢 {gameObject.name} : {currentHealth}/{maxHealth} HP");
 
         if (currentHealth <= 0f)
-        {
             Die();
-        }
     }
-
-    public bool IsDead => isDead;
 
     void Die()
     {
+        if (isDead) return;
         isDead = true;
 
-        Debug.Log($"{gameObject.name} est mort");
-
-        // Débloque la créature dans le bestiaire
-        if (bestiaryEntry != null)
+        // Passe par EnemyController pour le gold et le bestiaire
+        EnemyController controller = GetComponent<EnemyController>();
+        if (controller != null)
+            controller.Die();
+        else
         {
-            BestiaryManager.Instance.UnlockCreature(bestiaryEntry.id);
+            // Fallback si pas de EnemyController
+            if (XPManager.Instance != null)
+                Debug.Log("⚠️ EnemyController introuvable — gold non donné");
+
+            Debug.Log($"☠️ {gameObject.name} mort");
+            Destroy(gameObject);
         }
-
-        Destroy(gameObject);
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, 0.5f);
     }
 }

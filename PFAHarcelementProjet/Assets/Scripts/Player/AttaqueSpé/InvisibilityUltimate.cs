@@ -14,20 +14,23 @@ public class InvisibilityUltimate : MonoBehaviour
     public bool IsUnlocked { get; private set; } = false;
 
     private float            invisibilityDuration;
-    private float            invisibilityCooldown;
+    private float            baseCooldown;
     private float            lastUseTime = -99f;
     private bool             isActive    = false;
     private PlayerControls   controls;
+    private PlayerStats      stats;
     private InvisibilityVFX  vfxInstance;
 
     public bool  IsActive           => isActive;
-    public float GetRemaining()     => Mathf.Max(0f, invisibilityCooldown - (Time.time - lastUseTime));
-    public float GetCooldownRatio() => invisibilityCooldown > 0 ? GetRemaining() / invisibilityCooldown : 0f;
+    public float GetFinalCooldown() => baseCooldown * (1f - Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction)));
+    public float GetRemaining()     => Mathf.Max(0f, GetFinalCooldown() - (Time.time - lastUseTime));
+    public float GetCooldownRatio() => GetFinalCooldown() > 0 ? GetRemaining() / GetFinalCooldown() : 0f;
     public bool  IsReady()          => IsUnlocked && GetRemaining() <= 0f && !isActive;
 
     void Awake()
     {
         controls = new PlayerControls();
+        stats    = GetComponent<PlayerStats>();
         if (startUnlocked) Unlock();
     }
 
@@ -54,7 +57,7 @@ public class InvisibilityUltimate : MonoBehaviour
     public void Setup(float duration, float cooldown)
     {
         invisibilityDuration = duration;
-        invisibilityCooldown = cooldown;
+        baseCooldown         = cooldown;
     }
 
     void OnInput(InputAction.CallbackContext ctx)
@@ -77,7 +80,6 @@ public class InvisibilityUltimate : MonoBehaviour
     {
         isActive = true;
 
-        // Instancie le VFX
         if (invisibilityVFXPrefab != null)
         {
             GameObject vfxGO = Instantiate(
@@ -88,24 +90,35 @@ public class InvisibilityUltimate : MonoBehaviour
             );
             vfxGO.transform.localPosition = Vector3.zero;
             vfxInstance = vfxGO.GetComponent<InvisibilityVFX>();
+
+            // Trouve automatiquement les renderers du requin
+            // en excluant les particle systems
+            if (vfxInstance != null)
+            {
+                vfxInstance.sharkRenderers.Clear();
+                Renderer[] allRends = GetComponentsInChildren<Renderer>();
+                foreach (Renderer r in allRends)
+                {
+                    if (r.GetComponent<ParticleSystem>()         != null) continue;
+                    if (r.GetComponent<ParticleSystemRenderer>() != null) continue;
+                    vfxInstance.sharkRenderers.Add(r);
+                    Debug.Log($"✅ Renderer requin : {r.gameObject.name}");
+                }
+            }
         }
 
-        // Fade out — devient invisible
         if (vfxInstance != null)
             vfxInstance.FadeOut();
 
-        // Change le layer pour que les ennemis ignorent le joueur
-        int originalLayer   = gameObject.layer;
-        gameObject.layer    = LayerMask.NameToLayer("Invisible");
+        int originalLayer = gameObject.layer;
+        gameObject.layer  = LayerMask.NameToLayer("Invisible");
 
         Debug.Log($"👻 Invisibilité active {invisibilityDuration}s");
 
         yield return new WaitForSeconds(invisibilityDuration);
 
-        // Remet le layer original
         gameObject.layer = originalLayer;
 
-        // Fade in — redevient visible
         if (vfxInstance != null)
             vfxInstance.FadeIn();
 

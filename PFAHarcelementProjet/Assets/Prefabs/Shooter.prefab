@@ -155,6 +155,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19aca31a19a749c6a47d2af4cf8adb20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RangedEnemyController
+  AllowRotation: 1
+  rotationSpeed: 10
   bestiaryEntry: {fileID: 0}
   maxHealth: 20
   moveSpeed: 6
@@ -162,5 +164,6 @@ MonoBehaviour:
   chaseRange: 50
   attackCooldown: 3
   stopChaseRange: 7
+  goldValue: 10
   projectilePrefab: {fileID: 2725591829447007800, guid: fc1227368a75dbe408c5a36a2c828230, type: 3}
   firePoint: {fileID: 1209730540548839449}

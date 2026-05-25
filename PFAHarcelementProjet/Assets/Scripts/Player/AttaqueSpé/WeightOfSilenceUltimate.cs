@@ -17,19 +17,22 @@ public class WeightOfSilenceUltimate : MonoBehaviour
     private float          silenceRadius;
     private float          silenceSlowness;
     private float          silenceDuration;
-    private float          silenceCooldown;
+    private float          baseCooldown;
     private float          lastUseTime = -99f;
     private bool           isActive    = false;
     private PlayerControls controls;
+    private PlayerStats    stats;
 
     public bool  IsActive           => isActive;
-    public float GetRemaining()     => Mathf.Max(0f, silenceCooldown - (Time.time - lastUseTime));
-    public float GetCooldownRatio() => silenceCooldown > 0 ? GetRemaining() / silenceCooldown : 0f;
+    public float GetFinalCooldown() => baseCooldown * (1f - Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction)));
+    public float GetRemaining()     => Mathf.Max(0f, GetFinalCooldown() - (Time.time - lastUseTime));
+    public float GetCooldownRatio() => GetFinalCooldown() > 0 ? GetRemaining() / GetFinalCooldown() : 0f;
     public bool  IsReady()          => IsUnlocked && GetRemaining() <= 0f && !isActive;
 
     void Awake()
     {
         controls = new PlayerControls();
+        stats    = GetComponent<PlayerStats>();
         if (startUnlocked) Unlock();
     }
 
@@ -58,7 +61,7 @@ public class WeightOfSilenceUltimate : MonoBehaviour
         silenceRadius   = radius;
         silenceSlowness = slowness;
         silenceDuration = duration;
-        silenceCooldown = cooldown;
+        baseCooldown    = cooldown;
     }
 
     void OnInput(InputAction.CallbackContext ctx)
@@ -81,24 +84,19 @@ public class WeightOfSilenceUltimate : MonoBehaviour
     {
         isActive = true;
 
-        // Instancie le VFX
         if (silenceVFXPrefab != null)
         {
-            GameObject vfx = Instantiate(
-                silenceVFXPrefab,
-                transform.position,
-                Quaternion.identity
-            );
+            GameObject vfx = Instantiate(silenceVFXPrefab,
+                transform.position, Quaternion.identity);
             Destroy(vfx, silenceDuration + 2f);
         }
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, silenceRadius);
+        Collider[]        hits          = Physics.OverlapSphere(transform.position, silenceRadius);
         List<EnemySlowed> slowedEnemies = new List<EnemySlowed>();
 
         foreach (Collider hit in hits)
         {
             if (!hit.CompareTag("Enemy")) continue;
-
             EnemySlowed slowed = hit.gameObject.AddComponent<EnemySlowed>();
             slowed.Slow(silenceSlowness, silenceDuration);
             slowedEnemies.Add(slowed);

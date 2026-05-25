@@ -4941,4 +4941,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InvisibilityVFX
   invisibleAlpha: 0.15
   fadeSpeed: 3
+  transparentMaterial: {fileID: 2100000, guid: 28877d02109a3ef4db2b233aab5e05f1, type: 2}
   disappearParticles: {fileID: 8684317094660724619}

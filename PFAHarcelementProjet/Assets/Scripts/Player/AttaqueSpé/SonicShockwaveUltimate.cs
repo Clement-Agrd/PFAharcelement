@@ -16,15 +16,16 @@ public class SonicShockwaveUltimate : MonoBehaviour
 
     private float          shockwaveRadius;
     private float          shockwaveDuration;
-    private float          shockwaveCooldown;
+    private float          baseCooldown;
     private float          lastUseTime = -99f;
     private bool           isActive    = false;
     private PlayerControls controls;
     private PlayerStats    stats;
 
     public bool  IsActive           => isActive;
-    public float GetRemaining()     => Mathf.Max(0f, shockwaveCooldown - (Time.time - lastUseTime));
-    public float GetCooldownRatio() => shockwaveCooldown > 0 ? GetRemaining() / shockwaveCooldown : 0f;
+    public float GetFinalCooldown() => baseCooldown * (1f - Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction)));
+    public float GetRemaining()     => Mathf.Max(0f, GetFinalCooldown() - (Time.time - lastUseTime));
+    public float GetCooldownRatio() => GetFinalCooldown() > 0 ? GetRemaining() / GetFinalCooldown() : 0f;
     public bool  IsReady()          => IsUnlocked && GetRemaining() <= 0f && !isActive;
 
     void Awake()
@@ -58,7 +59,7 @@ public class SonicShockwaveUltimate : MonoBehaviour
     {
         shockwaveRadius   = radius;
         shockwaveDuration = duration;
-        shockwaveCooldown = cooldown;
+        baseCooldown      = cooldown;
     }
 
     void OnInput(InputAction.CallbackContext ctx)
@@ -83,25 +84,20 @@ public class SonicShockwaveUltimate : MonoBehaviour
 
         if (shockwaveVFXPrefab != null)
         {
-            GameObject vfx = Instantiate(
-                shockwaveVFXPrefab,
-                transform.position,
-                Quaternion.identity
-            );
+            GameObject vfx = Instantiate(shockwaveVFXPrefab,
+                transform.position, Quaternion.identity);
             Destroy(vfx, shockwaveDuration + 1f);
         }
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, shockwaveRadius);
+        Collider[]         hits           = Physics.OverlapSphere(transform.position, shockwaveRadius);
         List<EnemyStunned> stunnedEnemies = new List<EnemyStunned>();
 
         foreach (Collider hit in hits)
         {
             if (!hit.CompareTag("Enemy")) continue;
-
             EnemyStunned stunned = hit.gameObject.AddComponent<EnemyStunned>();
             stunned.Stun(shockwaveDuration);
             stunnedEnemies.Add(stunned);
-            Debug.Log($"💥 {hit.name} stunné");
         }
 
         Debug.Log($"💥 Onde de choc : {stunnedEnemies.Count} ennemis stunnés");

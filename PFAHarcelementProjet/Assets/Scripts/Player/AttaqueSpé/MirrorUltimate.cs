@@ -5,8 +5,9 @@ using UnityEngine.InputSystem;
 
 public class MirrorUltimate : MonoBehaviour
 {
-    [Header("VFX")]
-    public GameObject mirrorVFXPrefab;
+    [Header("Miroir")]
+    public GameObject mirrorDiskPrefab;
+    public float      diskOffset    = 2f;   // distance devant le requin
 
     [Header("Déblocage")]
     public bool startUnlocked = false;
@@ -14,17 +15,19 @@ public class MirrorUltimate : MonoBehaviour
     public bool IsUnlocked { get; private set; } = false;
 
     private float          mirrorDuration;
-    private float          mirrorCooldown;
+    private float          baseCooldown;
     private float          lastUseTime = -99f;
     private bool           isActive    = false;
     private PlayerControls controls;
     private PlayerHealth   playerHealth;
     private PlayerStats    stats;
-    private GameObject     mirrorVFXInstance;
+    private GameObject     mirrorInstance;
+    private MirrorDisk     mirrorDisk;
 
     public bool  IsActive           => isActive;
-    public float GetRemaining()     => Mathf.Max(0f, mirrorCooldown - (Time.time - lastUseTime));
-    public float GetCooldownRatio() => mirrorCooldown > 0 ? GetRemaining() / mirrorCooldown : 0f;
+    public float GetFinalCooldown() => baseCooldown * (1f - Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction)));
+    public float GetRemaining()     => Mathf.Max(0f, GetFinalCooldown() - (Time.time - lastUseTime));
+    public float GetCooldownRatio() => GetFinalCooldown() > 0 ? GetRemaining() / GetFinalCooldown() : 0f;
     public bool  IsReady()          => IsUnlocked && GetRemaining() <= 0f && !isActive;
 
     void Awake()
@@ -58,7 +61,7 @@ public class MirrorUltimate : MonoBehaviour
     public void Setup(float duration, float cooldown)
     {
         mirrorDuration = duration;
-        mirrorCooldown = cooldown;
+        baseCooldown   = cooldown;
     }
 
     void OnInput(InputAction.CallbackContext ctx)
@@ -81,32 +84,31 @@ public class MirrorUltimate : MonoBehaviour
     {
         isActive = true;
 
-        if (mirrorVFXPrefab != null)
+        if (mirrorDiskPrefab != null)
         {
-            mirrorVFXInstance = Instantiate(
-                mirrorVFXPrefab,
-                transform.position,
-                Quaternion.identity,
+            mirrorInstance = Instantiate(
+                mirrorDiskPrefab,
+                transform.position + transform.forward * diskOffset,
+                transform.rotation,
                 transform
             );
-            mirrorVFXInstance.transform.localPosition = Vector3.zero;
-        }
 
-        // Active le renvoi de dégâts
-        if (playerHealth != null)
-            playerHealth.SetMirror(true);
+            mirrorDisk = mirrorInstance.GetComponent<MirrorDisk>();
+            if (mirrorDisk != null)
+                mirrorDisk.Setup(stats, transform);
+        }
 
         Debug.Log($"🪞 Miroir actif {mirrorDuration}s");
 
         yield return new WaitForSeconds(mirrorDuration);
 
-        if (playerHealth != null)
-            playerHealth.SetMirror(false);
+        if (mirrorInstance != null)
+            Destroy(mirrorInstance);
 
-        if (mirrorVFXInstance != null)
-            Destroy(mirrorVFXInstance);
+        mirrorDisk     = null;
+        mirrorInstance = null;
+        isActive       = false;
 
-        isActive = false;
         Debug.Log("🪞 Miroir terminé");
     }
 }

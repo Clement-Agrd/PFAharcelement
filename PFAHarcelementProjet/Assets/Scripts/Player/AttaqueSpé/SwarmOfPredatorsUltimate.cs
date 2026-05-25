@@ -12,20 +12,21 @@ public class SwarmOfPredatorsUltimate : MonoBehaviour
     public bool IsUnlocked { get; private set; } = false;
 
     private int            swarmCount;
-    private float          swarmDamage;
     private float          swarmDuration;
-    private float          swarmCooldown;
+    private float          baseCooldown;
     private GameObject     swarmPrefab;
-    private float          lastUseTime = -99f;
-    private bool           isActive    = false;
+    private GameObject     projectilePrefab;
+    private float          lastUseTime  = -99f;
+    private bool           isActive     = false;
     private PlayerControls controls;
     private PlayerStats    stats;
 
-    private List<GameObject> activeAlly = new List<GameObject>();
+    private List<GameObject> activeAllies = new List<GameObject>();
 
     public bool  IsActive           => isActive;
-    public float GetRemaining()     => Mathf.Max(0f, swarmCooldown - (Time.time - lastUseTime));
-    public float GetCooldownRatio() => swarmCooldown > 0 ? GetRemaining() / swarmCooldown : 0f;
+    public float GetFinalCooldown() => baseCooldown * (1f - Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction)));
+    public float GetRemaining()     => Mathf.Max(0f, GetFinalCooldown() - (Time.time - lastUseTime));
+    public float GetCooldownRatio() => GetFinalCooldown() > 0 ? GetRemaining() / GetFinalCooldown() : 0f;
     public bool  IsReady()          => IsUnlocked && GetRemaining() <= 0f && !isActive;
 
     void Awake()
@@ -50,7 +51,7 @@ public class SwarmOfPredatorsUltimate : MonoBehaviour
     public void Unlock()
     {
         IsUnlocked = true;
-        Debug.Log("🔓 Essaim débloqué");
+        Debug.Log("🔓 Meute débloquée");
         UltimateUI ui = FindObjectOfType<UltimateUI>();
         if (ui != null) ui.OnUnlock();
     }
@@ -59,10 +60,16 @@ public class SwarmOfPredatorsUltimate : MonoBehaviour
                       float cooldown, GameObject prefab)
     {
         swarmCount    = count;
-        swarmDamage   = damage;
         swarmDuration = duration;
-        swarmCooldown = cooldown;
+        baseCooldown  = cooldown;
         swarmPrefab   = prefab;
+
+        // Récupère le projectile du joueur
+        PlayerCombat combat = GetComponent<PlayerCombat>();
+        if (combat != null)
+            projectilePrefab = combat.projectile;
+        else
+            Debug.LogWarning("⚠️ PlayerCombat introuvable — projectile non assigné");
     }
 
     void OnInput(InputAction.CallbackContext ctx)
@@ -84,45 +91,49 @@ public class SwarmOfPredatorsUltimate : MonoBehaviour
     IEnumerator SwarmCoroutine()
     {
         isActive = true;
-        activeAlly.Clear();
+        activeAllies.Clear();
 
-        float damage = swarmDamage + stats.GetStat(StatType.MeleeDamage) * 0.5f;
-
-        // Spawne les requins alliés en cercle autour du joueur
         for (int i = 0; i < swarmCount; i++)
         {
-            float angle  = i * (360f / swarmCount) * Mathf.Deg2Rad;
-            Vector3 offset = new Vector3(
-                Mathf.Cos(angle) * 3f,
-                0f,
-                Mathf.Sin(angle) * 3f
+            if (swarmPrefab == null) continue;
+
+            float   side     = (i % 2 == 0) ? -1f : 1f;
+            float   offset   = Mathf.Ceil((i + 1) / 2f) * 2.5f;
+            Vector3 spawnPos = transform.position +
+                               transform.right * side * offset;
+
+            GameObject ally = Instantiate(
+                swarmPrefab,
+                spawnPos,
+                transform.rotation
             );
 
-            if (swarmPrefab != null)
-            {
-                GameObject ally = Instantiate(
-                    swarmPrefab,
-                    transform.position + offset,
-                    Quaternion.identity
+            SwarmAlly allyScript = ally.GetComponent<SwarmAlly>();
+            if (allyScript != null)
+                allyScript.Setup(
+                    transform,
+                    swarmDuration,
+                    i,
+                    swarmCount,
+                    projectilePrefab,
+                    stats          // ← passe les stats du joueur directement
                 );
 
-                SwarmAlly allyScript = ally.GetComponent<SwarmAlly>();
-                if (allyScript != null)
-                    allyScript.Setup(transform, damage, swarmDuration);
-
-                activeAlly.Add(ally);
-            }
+            activeAllies.Add(ally);
         }
 
-        Debug.Log($"🦈 Essaim actif : {swarmCount} alliés pendant {swarmDuration}s");
+        Debug.Log($"🦈 Meute : {swarmCount} alliés en ligne");
+        Debug.Log($"🦈 RangedDamage : {stats.GetStat(StatType.RangedDamage):F1}");
+        Debug.Log($"🦈 ProjectileSpeed : {stats.GetStat(StatType.ProjectileSpeed):F1}");
+        Debug.Log($"🦈 AttackSpeed : {stats.GetStat(StatType.AttackSpeed):F1}");
 
         yield return new WaitForSeconds(swarmDuration);
 
-        foreach (GameObject ally in activeAlly)
+        foreach (GameObject ally in activeAllies)
             if (ally != null) Destroy(ally);
 
-        activeAlly.Clear();
+        activeAllies.Clear();
         isActive = false;
-        Debug.Log("🦈 Essaim terminé");
+        Debug.Log("🦈 Meute terminée");
     }
 }

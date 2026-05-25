@@ -15,7 +15,7 @@ public class RegenerationUltimate : MonoBehaviour
 
     private float           regenPercent;
     private float           regenDuration;
-    private float           regenCooldown;
+    private float           baseCooldown;
     private float           lastUseTime = -99f;
     private bool            isActive    = false;
     private PlayerControls  controls;
@@ -24,8 +24,9 @@ public class RegenerationUltimate : MonoBehaviour
     private RegenerationVFX vfxInstance;
 
     public bool  IsActive           => isActive;
-    public float GetRemaining()     => Mathf.Max(0f, regenCooldown - (Time.time - lastUseTime));
-    public float GetCooldownRatio() => regenCooldown > 0 ? GetRemaining() / regenCooldown : 0f;
+    public float GetFinalCooldown() => baseCooldown * (1f - Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction)));
+    public float GetRemaining()     => Mathf.Max(0f, GetFinalCooldown() - (Time.time - lastUseTime));
+    public float GetCooldownRatio() => GetFinalCooldown() > 0 ? GetRemaining() / GetFinalCooldown() : 0f;
     public bool  IsReady()          => IsUnlocked && GetRemaining() <= 0f && !isActive;
 
     void Awake()
@@ -58,9 +59,9 @@ public class RegenerationUltimate : MonoBehaviour
 
     public void Setup(float percent, float duration, float cooldown)
     {
-        regenPercent  = percent;
+        regenPercent = percent;
         regenDuration = duration;
-        regenCooldown = cooldown;
+        baseCooldown  = cooldown;
     }
 
     void OnInput(InputAction.CallbackContext ctx)
@@ -83,7 +84,6 @@ public class RegenerationUltimate : MonoBehaviour
     {
         isActive = true;
 
-        // Instancie le VFX
         if (regenVFXPrefab != null)
         {
             GameObject vfxGO = Instantiate(
@@ -96,9 +96,10 @@ public class RegenerationUltimate : MonoBehaviour
             vfxInstance = vfxGO.GetComponent<RegenerationVFX>();
         }
 
-        float maxHP       = stats.GetStat(StatType.MaxHealth);
-        float totalHeal   = maxHP * regenPercent;
-        float elapsed     = 0f;
+        // Scale sur HP max
+        float maxHP     = stats.GetStat(StatType.MaxHealth);
+        float totalHeal = maxHP * regenPercent;
+        float elapsed   = 0f;
 
         Debug.Log($"💚 Régénération : +{totalHeal:F0} HP sur {regenDuration}s");
 

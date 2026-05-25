@@ -18,25 +18,27 @@ public class ShieldUltimate : MonoBehaviour
     public bool IsUnlocked { get; private set; } = false;
 
     private float          shieldDuration;
-    private float          shieldCooldown;
+    private float          baseCooldown;
     private float          lastUseTime = -99f;
     private bool           isActive    = false;
     private PlayerControls controls;
     private PlayerHealth   playerHealth;
+    private PlayerStats    stats;
     private GameObject     shieldInstance;
     private ShieldVFX      shieldVFX;
     private ShieldCollider shieldCollider;
 
     public bool  IsActive           => isActive;
-    public float GetRemaining()     => Mathf.Max(0f, shieldCooldown - (Time.time - lastUseTime));
-    public float GetCooldownRatio() => shieldCooldown > 0 ? GetRemaining() / shieldCooldown : 0f;
+    public float GetFinalCooldown() => baseCooldown * (1f - Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction)));
+    public float GetRemaining()     => Mathf.Max(0f, GetFinalCooldown() - (Time.time - lastUseTime));
+    public float GetCooldownRatio() => GetFinalCooldown() > 0 ? GetRemaining() / GetFinalCooldown() : 0f;
     public bool  IsReady()          => IsUnlocked && GetRemaining() <= 0f && !isActive;
 
     void Awake()
     {
         controls     = new PlayerControls();
         playerHealth = GetComponent<PlayerHealth>();
-
+        stats        = GetComponent<PlayerStats>();
         if (startUnlocked) Unlock();
     }
 
@@ -56,7 +58,6 @@ public class ShieldUltimate : MonoBehaviour
     {
         IsUnlocked = true;
         Debug.Log("🔓 Bouclier débloqué");
-
         UltimateUI ui = FindObjectOfType<UltimateUI>();
         if (ui != null) ui.OnUnlock();
     }
@@ -64,17 +65,12 @@ public class ShieldUltimate : MonoBehaviour
     public void Setup(float duration, float cooldown)
     {
         shieldDuration = duration;
-        shieldCooldown = cooldown;
+        baseCooldown   = cooldown;
     }
 
     void OnInput(InputAction.CallbackContext ctx)
     {
-        if (!IsUnlocked)
-        {
-            Debug.Log("🔒 Bouclier non débloqué");
-            return;
-        }
-
+        if (!IsUnlocked) return;
         if (IsReady()) Activate();
     }
 
@@ -94,23 +90,14 @@ public class ShieldUltimate : MonoBehaviour
 
         if (shieldVFXPrefab != null)
         {
-            shieldInstance = Instantiate(
-                shieldVFXPrefab,
-                transform.position,
-                Quaternion.identity,
-                transform
-            );
-
+            shieldInstance = Instantiate(shieldVFXPrefab,
+                transform.position, Quaternion.identity, transform);
             shieldInstance.transform.localPosition = shieldOffset;
             shieldVFX      = shieldInstance.GetComponent<ShieldVFX>();
             shieldCollider = shieldInstance.GetComponentInChildren<ShieldCollider>();
-
-            // Active le collider du bouclier
-            if (shieldCollider != null)
-                shieldCollider.SetActive(true);
+            if (shieldCollider != null) shieldCollider.SetActive(true);
         }
 
-        // Bloque les dégâts sur le joueur
         if (playerHealth != null)
             playerHealth.SetInvincible(true);
 
@@ -118,35 +105,23 @@ public class ShieldUltimate : MonoBehaviour
 
         yield return new WaitForSeconds(shieldDuration);
 
-        // Désactive le collider
-        if (shieldCollider != null)
-            shieldCollider.SetActive(false);
-
-        // Réactive les dégâts
-        if (playerHealth != null)
-            playerHealth.SetInvincible(false);
-
-        if (shieldInstance != null)
-            Destroy(shieldInstance);
+        if (shieldCollider != null) shieldCollider.SetActive(false);
+        if (playerHealth   != null) playerHealth.SetInvincible(false);
+        if (shieldInstance != null) Destroy(shieldInstance);
 
         shieldCollider = null;
         shieldVFX      = null;
         isActive       = false;
-
-        Debug.Log("🛡️ Bouclier terminé");
     }
 
     public void NotifyHit(Vector3 hitPoint)
     {
-        if (shieldVFX != null)
-            shieldVFX.OnHit(hitPoint);
+        if (shieldVFX != null) shieldVFX.OnHit(hitPoint);
     }
 
     void OnDrawGizmos()
     {
         if (!showGizmo) return;
-
-        Gizmos.color = new Color(0f, 0.6f, 1f, 0.3f);
 
         Vector3 scale = new Vector3(4f, 2.5f, 6f);
         if (shieldVFXPrefab != null)
@@ -155,6 +130,7 @@ public class ShieldUltimate : MonoBehaviour
             if (vfx != null) scale = vfx.baseScale;
         }
 
+        Gizmos.color = new Color(0f, 0.6f, 1f, 0.3f);
         Matrix4x4 oldMatrix = Gizmos.matrix;
         Gizmos.matrix = Matrix4x4.TRS(
             transform.TransformPoint(shieldOffset),

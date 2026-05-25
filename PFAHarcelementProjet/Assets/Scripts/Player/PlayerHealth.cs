@@ -1,8 +1,8 @@
 // Scripts/Player/PlayerHealth.cs
-
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
@@ -10,15 +10,20 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public UnityEvent<float, float> onHealthChanged;
     public UnityEvent               onDeath;
 
-    public static System.Action OnPlayerDamaged;
+    [Header("Mort")]
+    public float deathDelay = 2f; // délai avant retour menu
+
+    public static Action OnPlayerDamaged;
+
     private PlayerStats stats;
-    private float lastMaxHealth;
+    private float       lastMaxHealth;
     private float       currentHealth;
     private bool        isDead;
     private bool        isInvincible = false;
     private bool        isMirror     = false;
 
-    public bool IsDead => isDead;
+    public bool IsDead  => isDead;
+    public bool IsDead_ => isDead;
 
     // ─── Invincibilité / Miroir ───────────────────────────────────────────────
 
@@ -36,8 +41,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     // ─── IDamageable ─────────────────────────────────────────────────────────
 
-    public bool IsDead_ => isDead;
-
     public void TakeDamage(float amount)
     {
         if (isDead)       return;
@@ -53,7 +56,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             foreach (Collider hit in hits)
             {
                 if (!hit.CompareTag("Enemy")) continue;
-
                 IDamageable enemy = hit.GetComponent<IDamageable>();
                 if (enemy != null)
                 {
@@ -62,17 +64,14 @@ public class PlayerHealth : MonoBehaviour, IDamageable
                 }
                 break;
             }
-            return; // Ne prend pas les dégâts
+            return;
         }
-        
 
         currentHealth -= finalDamage;
         currentHealth  = Mathf.Max(currentHealth, 0f);
 
-        // ✅ AJOUT ICI
         OnPlayerDamaged?.Invoke();
 
-        
         onHealthChanged?.Invoke(currentHealth, stats.GetStat(StatType.MaxHealth));
 
         if (currentHealth <= 0f)
@@ -85,8 +84,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         if (isDead) return;
 
-        float maxHP = stats.GetStat(StatType.MaxHealth);
-        currentHealth   = Mathf.Min(currentHealth + amount, maxHP);
+        float maxHP   = stats.GetStat(StatType.MaxHealth);
+        currentHealth = Mathf.Min(currentHealth + amount, maxHP);
 
         onHealthChanged?.Invoke(currentHealth, maxHP);
     }
@@ -102,31 +101,20 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         stats = GetComponent<PlayerStats>();
     }
 
-
     void Start()
     {
-        float maxHP = stats.GetStat(StatType.MaxHealth);
+        float maxHP   = stats.GetStat(StatType.MaxHealth);
         currentHealth = maxHP;
         lastMaxHealth = maxHP;
 
         Invoke(nameof(BroadcastHP), 0.1f);
-        
     }
-
 
     void BroadcastHP()
     {
         onHealthChanged?.Invoke(currentHealth, stats.GetStat(StatType.MaxHealth));
     }
 
-    void Die()
-    {
-        if (isDead) return;
-        isDead = true;
-        onDeath?.Invoke();
-        gameObject.SetActive(false);
-    }
-    
     void OnEnable()
     {
         stats = GetComponent<PlayerStats>();
@@ -139,24 +127,46 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (stats != null)
             stats.OnStatsChanged -= HandleStatsChanged;
     }
+
     void HandleStatsChanged()
     {
-        float previousMaxHP = lastMaxHealth;
         float newMaxHP = stats.GetStat(StatType.MaxHealth);
+        float delta    = newMaxHP - lastMaxHealth;
 
-        float delta = newMaxHP - previousMaxHP;
-
-        // ✅ Roguelike-friendly : la vie augmente avec le max
         if (delta > 0)
             currentHealth += delta;
 
-        // ✅ Clamp de sécurité
         currentHealth = Mathf.Min(currentHealth, newMaxHP);
-
         lastMaxHealth = newMaxHP;
 
-        // ✅ Notify l’UI
         onHealthChanged?.Invoke(currentHealth, newMaxHP);
     }
-    
+
+    // ─── Mort ────────────────────────────────────────────────────────────────
+
+    void Die()
+    {
+        if (isDead) return;
+        isDead = true;
+
+        Debug.Log("💀 Joueur mort");
+
+        onDeath?.Invoke();
+
+        // Convertit le gold en XP
+        if (XPManager.Instance != null)
+        {
+            Debug.Log($"✨ Conversion : {XPManager.Instance.GetGold()} gold → XP");
+            XPManager.Instance.ConvertGoldToXP();
+        }
+
+        // Retour au menu après délai
+        Invoke(nameof(ReturnToMenu), deathDelay);
+    }
+
+    void ReturnToMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
+    }
 }

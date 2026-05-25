@@ -21,12 +21,7 @@ public class OptionsUI : MonoBehaviour
     [Header("Accessibilité")]
     public TMP_Dropdown dropdownTextSize;
     public TMP_Dropdown dropdownColorblind;
-
-    [Header("Langue")]
-    public Button buttonFR;
-    public Button buttonEN;
-    public TextMeshProUGUI languageLabel;
-
+    
     [Header("Boutons")]
     public Button buttonApply;
     public Button buttonBack;
@@ -81,7 +76,7 @@ public class OptionsUI : MonoBehaviour
         dropdownTextSize     .value = d.textSize;
         dropdownColorblind   .value = d.colorblindMode;
 
-        UpdateLanguageLabel(d.language);
+        
     }
 
     void BindButtons()
@@ -113,28 +108,9 @@ public class OptionsUI : MonoBehaviour
         // Toggle
         toggleFullscreen.onValueChanged.RemoveAllListeners();
         toggleFullscreen.onValueChanged.AddListener(OptionsManager.Instance.SetFullscreen);
-
-        // Langue
-        buttonFR.onClick.RemoveAllListeners();
-        buttonEN.onClick.RemoveAllListeners();
-        buttonFR.onClick.AddListener(() => OnLanguage("fr"));
-        buttonEN.onClick.AddListener(() => OnLanguage("en"));
-
+        
         // Appliquer / Retour
         buttonApply.onClick.RemoveAllListeners();
         buttonApply.onClick.AddListener(OptionsManager.Instance.ApplyAndSave);
-    }
-
-    //  Langue 
-
-    void OnLanguage(string lang)
-    {
-        OptionsManager.Instance.SetLanguage(lang);
-        UpdateLanguageLabel(lang);
-    }
-
-    void UpdateLanguageLabel(string lang)
-    {
-        languageLabel.text = lang == "fr" ? "Langue : Français" : "Language : English";
     }
 }

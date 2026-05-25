@@ -23,11 +23,11 @@ MonoBehaviour:
   statBoostDuration: 10
   shieldDuration: 5
   shieldCooldown: 20
-  swarmCount: 5
+  swarmCount: 3
   swarmDamage: 15
   swarmDuration: 8
-  swarmCooldown: 20
-  swarmPrefab: {fileID: 0}
+  swarmCooldown: 9
+  swarmPrefab: {fileID: 5141584461661379244, guid: 890e521ff79de394abce0ad0c9dce9ff, type: 3}
   shockwaveRadius: 8
   shockwaveDuration: 3
   shockwaveCooldown: 15

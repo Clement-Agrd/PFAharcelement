@@ -6,110 +6,81 @@ using TMPro;
 public class UltimateUI : MonoBehaviour
 {
     [Header("Références")]
-    public Image           ultimateIcon;
+    public Image           iconImage;
     public Image           cooldownFill;
+    public Image           cooldownBackground;
     public TextMeshProUGUI cooldownText;
     public Button          ultimateButton;
-    public Image           buttonImage;
-    public GameObject      lockIcon;
-    public GameObject      activeGlow;
+    public GameObject      root;
 
     [Header("Couleurs")]
-    public Color readyColor    = new Color(1f,   0.7f, 0f);
-    public Color cooldownColor = new Color(0.3f, 0.3f, 0.3f);
-    public Color activeColor   = new Color(1f,   1f,   0f);
-    public Color lockedColor   = new Color(0.2f, 0.2f, 0.2f);
+    public Color readyColor    = new Color(1f,   0.85f, 0f,  1f);
+    public Color cooldownColor = new Color(0f,   0f,    0f,  0.7f);
+    public Color activeColor   = new Color(1f,   1f,    0.3f, 1f);
+
+    [Header("Animation")]
+    public float pulseSpeed     = 3f;
+    public float pulseAmplitude = 0.08f;
 
     private UltimateData currentData;
+    private float        elapsed;
+    private bool         isPulsing = false;
+
+    void Awake()
+    {
+        // Cache le root dès Awake avant que Start soit appelé
+        if (root != null)
+            root.SetActive(false);
+    }
 
     void Start()
     {
-        if (lockIcon   != null) lockIcon.SetActive(true);
-        if (activeGlow != null) activeGlow.SetActive(false);
-
         if (ultimateButton != null)
-        {
             ultimateButton.onClick.AddListener(OnButtonClicked);
-            ultimateButton.interactable = false;
-        }
 
-        if (buttonImage != null)
-            buttonImage.color = lockedColor;
+        Debug.Log("✅ UltimateUI initialisé");
     }
 
     void Update()
     {
         if (currentData == null) return;
         UpdateCooldownUI();
+        HandlePulse();
     }
+
+    // ─── API publique ─────────────────────────────────────────────────────────
 
     public void SetUltimate(UltimateData data)
     {
         currentData = data;
 
-        if (ultimateIcon != null && data.icon != null)
-            ultimateIcon.sprite = data.icon;
+        if (iconImage != null && data.icon != null)
+            iconImage.sprite = data.icon;
 
-        RefreshLockState();
+        if (root != null)
+        {
+            root.SetActive(true);
+            Debug.Log($"✅ UltimateUI visible — {data.ultimateName}");
+        }
+        else
+            Debug.LogError("❌ UltimateUI : root non assigné");
     }
 
     public void OnUnlock()
     {
-        RefreshLockState();
+        if (root != null)
+            root.SetActive(true);
+
+        Debug.Log("✅ UltimateUI débloqué");
     }
 
     public void OnActivate()
     {
-        if (activeGlow != null)
-            activeGlow.SetActive(true);
-
-        if (buttonImage != null)
-            buttonImage.color = activeColor;
+        isPulsing = true;
+        elapsed   = 0f;
     }
 
-    void RefreshLockState()
-    {
-        if (currentData == null) return;
-
-        bool unlocked = IsCurrentUltimateUnlocked();
-
-        if (lockIcon != null)
-            lockIcon.SetActive(!unlocked);
-
-        if (buttonImage != null)
-            buttonImage.color = unlocked ? readyColor : lockedColor;
-
-        if (ultimateButton != null)
-            ultimateButton.interactable = unlocked;
-
-        if (cooldownText != null)
-            cooldownText.text = unlocked ? "" : "🔒";
-    }
-
-    bool IsCurrentUltimateUnlocked()
-    {
-        if (currentData == null) return false;
-
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null) return false;
-
-        switch (currentData.type)
-        {
-            case UltimateType.SpecialAttack:
-                SpecialAttack sa = player.GetComponent<SpecialAttack>();
-                return sa != null && sa.IsUnlocked;
-
-            case UltimateType.StatBoost:
-                StatBoostUltimate sb = player.GetComponent<StatBoostUltimate>();
-                return sb != null && sb.IsUnlocked;
-
-            case UltimateType.Shield:
-                ShieldUltimate sh = player.GetComponent<ShieldUltimate>();
-                return sh != null && sh.IsUnlocked;
-        }
-
-        return false;
-    }
+    // ─── Cooldown ─────────────────────────────────────────────────────────────
 
     void UpdateCooldownUI()
     {
@@ -156,27 +127,116 @@ public class UltimateUI : MonoBehaviour
                     isReady   = sh.IsReady();
                 }
                 break;
+
+            case UltimateType.SwarmOfPredators:
+                SwarmOfPredatorsUltimate sw = player.GetComponent<SwarmOfPredatorsUltimate>();
+                if (sw != null)
+                {
+                    remaining = sw.GetRemaining();
+                    ratio     = sw.GetCooldownRatio();
+                    isActive  = sw.IsActive;
+                    isReady   = sw.IsReady();
+                }
+                break;
+
+            case UltimateType.SonicShockwave:
+                SonicShockwaveUltimate ss = player.GetComponent<SonicShockwaveUltimate>();
+                if (ss != null)
+                {
+                    remaining = ss.GetRemaining();
+                    ratio     = ss.GetCooldownRatio();
+                    isActive  = ss.IsActive;
+                    isReady   = ss.IsReady();
+                }
+                break;
+
+            case UltimateType.Mirror:
+                MirrorUltimate mi = player.GetComponent<MirrorUltimate>();
+                if (mi != null)
+                {
+                    remaining = mi.GetRemaining();
+                    ratio     = mi.GetCooldownRatio();
+                    isActive  = mi.IsActive;
+                    isReady   = mi.IsReady();
+                }
+                break;
+
+            case UltimateType.Invisibility:
+                InvisibilityUltimate inv = player.GetComponent<InvisibilityUltimate>();
+                if (inv != null)
+                {
+                    remaining = inv.GetRemaining();
+                    ratio     = inv.GetCooldownRatio();
+                    isActive  = inv.IsActive;
+                    isReady   = inv.IsReady();
+                }
+                break;
+
+            case UltimateType.WeightOfSilence:
+                WeightOfSilenceUltimate ws = player.GetComponent<WeightOfSilenceUltimate>();
+                if (ws != null)
+                {
+                    remaining = ws.GetRemaining();
+                    ratio     = ws.GetCooldownRatio();
+                    isActive  = ws.IsActive;
+                    isReady   = ws.IsReady();
+                }
+                break;
+
+            case UltimateType.Regeneration:
+                RegenerationUltimate rg = player.GetComponent<RegenerationUltimate>();
+                if (rg != null)
+                {
+                    remaining = rg.GetRemaining();
+                    ratio     = rg.GetCooldownRatio();
+                    isActive  = rg.IsActive;
+                    isReady   = rg.IsReady();
+                }
+                break;
         }
 
         if (cooldownFill != null)
             cooldownFill.fillAmount = isReady ? 0f : ratio;
 
+        if (cooldownBackground != null)
+            cooldownBackground.color = isReady
+                ? new Color(0f, 0f, 0f, 0f)
+                : cooldownColor;
+
         if (cooldownText != null)
-            cooldownText.text = isReady ? "" : $"{remaining:F1}s";
+            cooldownText.text = (isActive || isReady) ? "" : $"{remaining:F1}";
 
-        if (activeGlow != null)
-            activeGlow.SetActive(isActive);
-
-        if (buttonImage != null)
+        if (iconImage != null)
         {
-            if (isActive)     buttonImage.color = activeColor;
-            else if (isReady) buttonImage.color = readyColor;
-            else              buttonImage.color = cooldownColor;
+            if (isActive)     iconImage.color = activeColor;
+            else if (isReady) iconImage.color = Color.white;
+            else              iconImage.color = new Color(0.5f, 0.5f, 0.5f, 1f);
         }
 
         if (ultimateButton != null)
-            ultimateButton.interactable = isReady;
+            ultimateButton.interactable = isReady || isActive;
+
+        if (!isActive) isPulsing = false;
     }
+
+    // ─── Pulse ────────────────────────────────────────────────────────────────
+
+    void HandlePulse()
+    {
+        if (root == null) return;
+
+        if (!isPulsing)
+        {
+            root.transform.localScale = Vector3.one;
+            return;
+        }
+
+        elapsed += Time.deltaTime;
+        float scale = 1f + Mathf.Sin(elapsed * pulseSpeed) * pulseAmplitude;
+        root.transform.localScale = Vector3.one * scale;
+    }
+
+    // ─── Bouton ───────────────────────────────────────────────────────────────
 
     void OnButtonClicked()
     {
@@ -190,13 +250,29 @@ public class UltimateUI : MonoBehaviour
             case UltimateType.SpecialAttack:
                 player.GetComponent<SpecialAttack>()?.OnSpecialButtonPressed();
                 break;
-
             case UltimateType.StatBoost:
                 player.GetComponent<StatBoostUltimate>()?.Activate();
                 break;
-
             case UltimateType.Shield:
                 player.GetComponent<ShieldUltimate>()?.Activate();
+                break;
+            case UltimateType.SwarmOfPredators:
+                player.GetComponent<SwarmOfPredatorsUltimate>()?.Activate();
+                break;
+            case UltimateType.SonicShockwave:
+                player.GetComponent<SonicShockwaveUltimate>()?.Activate();
+                break;
+            case UltimateType.Mirror:
+                player.GetComponent<MirrorUltimate>()?.Activate();
+                break;
+            case UltimateType.Invisibility:
+                player.GetComponent<InvisibilityUltimate>()?.Activate();
+                break;
+            case UltimateType.WeightOfSilence:
+                player.GetComponent<WeightOfSilenceUltimate>()?.Activate();
+                break;
+            case UltimateType.Regeneration:
+                player.GetComponent<RegenerationUltimate>()?.Activate();
                 break;
         }
     }

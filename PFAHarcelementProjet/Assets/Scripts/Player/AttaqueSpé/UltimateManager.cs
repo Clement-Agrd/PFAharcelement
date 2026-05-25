@@ -75,11 +75,17 @@ public class UltimateManager : MonoBehaviour
                 ApplyRegeneration(player, data);    break;
         }
 
-        UltimateUI ui = FindObjectOfType<UltimateUI>();
-        if (ui != null)
-            ui.SetUltimate(data);
+        // Cherche UltimateUI dans la scène
+        UltimateUI ui = FindObjectOfType<UltimateUI>(true);
+        Debug.Log($"🎮 UltimateUI trouvé : {ui != null}");
 
-        Debug.Log($"✅ Ultime appliqué : {data.ultimateName}");
+        if (ui != null)
+        {
+            ui.SetUltimate(data);
+            Debug.Log($"✅ SetUltimate appelé : {data.ultimateName}");
+        }
+        else
+            Debug.LogError("❌ UltimateUI introuvable dans la scène");
     }
 
     // ─── Méthodes Apply ──────────────────────────────────────────────────────

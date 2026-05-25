@@ -18,9 +18,8 @@ public class SpecialAttack : MonoBehaviour
     public float      gamepadDeadzone = 0.15f;
 
     [Header("Déblocage")]
-    public bool startUnlocked = false; // coché = débloquée dès le départ
+    public bool startUnlocked = false;
 
-    // ─── État ─────────────────────────────────────────────────────────────────
     public bool IsUnlocked { get; private set; } = false;
 
     private PlayerStats    stats;
@@ -33,10 +32,7 @@ public class SpecialAttack : MonoBehaviour
     {
         stats    = GetComponent<PlayerStats>();
         controls = new PlayerControls();
-
-        // Si startUnlocked est coché dans l'Inspector on débloque direct
-        if (startUnlocked)
-            Unlock();
+        if (startUnlocked) Unlock();
     }
 
     void OnEnable()
@@ -51,29 +47,29 @@ public class SpecialAttack : MonoBehaviour
         controls.Player.Disable();
     }
 
-    // ─── Déblocage ────────────────────────────────────────────────────────────
-
     public void Unlock()
     {
         IsUnlocked = true;
-        Debug.Log("🔓 Attaque spéciale débloquée !");
-
-        // Notifie l'UI si elle existe
+        Debug.Log("🔓 Attaque spéciale débloquée");
         SpecialAttackUI ui = FindObjectOfType<SpecialAttackUI>();
-        if (ui != null)
-            ui.OnUnlock();
+        if (ui != null) ui.OnUnlock();
     }
 
-    // ─── Input ────────────────────────────────────────────────────────────────
+    // ─── Cooldown avec CooldownReduction ─────────────────────────────────────
+
+    public float GetFinalCooldown()
+    {
+        float cdr = Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction));
+        return baseCooldown * (1f - cdr);
+    }
+
+    public float GetCooldownRemaining() => Mathf.Max(0f, GetFinalCooldown() - (Time.time - lastUseTime));
+    public float GetCooldownRatio()     => GetCooldownRemaining() / GetFinalCooldown();
+    public bool  IsReady()              => IsUnlocked && GetCooldownRemaining() <= 0f;
 
     void OnSpecialInput(InputAction.CallbackContext ctx)
     {
-        if (!IsUnlocked)
-        {
-            Debug.Log("🔒 Attaque spéciale non débloquée");
-            return;
-        }
-
+        if (!IsUnlocked) { Debug.Log("🔒 Non débloqué"); return; }
         if (!isAiming) ToggleAim();
         else           Launch();
     }
@@ -87,22 +83,11 @@ public class SpecialAttack : MonoBehaviour
         if (Gamepad.current != null)
             stick = Gamepad.current.leftStick.ReadValue();
 
-        if (stick.magnitude > gamepadDeadzone)
-            HandleGamepadAim(stick);
-        else
-            HandleMouseAim();
+        if (stick.magnitude > gamepadDeadzone) HandleGamepadAim(stick);
+        else                                   HandleMouseAim();
 
         UpdateIndicator();
     }
-
-    // ─── Cooldown ─────────────────────────────────────────────────────────────
-
-    public float GetFinalCooldown()     => baseCooldown * (1f - Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction)));
-    public float GetCooldownRemaining() => Mathf.Max(0f, GetFinalCooldown() - (Time.time - lastUseTime));
-    public float GetCooldownRatio()     => GetCooldownRemaining() / GetFinalCooldown();
-    public bool  IsReady()              => IsUnlocked && GetCooldownRemaining() <= 0f;
-
-    // ─── Visée souris ─────────────────────────────────────────────────────────
 
     void HandleMouseAim()
     {
@@ -113,26 +98,18 @@ public class SpecialAttack : MonoBehaviour
         {
             Vector3 point     = ray.GetPoint(dist);
             Vector3 direction = point - transform.position;
-
             if (direction.magnitude > maxRange)
                 point = transform.position + direction.normalized * maxRange;
-
             aimPosition = point;
         }
     }
-
-    // ─── Visée manette ────────────────────────────────────────────────────────
 
     void HandleGamepadAim(Vector2 stick)
     {
         Vector3 direction = new Vector3(stick.x, 0f, stick.y);
         Vector3 target    = transform.position + direction.normalized * maxRange;
-
-        aimPosition = Vector3.MoveTowards(
-            aimPosition,
-            target,
-            gamepadAimSpeed * Time.deltaTime
-        );
+        aimPosition       = Vector3.MoveTowards(aimPosition, target,
+                            gamepadAimSpeed * Time.deltaTime);
 
         Vector3 offset = aimPosition - transform.position;
         if (offset.magnitude > maxRange)
@@ -142,7 +119,6 @@ public class SpecialAttack : MonoBehaviour
     void UpdateIndicator()
     {
         if (aimIndicator == null) return;
-
         aimIndicator.transform.position = new Vector3(
             aimPosition.x,
             transform.position.y + 0.1f,
@@ -150,34 +126,23 @@ public class SpecialAttack : MonoBehaviour
         );
     }
 
-    // ─── Actions ──────────────────────────────────────────────────────────────
-
     void ToggleAim()
     {
-        if (!IsReady())
-        {
-            Debug.Log($"⏳ Recharge : {GetCooldownRemaining():F1}s");
-            return;
-        }
-
+        if (!IsReady()) { Debug.Log($"⏳ Recharge : {GetCooldownRemaining():F1}s"); return; }
         isAiming    = true;
         aimPosition = transform.position + transform.forward * 3f;
-
-        if (aimIndicator != null)
-            aimIndicator.SetActive(true);
+        if (aimIndicator != null) aimIndicator.SetActive(true);
     }
 
     void CancelAim()
     {
         isAiming = false;
-        if (aimIndicator != null)
-            aimIndicator.SetActive(false);
+        if (aimIndicator != null) aimIndicator.SetActive(false);
     }
 
     public void Launch()
     {
         if (!IsReady()) return;
-
         CancelAim();
         StartCoroutine(ExplodeCoroutine());
         lastUseTime = Time.time;
@@ -185,12 +150,7 @@ public class SpecialAttack : MonoBehaviour
 
     public void OnSpecialButtonPressed()
     {
-        if (!IsUnlocked)
-        {
-            Debug.Log("🔒 Attaque spéciale non débloquée");
-            return;
-        }
-
+        if (!IsUnlocked) return;
         if (!isAiming) ToggleAim();
         else           Launch();
     }
@@ -203,6 +163,7 @@ public class SpecialAttack : MonoBehaviour
 
     void Explode()
     {
+        // Scale sur RangedDamage
         float damage = baseDamage + stats.GetStat(StatType.RangedDamage);
 
         if (explosionVFX != null)
@@ -215,7 +176,6 @@ public class SpecialAttack : MonoBehaviour
         foreach (Collider hit in hits)
         {
             if (!hit.CompareTag("Enemy")) continue;
-
             IDamageable target = hit.GetComponent<IDamageable>();
             if (target == null) continue;
 
@@ -233,7 +193,6 @@ public class SpecialAttack : MonoBehaviour
             }
         }
     }
-    
 
     void OnDrawGizmosSelected()
     {

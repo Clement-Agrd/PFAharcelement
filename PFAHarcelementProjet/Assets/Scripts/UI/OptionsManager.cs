@@ -10,8 +10,10 @@ public class OptionsManager : MonoBehaviour
     [Header("Audio")]
     public AudioMixer audioMixer;
 
-    private OptionsData data = new OptionsData();
+    private OptionsData data     = new OptionsData();
     private string SavePath => Application.persistentDataPath + "/options.json";
+
+    // ─── Unity ───────────────────────────────────────────────────────────────
 
     void Awake()
     {
@@ -21,6 +23,8 @@ public class OptionsManager : MonoBehaviour
         Load();
         Apply();
     }
+
+    // ─── API publique ─────────────────────────────────────────────────────────
 
     public OptionsData GetData() => data;
 
@@ -34,10 +38,8 @@ public class OptionsManager : MonoBehaviour
     public void SetResolution(int index)       => data.resolutionIndex = index;
     public void SetTextSize(int index)         => data.textSize        = index;
     public void SetColorblindMode(int index)   => data.colorblindMode  = index;
-    public void SetLanguage(string lang)       => data.language        = lang;
 
-    public float  GetMouseSensivity() => data.mouseSensivity;
-    public string GetLanguage()       => data.language;
+    public float GetMouseSensivity() => data.mouseSensivity;
 
     public void ApplyAndSave()
     {
@@ -46,7 +48,8 @@ public class OptionsManager : MonoBehaviour
         Debug.Log("✅ Options sauvegardées");
     }
 
-    // Dans OptionsManager.cs — remplace la méthode Apply() par celle-ci
+    // ─── Application ─────────────────────────────────────────────────────────
+
     void Apply()
     {
         // Audio
@@ -58,25 +61,26 @@ public class OptionsManager : MonoBehaviour
         }
 
         // Qualité graphique
-        if (data.qualityIndex >= 0 && data.qualityIndex < QualitySettings.names.Length)
+        if (data.qualityIndex >= 0 &&
+            data.qualityIndex < QualitySettings.names.Length)
             QualitySettings.SetQualityLevel(data.qualityIndex, true);
 
         // Résolution
         Resolution[] resolutions = Screen.resolutions;
         if (resolutions.Length > 0)
         {
-            int safeIndex = Mathf.Clamp(data.resolutionIndex, 0, resolutions.Length - 1);
+            int safeIndex        = Mathf.Clamp(data.resolutionIndex,
+                                               0, resolutions.Length - 1);
             data.resolutionIndex = safeIndex;
-            Resolution res = resolutions[safeIndex];
+            Resolution res       = resolutions[safeIndex];
             Screen.SetResolution(res.width, res.height, data.fullscreen);
         }
         else
-        {
             Screen.fullScreen = data.fullscreen;
-        }
 
-        // Luminosité
-        Screen.brightness = Mathf.Clamp01(data.brightness);
+        // Luminosité via panel UI
+        if (BrightnessManager.Instance != null)
+            BrightnessManager.Instance.ApplyBrightness(data.brightness);
 
         // Taille des textes
         if (TextSizeManager.Instance != null)
@@ -85,11 +89,10 @@ public class OptionsManager : MonoBehaviour
         // Daltonisme
         if (ColorblindManager.Instance != null)
             ColorblindManager.Instance.ApplyColorblindMode(data.colorblindMode);
-
-        // Langue
-        if (LanguageManager.Instance != null)
-            LanguageManager.Instance.ApplyLanguage(data.language);
     }
+
+    // ─── Sauvegarde ──────────────────────────────────────────────────────────
+
     void Save()
     {
         File.WriteAllText(SavePath, JsonUtility.ToJson(data, true));
@@ -105,11 +108,12 @@ public class OptionsManager : MonoBehaviour
         }
         catch
         {
-            // Si le fichier est corrompu on repart des valeurs par défaut
             data = new OptionsData();
-            Debug.LogWarning("⚠️ Fichier options corrompu — valeurs par défaut chargées");
+            Debug.LogWarning("⚠️ Fichier options corrompu — valeurs par défaut");
         }
     }
+
+    // ─── Utilitaire ──────────────────────────────────────────────────────────
 
     float VolumeToDb(float value)
     {

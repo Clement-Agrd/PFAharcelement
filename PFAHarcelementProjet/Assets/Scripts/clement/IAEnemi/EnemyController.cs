@@ -1,43 +1,43 @@
-﻿using UnityEngine;
+﻿// Scripts/Enemies/EnemyController.cs
+using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-
 public abstract class EnemyController : MonoBehaviour, IDamageable
 {
     public bool AllowRotation = true;
-    
+
     [Header("Rotation")]
     public float rotationSpeed = 10f;
-    
+
     [Header("Bestiaire")]
     public BestiaryEntry bestiaryEntry;
 
     [Header("Stats")]
-    public float maxHealth   = 100f;
-    public float moveSpeed   = 3f;
-    public float attackRange = 8f;
-    public float chaseRange  = 20f;
+    public float maxHealth      = 100f;
+    public float moveSpeed      = 3f;
+    public float attackRange    = 8f;
+    public float chaseRange     = 20f;
     public float attackCooldown = 1.2f;
-    public float stopChaseRange = 4f; // Distance à laquelle l'ennemi arrête de chase
-    
+    public float stopChaseRange = 4f;
+
+    [Header("Récompense")]
+    public int goldValue = 10;
+
     public abstract void PerformAttack();
-    
+
     public bool IsDead => CurrentHealth <= 0f;
 
-    // Runtime
-    public float          CurrentHealth { get; private set; }
-    public Transform      PlayerTransform { get; private set; }
-    public Rigidbody    Rb            { get; private set; }
-    public Animator       Anim          { get; private set; }
-    public StateMachine   StateMachine  { get; private set; }
+    public float        CurrentHealth   { get; private set; }
+    public Transform    PlayerTransform { get; private set; }
+    public Rigidbody    Rb              { get; private set; }
+    public Animator     Anim            { get; private set; }
+    public StateMachine StateMachine    { get; private set; }
 
-    // États communs (surchargeables)
     protected EnemyStateBase idleState;
     protected EnemyStateBase chaseState;
     protected EnemyStateBase attackState;
     protected EnemyStateBase hurtState;
     protected EnemyStateBase deathState;
-
 
     public EnemyStateBase GetIdleState()   => idleState;
     public EnemyStateBase GetChaseState()  => chaseState;
@@ -47,24 +47,29 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
 
     protected virtual void Awake()
     {
-        Rb           = GetComponent<Rigidbody>();
-        Anim         = GetComponent<Animator>();
-        StateMachine = new StateMachine();
+        Rb            = GetComponent<Rigidbody>();
+        Anim          = GetComponent<Animator>();
+        StateMachine  = new StateMachine();
         CurrentHealth = maxHealth;
 
-        // Le joueur doit avoir le tag "Player"
         var player = GameObject.FindWithTag("Player");
         if (player != null) PlayerTransform = player.transform;
 
         InitStates();
     }
 
+    public bool IsPlayerInvisible()
+    {
+        if (PlayerTransform == null) return false;
+        return PlayerTransform.gameObject.layer ==
+               LayerMask.NameToLayer("Invisible");
+    }
+
     protected virtual void Start()
     {
         StateMachine.Initialize(idleState);
     }
-    
-    // ✅ EnemyController.cs — ajoute cette méthode
+
     public void PlayAnim(string stateName)
     {
         if (Anim == null) return;
@@ -73,20 +78,17 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
             Anim.Play(stateName);
     }
 
-// ✅ Ajoute ici
     public void TriggerAnim(string triggerName)
     {
         if (Anim == null) return;
         if (!Anim.isActiveAndEnabled) return;
         Anim.SetTrigger(triggerName);
     }
-    
-    protected virtual void FixedUpdate()  => StateMachine.FixedUpdate();
 
-    // Chaque ennemi crée ses propres états ici
+    protected virtual void FixedUpdate() => StateMachine.FixedUpdate();
+
     protected abstract void InitStates();
 
-    // ── API publique ─────────────────────────────────────────────────
     public float DistanceToPlayer()
     {
         if (PlayerTransform == null) return float.MaxValue;
@@ -100,7 +102,6 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
         if (StateMachine.CurrentState == deathState) return;
 
         CurrentHealth -= amount;
-
         Debug.Log($"{gameObject.name} prend {amount} dégâts");
 
         if (CurrentHealth <= 0)
@@ -113,30 +114,37 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
             StateMachine.ChangeState(hurtState);
         }
     }
-    
+
     public virtual void Die()
     {
         Debug.Log($"{gameObject.name} est mort");
 
-        if (bestiaryEntry != null)
+        // ─── Récompense gold ──────────────────────────────────────────────
+        if (XPManager.Instance != null && goldValue > 0)
         {
-            BestiaryManager.Instance.UnlockCreature(bestiaryEntry.id);
+            XPManager.Instance.AddGold(goldValue);
+            Debug.Log($"💰 +{goldValue} gold ({gameObject.name})");
         }
 
-        gameObject.SetActive(false); // ✅ important
+        // ─── Bestiaire ────────────────────────────────────────────────────
+        if (bestiaryEntry != null)
+            BestiaryManager.Instance.UnlockCreature(bestiaryEntry.id);
+
+        gameObject.SetActive(false);
         Destroy(gameObject, 2f);
     }
+
     protected virtual void Update()
     {
         StateMachine.Update();
-
         RotateTowardsPlayer();
     }
+
     protected virtual void RotateTowardsPlayer()
     {
-        if (!AllowRotation) return;
+        if (!AllowRotation)    return;
         if (PlayerTransform == null) return;
-        if (IsDead) return;
+        if (IsDead)            return;
 
         Vector3 dir = PlayerTransform.position - transform.position;
         dir.y = 0f;
@@ -144,7 +152,7 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
         if (dir.sqrMagnitude < 0.01f) return;
 
         Quaternion targetRot = Quaternion.LookRotation(dir);
-        transform.rotation = Quaternion.Slerp(
+        transform.rotation   = Quaternion.Slerp(
             transform.rotation,
             targetRot,
             rotationSpeed * Time.deltaTime
