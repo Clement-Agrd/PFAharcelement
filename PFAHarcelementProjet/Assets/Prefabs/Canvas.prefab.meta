@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:PFAHarcelementProjet/Assets/Prefabs/Canvas.prefab.meta
 guid: 42a6bcffe70b1c146ad504c0ba7c9288
+========
+guid: cef2b1e54fe2b7241a6bc9b80b13c217
+>>>>>>>> a357d7f6 (ajout d'asset et encore):PFAHarcelementProjet/Assets/Prefabs/MirrorDiskPrefab.prefab.meta
 PrefabImporter:
   externalObjects: {}
   userData: 

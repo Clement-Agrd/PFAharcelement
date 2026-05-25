@@ -1,4 +1,4 @@
-﻿// Scripts/Ultimates/MirrorDisk.cs
+// Scripts/Ultimates/MirrorDisk.cs
 using UnityEngine;
 
 public class MirrorDisk : MonoBehaviour

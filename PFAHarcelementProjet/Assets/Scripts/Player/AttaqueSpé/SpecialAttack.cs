@@ -1,4 +1,4 @@
-﻿// Scripts/Player/SpecialAttack.cs
+// Scripts/Player/SpecialAttack.cs
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;

@@ -1,4 +1,4 @@
-﻿// Scripts/Ultimates/InvisibilityUltimate.cs
+// Scripts/Ultimates/InvisibilityUltimate.cs
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;

@@ -1,4 +1,4 @@
-﻿// Scripts/VFX/InvisibilityVFX.cs
+// Scripts/VFX/InvisibilityVFX.cs
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;

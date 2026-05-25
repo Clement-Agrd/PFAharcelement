@@ -1,4 +1,4 @@
-﻿// Scripts/Ultimates/RegenerationUltimate.cs
+// Scripts/Ultimates/RegenerationUltimate.cs
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -59,7 +59,7 @@ public class RegenerationUltimate : MonoBehaviour
 
     public void Setup(float percent, float duration, float cooldown)
     {
-        regenPercent  = percent;
+        regenPercent = percent;
         regenDuration = duration;
         baseCooldown  = cooldown;
     }

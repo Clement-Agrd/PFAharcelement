@@ -1,4 +1,4 @@
-﻿// Scripts/Ultimates/ShieldUltimate.cs
+// Scripts/Ultimates/ShieldUltimate.cs
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;

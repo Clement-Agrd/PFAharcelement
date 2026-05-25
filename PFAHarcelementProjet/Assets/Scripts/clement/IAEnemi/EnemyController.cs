@@ -47,9 +47,9 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
 
     protected virtual void Awake()
     {
-        Rb           = GetComponent<Rigidbody>();
-        Anim = GetComponentInChildren<Animator>();
-        StateMachine = new StateMachine();
+        Rb            = GetComponent<Rigidbody>();
+        Anim          = GetComponent<Animator>();
+        StateMachine  = new StateMachine();
         CurrentHealth = maxHealth;
 
         var player = GameObject.FindWithTag("Player");
@@ -104,19 +104,8 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
         Anim.ResetTrigger(triggerName); // évite les blocages
         Anim.SetTrigger(triggerName);
     }
-    
-    bool HasParameter(string paramName)
-    {
-        foreach (var param in Anim.parameters)
-        {
-            if (param.name == paramName)
-                return true;
-        }
-        return false;
-    }
 
-
-    protected virtual void FixedUpdate()  => StateMachine.FixedUpdate();
+    protected virtual void FixedUpdate() => StateMachine.FixedUpdate();
 
     protected abstract void InitStates();
 

@@ -1,7 +1,13 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:PFAHarcelementProjet/Assets/Prefabs/Coelacanth.prefab.meta
 guid: be49f008cf1de0b40abfc2fa0393ee72
 PrefabImporter:
+========
+guid: 517e5aafbf4b73c4f8614737fbf4feb5
+NativeFormatImporter:
+>>>>>>>> a357d7f6 (ajout d'asset et encore):PFAHarcelementProjet/Assets/GA/Texture/Materials/MirrorMaterial.mat.meta
   externalObjects: {}
+  mainObjectFileID: 2100000
   userData: 
   assetBundleName: 
   assetBundleVariant: 

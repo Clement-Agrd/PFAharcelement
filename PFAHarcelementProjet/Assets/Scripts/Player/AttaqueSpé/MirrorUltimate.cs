@@ -1,4 +1,4 @@
-﻿// Scripts/Ultimates/MirrorUltimate.cs
+// Scripts/Ultimates/MirrorUltimate.cs
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
