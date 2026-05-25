@@ -52,7 +52,7 @@ public class RewardPickup : MonoBehaviour
         if (stats != null && buffData != null)
             stats.ApplyBuff(buffData);
 
-        StageManager.Instance.SpawnRoomChoices();
+        StageManager.Instance.OnRewardPicked();
 
         OnPickupConsumed?.Invoke(this);
         Destroy(gameObject);

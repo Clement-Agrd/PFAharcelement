@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 0
     path: "Assets/Scenes/Cl\xE9ment scene/MainClem.unity"
     guid: 98febda56a0a4e44ea6fb9061ffc3936
+  - enabled: 1
+    path: "Assets/Scenes/Cl\xE9ment scene/MainClem 2.unity"
+    guid: acc211ac7ab54b14f963113b4640a15e
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

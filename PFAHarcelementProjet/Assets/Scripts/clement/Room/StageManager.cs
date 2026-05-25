@@ -30,6 +30,11 @@ public class StageManager : MonoBehaviour
     public ItemPrefabPool combatItemPool;
     public ItemPrefabPool eliteItemPool;
     public ItemPrefabPool bossItemPool;
+    
+    
+    [Header("Exit")]
+    public GameObject nextStagePortalPrefab;
+
 
 
     public RoomChoiceVisualDatabase choiceVisualDatabase;
@@ -163,6 +168,38 @@ public class StageManager : MonoBehaviour
         pickup.pickupMode = PickupMode.Reward;
     }
     
+    
+    public void OnRewardPicked()
+    {
+        // ✅ Si dernière room → portail
+        if (index >= layout.nodes.Length)
+        {
+            SpawnExitPortal();
+        }
+        else
+        {
+            SpawnRoomChoices();
+        }
+    }
+
+    void SpawnExitPortal()
+    {
+        if (currentRoomSpawnPoints == null || nextStagePortalPrefab == null)
+            return;
+
+        Transform spawnPoint = currentRoomSpawnPoints.exitSpawnPoint;
+
+        // ✅ fallback si non assigné
+        if (spawnPoint == null)
+            spawnPoint = currentRoomSpawnPoints.rewardSpawnPoint;
+
+        Instantiate(
+            nextStagePortalPrefab,
+            spawnPoint.position,
+            Quaternion.identity
+        );
+    }
+
     ItemPrefabPool GetPoolForRoomType(RoomType roomType)
     {
         switch (roomType)

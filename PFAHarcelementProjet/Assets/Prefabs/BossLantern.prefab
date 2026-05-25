@@ -173,7 +173,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 64
+  m_Constraints: 68
   m_CollisionDetection: 0
 --- !u!114 &8944529428523369106
 MonoBehaviour:
@@ -236,7 +236,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 2.35
-  m_Center: {x: 0, y: 2.77, z: 0.96}
+  m_Center: {x: 0, y: 1.77, z: 0.96}
 --- !u!1 &7669714965729474109
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,15 +374,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 121a496b93d83d14480033c79e2781b0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0000282377
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 121a496b93d83d14480033c79e2781b0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.0000018
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 121a496b93d83d14480033c79e2781b0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.0000069588423
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 121a496b93d83d14480033c79e2781b0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -432,6 +432,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 03e120c46401e0a47a3aa3ad34051f82, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 121a496b93d83d14480033c79e2781b0, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: b95247d392bc12844a1038f1936ba31c, type: 2}
     - target: {fileID: 8886403197124858539, guid: 121a496b93d83d14480033c79e2781b0, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 

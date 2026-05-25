@@ -26,6 +26,7 @@ public class BossSpinState : EnemyStateBase
 
     public override void Enter()
     {
+        enemy.AllowRotation = false;
         timer = 0f;
         phase = Phase.Telegraph;
         enemy.PlayAnim("Idle");
@@ -177,6 +178,8 @@ public class BossSpinState : EnemyStateBase
     public override void Exit()
     {
         enemy.transform.rotation = Quaternion.identity;
+        
+        enemy.AllowRotation = true;
 
         boss.TelegraphVFX?.Stop();
 
