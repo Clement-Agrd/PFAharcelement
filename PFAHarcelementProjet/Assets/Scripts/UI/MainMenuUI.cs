@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
+using System.Collections;
 
 public class MainMenuUI : MonoBehaviour
 {
@@ -19,9 +20,11 @@ public class MainMenuUI : MonoBehaviour
     void Start()
     {
         ShowMenu();
-    }
 
-    // ─── Boutons menu principal ───────────────────────────────────────────────
+        // Lance la musique du menu
+        if (MusicManager.Instance != null)
+            MusicManager.Instance.PlayMenuMusic();
+    }
 
     public void OnPlay()
     {
@@ -43,17 +46,15 @@ public class MainMenuUI : MonoBehaviour
     public void OnQuit()     => Application.Quit();
     public void OnBack()     => ShowMenu();
 
-    // ─── Privé ────────────────────────────────────────────────────────────────
-
     void ShowMenu() => ShowOnly(panelMenu);
 
     void ShowOnly(GameObject panel)
     {
-        panelMenu      .SetActive(panel == panelMenu);
-        panelOptions   .SetActive(panel == panelOptions);
-        panelCredits   .SetActive(panel == panelCredits);
-        panelStatTree  .SetActive(panel == panelStatTree);
-        panelCinematic .SetActive(panel == panelCinematic);
+        panelMenu     .SetActive(panel == panelMenu);
+        panelOptions  .SetActive(panel == panelOptions);
+        panelCredits  .SetActive(panel == panelCredits);
+        panelStatTree .SetActive(panel == panelStatTree);
+        panelCinematic.SetActive(panel == panelCinematic);
     }
 
     void OnCinematicEnd(VideoPlayer vp)
@@ -64,6 +65,22 @@ public class MainMenuUI : MonoBehaviour
 
     void LaunchGame()
     {
+        // Fondu musical avant de charger la scène
+        if (MusicManager.Instance != null)
+            MusicManager.Instance.PlayGameMusic();
+
+        StartCoroutine(LoadGameAfterFade());
+    }
+
+    IEnumerator LoadGameAfterFade()
+    {
+        // Attend la durée du fondu
+        yield return new WaitForSecondsRealtime(
+            MusicManager.Instance != null
+                ? MusicManager.Instance.fadeDuration
+                : 1.5f
+        );
+
         SceneManager.LoadScene(gameSceneName);
     }
 }
