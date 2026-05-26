@@ -156,17 +156,32 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         // Convertit le gold en XP
         if (XPManager.Instance != null)
         {
-            Debug.Log($"✨ Conversion : {XPManager.Instance.GetGold()} gold → XP");
             XPManager.Instance.ConvertGoldToXP();
         }
 
         // Retour au menu après délai
-        Invoke(nameof(ReturnToMenu), deathDelay);
+        Invoke(nameof(CleanupAndLoad), deathDelay);
     }
 
-    void ReturnToMenu()
+    void CleanupAndLoad()
     {
-        Time.timeScale = 1f;
+        // ✅ récupère tous les objets, même persistants
+        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+
+        foreach (GameObject obj in allObjects)
+        {
+            // ✅ skip ceux qui sont dans un asset/prefab
+            if (!obj.scene.IsValid()) continue;
+
+            // ✅ skip GameManagers (tagged Persistent)
+            if (obj.CompareTag("Persistent")) continue;
+
+            // ✅ on ne détruit pas le portail lui-même
+            if (obj == gameObject) continue;
+
+            Destroy(obj);
+        }
+
         SceneManager.LoadScene("MainMenu");
     }
 }

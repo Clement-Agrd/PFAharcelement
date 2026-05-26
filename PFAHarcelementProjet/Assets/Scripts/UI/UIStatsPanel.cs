@@ -55,34 +55,23 @@ public class UIStatsPanel : MonoBehaviour
         {
             StatType statType = pair.Key;
 
-            float baseValue    = playerStats.GetBaseStatValue(statType);
-            float flatBonus    = 0f;
-            float percentBonus = 0f;
+            float current = playerStats.GetStat(statType);
 
-            // Buffs déjà actifs
-            foreach (var mod in playerStats.GetActiveModifiers())
-            {
-                if (mod.targetStat != statType) continue;
+            float preview = current;
 
-                if (mod.modifierType == ModifierType.Flat)
-                    flatBonus += mod.value;
-                else
-                    percentBonus += mod.value;
-            }
-
-            // Buff en preview
+            // ✅ Applique TOUS les modifiers du buff en preview
             foreach (var mod in buff.modifiers)
             {
                 if (mod.statType != statType) continue;
 
-                if (mod.modifierType == ModifierType.Flat)
-                    flatBonus += mod.value;
-                else
-                    percentBonus += mod.value;
-            }
+                StatModifier previewModifier = new StatModifier(
+                    mod.statType,
+                    mod.modifierType,
+                    mod.value
+                );
 
-            float current = playerStats.GetStat(statType);
-            float preview = (baseValue + flatBonus) * (1f + percentBonus);
+                preview = playerStats.GetStatPreview(statType, previewModifier);
+            }
 
             pair.Value.Set(
                 GetSprite(statType),
@@ -92,7 +81,6 @@ public class UIStatsPanel : MonoBehaviour
             );
         }
     }
-    
     
     public void ClearPreview()
     {

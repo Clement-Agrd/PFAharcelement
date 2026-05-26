@@ -3,7 +3,6 @@ using UnityEngine.SceneManagement;
 
 public class FinalPortal : MonoBehaviour
 {
-    [Header("Scene")]
     public string menuSceneName = "MainMenu";
 
     private bool used = false;
@@ -12,7 +11,7 @@ public class FinalPortal : MonoBehaviour
     {
         if (used) return;
         if (!other.CompareTag("Player")) return;
-
+        XPManager.Instance.ConvertGoldToXP();
         used = true;
 
         CleanupAndLoad();
@@ -20,33 +19,23 @@ public class FinalPortal : MonoBehaviour
 
     void CleanupAndLoad()
     {
-        // ✅ Garde une référence de ton manager
-        XPManager xpManager = FindObjectOfType<XPManager>();
-
-        // ✅ On récupère TOUS les objets de la scène
-        GameObject[] allObjects = FindObjectsOfType<GameObject>();
+        // ✅ récupère tous les objets, même persistants
+        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
 
         foreach (GameObject obj in allObjects)
         {
-            // ❌ On ne détruit PAS le XPManager
-            if (xpManager != null && obj == xpManager.gameObject)
-                continue;
+            // ✅ skip ceux qui sont dans un asset/prefab
+            if (!obj.scene.IsValid()) continue;
 
-            // ❌ On ne détruit PAS le portail lui-même (optionnel)
-            if (obj == this.gameObject)
-                continue;
+            // ✅ skip GameManagers (tagged Persistent)
+            if (obj.CompareTag("Persistent")) continue;
 
-            // ✅ On détruit tout le reste
+            // ✅ on ne détruit pas le portail lui-même
+            if (obj == gameObject) continue;
+
             Destroy(obj);
         }
 
-        // ✅ On garde le XPManager entre les scènes
-        if (xpManager != null)
-        {
-            DontDestroyOnLoad(xpManager.gameObject);
-        }
-
-        // ✅ On charge le menu
         SceneManager.LoadScene(menuSceneName);
     }
 }

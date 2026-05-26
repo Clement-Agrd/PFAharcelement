@@ -7,7 +7,7 @@ public class BuffPickupData : ScriptableObject
     [Header("Visuel")]
     public string buffName    = "Nouveau buff";
     public string description = "Description du buff";
-    public Sprite icon;
+
 
     [Header("Modificateurs")]
     public List<StatModifierData> modifiers = new List<StatModifierData>();

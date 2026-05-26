@@ -20,8 +20,7 @@ public class StageManager : MonoBehaviour
     
     [Header("Reward Prefabs")]
     public GameObject goldRewardPrefab;
-    public GameObject itemRewardPrefab;
-    
+
     
 
     [Header("Item Rewards")]

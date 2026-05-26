@@ -75,7 +75,24 @@ public class PlayerStats : MonoBehaviour
             }
         }
 
-        return (baseValue + flatBonus) * (1f + percentBonus);
+
+        float result = (baseValue + flatBonus) * (1f + percentBonus);
+
+
+        switch (stat)
+        {
+            case StatType.CooldownReduction:
+                result = Mathf.Clamp(result, 0f, 0.8f); // max 80%
+                break;
+
+            default:
+                if (stat != StatType.MaxHealth)
+                    result = Mathf.Max(0f, result);
+                break;
+        }
+
+        return result;
+
     }
 
     // ─── Privé ────────────────────────────────────────────────────────────────
@@ -109,4 +126,68 @@ public class PlayerStats : MonoBehaviour
     }
     
     public System.Action OnStatsChanged;
+    
+    public float GetStatPreview(StatType stat, StatModifier previewModifier)
+    {
+        float baseValue    = GetBaseValue(stat);
+        float flatBonus    = 0f;
+        float percentBonus = 0f;
+
+        // ✅ Mods actuels
+        foreach (StatModifier mod in modifiers)
+        {
+            if (mod.targetStat != stat) continue;
+
+            if (mod.modifierType == ModifierType.Flat)
+                flatBonus += mod.value;
+            else
+                percentBonus += mod.value;
+        }
+
+        // ✅ Ajout du preview
+        if (previewModifier != null && previewModifier.targetStat == stat)
+        {
+            if (previewModifier.modifierType == ModifierType.Flat)
+                flatBonus += previewModifier.value;
+            else
+                percentBonus += previewModifier.value;
+        }
+
+        // ✅ StatTree (IMPORTANT)
+        if (StatTreeManager.Instance != null)
+        {
+            StatNodeData node = StatTreeManager.Instance.treeData.nodes
+                .Find(n => n.statType == stat);
+
+            if (node != null)
+            {
+                float treeBonus = StatTreeManager.Instance.GetTotalBonus(stat);
+
+                if (node.modifierType == ModifierType.Flat)
+                    flatBonus += treeBonus;
+                else
+                    percentBonus += treeBonus;
+            }
+        }
+
+
+        float result = (baseValue + flatBonus) * (1f + percentBonus);
+
+
+        switch (stat)
+        {
+            case StatType.CooldownReduction:
+                result = Mathf.Clamp(result, 0f, 0.8f); // max 80%
+                break;
+
+            default:
+                if (stat != StatType.MaxHealth)
+                    result = Mathf.Max(0f, result);
+                break;
+        }
+
+
+        return result;
+
+    }
 }

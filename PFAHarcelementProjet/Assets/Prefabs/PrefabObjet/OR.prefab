@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 722647973300324655}
   - component: {fileID: 4477176482649833033}
   - component: {fileID: 414550204783855377}
-  - component: {fileID: 7395906122566501102}
+  - component: {fileID: 1210492174562670926}
   m_Layer: 7
   m_Name: OR
   m_TagString: Untagged
@@ -113,7 +113,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7395906122566501102
+--- !u!114 &1210492174562670926
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,10 +122,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7172846633748202380}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0ded18dd1cf4805b8e68f4a78d8fe74, type: 3}
+  m_Script: {fileID: 11500000, guid: a3241a31bef74b39b8f6434de9ab027a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RewardPickup
-  buffData: {fileID: 11400000, guid: 396a4d740db284f428847a3514afa1b6, type: 2}
-  pickupMode: 0
-  interactionRange: 3
-  price: 0
+  m_EditorClassIdentifier: Assembly-CSharp::GoldRewardPickup
+  goldAmount: 50

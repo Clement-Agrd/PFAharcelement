@@ -492,6 +492,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 0f2ab160-54ae-4837-b3ca-321bce312be0
     m_ActionName: 'Player/Shoot[/Mouse/leftButton,/DualSenseGamepadHID/rightTrigger]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: bef8fb93-ef75-410b-a366-1f21763be0dd
+    m_ActionName: 'Player/SpecialAttack[/Keyboard/a]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: eba3972f-9369-40b7-ab56-72303aa66b81
+    m_ActionName: 'Player/Pause[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -518,7 +526,7 @@ CharacterController:
   m_Height: 0
   m_Radius: 0.3
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
@@ -645,6 +653,7 @@ MonoBehaviour:
   onDeath:
     m_PersistentCalls:
       m_Calls: []
+  deathDelay: 2
 --- !u!114 &578442995725811264
 MonoBehaviour:
   m_ObjectHideFlags: 0
