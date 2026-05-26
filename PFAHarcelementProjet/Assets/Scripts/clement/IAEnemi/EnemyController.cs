@@ -118,8 +118,6 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
 
     protected virtual void FixedUpdate()  => StateMachine.FixedUpdate();
 
-    protected virtual void FixedUpdate() => StateMachine.FixedUpdate();
-
     protected abstract void InitStates();
 
     public float DistanceToPlayer()
