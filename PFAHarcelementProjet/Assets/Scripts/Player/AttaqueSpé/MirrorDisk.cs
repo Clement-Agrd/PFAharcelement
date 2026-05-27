@@ -26,7 +26,6 @@ public class MirrorDisk : MonoBehaviour
 
         transform.position = playerTransform.position +
                              playerTransform.forward * 2f;
-
         transform.rotation = playerTransform.rotation *
                              Quaternion.Euler(rotOffset);
     }
@@ -48,28 +47,23 @@ public class MirrorDisk : MonoBehaviour
     void ReflectProjectile(GameObject proj)
     {
         ProjectileEnemy projScript = proj.GetComponent<ProjectileEnemy>();
-
-        Debug.Log($"🪞 ProjectileEnemy trouvé : {projScript != null}");
-
         if (projScript == null) return;
+
+        // ← Son à chaque renvoi
+        if (UltimateSoundManager.Instance != null)
+            UltimateSoundManager.Instance.PlayMirrorReflect();
 
         Transform nearestEnemy = FindNearestEnemy();
         Vector3   newDir;
-
-        Debug.Log($"🪞 Ennemi le plus proche : {(nearestEnemy != null ? nearestEnemy.name : "aucun")}");
 
         if (nearestEnemy != null)
         {
             newDir   = (nearestEnemy.position - proj.transform.position).normalized;
             newDir.y = 0f;
             newDir   = newDir.normalized;
-            Debug.Log($"🪞 Projectile renvoyé vers {nearestEnemy.name}");
         }
         else
-        {
             newDir = Vector3.Reflect(proj.transform.forward, transform.forward);
-            Debug.Log("🪞 Projectile renvoyé — rebond");
-        }
 
         if (playerStats != null)
             projScript.damage += Mathf.RoundToInt(
@@ -77,8 +71,6 @@ public class MirrorDisk : MonoBehaviour
 
         projScript.isReflected = true;
         projScript.ResetDirection(newDir);
-
-        Debug.Log($"🪞 isReflected : {projScript.isReflected}");
     }
 
     void PushEnemy(Collider other)
@@ -89,8 +81,6 @@ public class MirrorDisk : MonoBehaviour
         Vector3 pushDir = (other.transform.position - transform.position).normalized;
         pushDir.y       = 0f;
         rb.AddForce(pushDir * pushForce, ForceMode.Impulse);
-
-        Debug.Log($"🪞 Ennemi repoussé : {other.name}");
     }
 
     Transform FindNearestEnemy()
@@ -102,8 +92,7 @@ public class MirrorDisk : MonoBehaviour
         foreach (GameObject enemy in enemies)
         {
             if (enemy == null) continue;
-            float dist = Vector3.Distance(
-                transform.position, enemy.transform.position);
+            float dist = Vector3.Distance(transform.position, enemy.transform.position);
             if (dist < closestDist)
             {
                 closestDist = dist;

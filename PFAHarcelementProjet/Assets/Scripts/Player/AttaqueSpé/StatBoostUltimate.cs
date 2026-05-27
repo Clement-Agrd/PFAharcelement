@@ -85,6 +85,10 @@ public class StatBoostUltimate : MonoBehaviour
     {
         isActive = true;
 
+        // ← Son au début
+        if (UltimateSoundManager.Instance != null)
+            UltimateSoundManager.Instance.PlayStatBoostStart();
+
         if (statBoostVFXPrefab != null)
         {
             GameObject vfxGO = Instantiate(statBoostVFXPrefab,
@@ -113,16 +117,13 @@ public class StatBoostUltimate : MonoBehaviour
             stats.AddModifier(mod);
         }
 
-        Debug.Log($"⚡ StatBoost actif {boostDuration}s");
-
         yield return new WaitForSeconds(boostDuration);
 
         foreach (StatModifier mod in activeModifiers)
             stats.RemoveModifier(mod);
         activeModifiers.Clear();
 
-        if (vfxInstance != null)
-            vfxInstance.Deactivate();
+        if (vfxInstance != null) vfxInstance.Deactivate();
 
         isActive = false;
     }

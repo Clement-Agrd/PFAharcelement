@@ -55,8 +55,6 @@ public class SpecialAttack : MonoBehaviour
         if (ui != null) ui.OnUnlock();
     }
 
-    // ─── Cooldown avec CooldownReduction ─────────────────────────────────────
-
     public float GetFinalCooldown()
     {
         float cdr = Mathf.Clamp01(stats.GetStat(StatType.CooldownReduction));
@@ -69,7 +67,7 @@ public class SpecialAttack : MonoBehaviour
 
     void OnSpecialInput(InputAction.CallbackContext ctx)
     {
-        if (!IsUnlocked) { Debug.Log("🔒 Non débloqué"); return; }
+        if (!IsUnlocked) return;
         if (!isAiming) ToggleAim();
         else           Launch();
     }
@@ -128,7 +126,7 @@ public class SpecialAttack : MonoBehaviour
 
     void ToggleAim()
     {
-        if (!IsReady()) { Debug.Log($"⏳ Recharge : {GetCooldownRemaining():F1}s"); return; }
+        if (!IsReady()) return;
         isAiming    = true;
         aimPosition = transform.position + transform.forward * 3f;
         if (aimIndicator != null) aimIndicator.SetActive(true);
@@ -163,7 +161,10 @@ public class SpecialAttack : MonoBehaviour
 
     void Explode()
     {
-        // Scale sur RangedDamage
+        // ← Son au lancement
+        if (UltimateSoundManager.Instance != null)
+            UltimateSoundManager.Instance.PlaySpecialLaunch();
+
         float damage = baseDamage + stats.GetStat(StatType.RangedDamage);
 
         if (explosionVFX != null)

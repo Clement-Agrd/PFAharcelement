@@ -7,7 +7,7 @@ public class MirrorUltimate : MonoBehaviour
 {
     [Header("Miroir")]
     public GameObject mirrorDiskPrefab;
-    public float      diskOffset    = 2f;   // distance devant le requin
+    public float      diskOffset = 2f;
 
     [Header("Déblocage")]
     public bool startUnlocked = false;
@@ -84,14 +84,15 @@ public class MirrorUltimate : MonoBehaviour
     {
         isActive = true;
 
+        // ← Son au début
+        if (UltimateSoundManager.Instance != null)
+            UltimateSoundManager.Instance.PlayMirrorStart();
+
         if (mirrorDiskPrefab != null)
         {
-            mirrorInstance = Instantiate(
-                mirrorDiskPrefab,
+            mirrorInstance = Instantiate(mirrorDiskPrefab,
                 transform.position + transform.forward * diskOffset,
-                transform.rotation,
-                transform
-            );
+                transform.rotation);
 
             mirrorDisk = mirrorInstance.GetComponent<MirrorDisk>();
             if (mirrorDisk != null)
@@ -108,7 +109,5 @@ public class MirrorUltimate : MonoBehaviour
         mirrorDisk     = null;
         mirrorInstance = null;
         isActive       = false;
-
-        Debug.Log("🪞 Miroir terminé");
     }
 }

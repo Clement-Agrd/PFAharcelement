@@ -1,19 +1,21 @@
+// Scripts/Player/PlayerDash.cs
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerDash : MonoBehaviour
 {
-    public float dashSpeed = 20f;
+    public float dashSpeed    = 20f;
     public float dashDuration = 0.15f;
     public float dashCooldown = 1f;
-    
+
     [Header("IFrames")]
     [SerializeField] private GameObject damageHitbox;
-    [SerializeField] private float postDashIFrames = 0.15f;
+    [SerializeField] private float      postDashIFrames = 0.15f;
 
-    private int normalLayer;
-    private int invincibleLayer;
+    private int   normalLayer;
+    private int   invincibleLayer;
     private float invincibleTimer;
+
     [Header("Style")]
     public float spinZSpeed = 720f;
 
@@ -24,91 +26,76 @@ public class PlayerDash : MonoBehaviour
     public float restoreAimDuration = 0.12f;
 
     CharacterController controller;
-    PlayerCombat combat;
+    PlayerCombat        combat;
 
-    float dashTime;
-    float nextDash;
-    bool isDashing;
+    float     dashTime;
+    float     nextDash;
+    bool      isDashing;
+    Vector3   dashDirection;
+    Vector3   lockedAimDirection;
 
-    Vector3 dashDirection;
-    Vector3 lockedAimDirection;
-
-    // Alignement début dash
-    float alignTime;
+    float      alignTime;
     Quaternion alignStartRot;
     Quaternion alignTargetRot;
-    bool aligning;
+    bool       aligning;
 
-    // Spin
-    float spinAngle;
-
-    // Restauration visée
+    float      spinAngle;
     Quaternion restoreStartRot;
     Quaternion restoreTargetRot;
-    float restoreTime;
-    bool restoringAim;
+    float      restoreTime;
+    bool       restoringAim;
 
     void Awake()
     {
-        controller = GetComponent<CharacterController>();
-        combat = GetComponent<PlayerCombat>();
-
-        normalLayer = damageHitbox.layer;
+        controller      = GetComponent<CharacterController>();
+        combat          = GetComponent<PlayerCombat>();
+        normalLayer     = damageHitbox.layer;
         invincibleLayer = LayerMask.NameToLayer("Invincible");
     }
 
     public bool CanDash => Time.time >= nextDash && !isDashing && !restoringAim;
 
-    
     public void StartDash(Vector3 direction, Vector3 aimDirection)
     {
         if (!CanDash) return;
 
-        dashDirection = direction.normalized;
+        dashDirection      = direction.normalized;
         lockedAimDirection = aimDirection.normalized;
 
-        // Alignement
         alignStartRot  = transform.rotation;
         alignTargetRot = Quaternion.LookRotation(dashDirection);
-        alignTime = 0f;
-        aligning = true;
+        alignTime      = 0f;
+        aligning       = true;
+        dashTime       = dashDuration;
+        isDashing      = true;
+        spinAngle      = 0f;
+        nextDash       = Time.time + dashCooldown;
 
-        dashTime = dashDuration;
-        isDashing = true;
-        spinAngle = 0f;
-        nextDash = Time.time + dashCooldown;
-
-        // 🔥 ACTIVE INVINCIBILITÉ
         SetInvincible(true);
+
+        // ← Son au lancement du dash
+        if (PlayerSoundManager.Instance != null)
+            PlayerSoundManager.Instance.PlayDash();
     }
 
     void Update()
     {
-        
-        // Gestion iFrames après dash
         if (invincibleTimer > 0f)
         {
             invincibleTimer -= Time.deltaTime;
-
             if (invincibleTimer <= 0f)
                 SetInvincible(false);
         }
 
-        // 🔁 RESTAURATION DE LA VISÉE (SMOOTH)
         if (restoringAim)
         {
             restoreTime += Time.deltaTime;
             float t = restoreTime / restoreAimDuration;
 
             transform.rotation = Quaternion.Slerp(
-                restoreStartRot,
-                restoreTargetRot,
-                t
-            );
+                restoreStartRot, restoreTargetRot, t);
 
-            if (t >= 1f)
-                restoringAim = false;
-
+            if (t >= 1f) restoringAim = false;
             return;
         }
 
@@ -116,62 +103,43 @@ public class PlayerDash : MonoBehaviour
 
         dashTime -= Time.deltaTime;
 
-        // 🔄 ALIGN AU DÉBUT
         if (aligning)
         {
             alignTime += Time.deltaTime;
             float t = alignTime / alignDuration;
 
             transform.rotation = Quaternion.Slerp(
-                alignStartRot,
-                alignTargetRot,
-                t
-            );
+                alignStartRot, alignTargetRot, t);
 
-            if (t >= 1f)
-                aligning = false;
+            if (t >= 1f) aligning = false;
         }
         else
         {
-            // 🔥 SPIN
             spinAngle += spinZSpeed * Time.deltaTime;
-
             Quaternion baseRot = Quaternion.LookRotation(dashDirection);
-            Quaternion roll = Quaternion.AngleAxis(spinAngle, Vector3.forward);
+            Quaternion roll    = Quaternion.AngleAxis(spinAngle, Vector3.forward);
             transform.rotation = baseRot * roll;
         }
 
         controller.Move(dashDirection * dashSpeed * Time.deltaTime);
 
-        // ✅ FIN DU DASH → RESTORE AIM
-
         if (dashTime <= 0f)
         {
-            isDashing = false;
-
-            // 🔥 garde invincibilité un peu après
+            isDashing       = false;
             invincibleTimer = postDashIFrames;
 
             restoreStartRot  = transform.rotation;
             restoreTargetRot = Quaternion.LookRotation(lockedAimDirection);
-
-            restoreTime = 0f;
+            restoreTime      = 0f;
 
             if (combat.isShooting)
                 restoringAim = true;
         }
     }
+
     void SetInvincible(bool value)
     {
         if (damageHitbox == null) return;
-
-        if (value)
-        {
-            damageHitbox.layer = invincibleLayer;
-        }
-        else
-        {
-            damageHitbox.layer = normalLayer;
-        }
+        damageHitbox.layer = value ? invincibleLayer : normalLayer;
     }
 }

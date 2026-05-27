@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c1045d518134561976d2ca48c2aa55d, type: 3}
-  m_Name: UltimateSwarmOfPredators
+  m_Name: UltimateSpecialAttack
   m_EditorClassIdentifier: Assembly-CSharp::UltimateData
-  ultimateName: Meute de Soutien
-  description: "Les alli\xE9s qui se l\xE8vent pour toi"
-  icon: {fileID: 0}
-  type: 3
+  ultimateName: "Cri de R\xE9volte"
+  description: "Exploser apr\xE8s avoir trop retenu"
+  icon: {fileID: 21300000, guid: 814d210c488d99e40b8349f8b889c07f, type: 3}
+  type: 0
   specialDamage: 30
   specialRadius: 5
   specialCooldown: 8
@@ -23,11 +23,11 @@ MonoBehaviour:
   statBoostDuration: 10
   shieldDuration: 5
   shieldCooldown: 20
-  swarmCount: 3
+  swarmCount: 5
   swarmDamage: 15
   swarmDuration: 8
-  swarmCooldown: 9
-  swarmPrefab: {fileID: 5141584461661379244, guid: 890e521ff79de394abce0ad0c9dce9ff, type: 3}
+  swarmCooldown: 20
+  swarmPrefab: {fileID: 0}
   shockwaveRadius: 8
   shockwaveDuration: 3
   shockwaveCooldown: 15

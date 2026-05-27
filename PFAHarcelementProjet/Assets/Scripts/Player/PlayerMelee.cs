@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿// Scripts/Player/PlayerMelee.cs
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,16 +11,16 @@ public class PlayerMelee : MonoBehaviour
     HashSet<IDamageable> hitTargets = new HashSet<IDamageable>();
 
     [Header("Détection")]
-    public float hitRange = 1.5f;
+    public float hitRange  = 1.5f;
     public float coneAngle = 60f;
 
     [Header("Rotation")]
     public float attackRotateSpeed = 720f;
-    public float maxRotateTime = 0.15f;
+    public float maxRotateTime     = 0.15f;
 
     [Header("Dash (premier coup seulement)")]
     public float dashDistance = 3f;
-    public float dashSpeed = 12f;
+    public float dashSpeed    = 12f;
 
     [Header("Timing")]
     public float pauseAtPeak = 0.2f;
@@ -27,14 +28,14 @@ public class PlayerMelee : MonoBehaviour
     [Header("Combo")]
     public float comboBufferTime = 0.25f;
 
-    bool comboQueued;
+    bool  comboQueued;
     float comboTimer;
-    bool hasDashedThisChain;
+    bool  hasDashedThisChain;
 
     [Header("Références")]
     public Animator animator;
 
-    PlayerStats stats;
+    PlayerStats      stats;
     PlayerController controller;
     CharacterController cc;
 
@@ -57,33 +58,32 @@ public class PlayerMelee : MonoBehaviour
         }
     }
 
-    // ✅ Appelé par PlayerCombat avec la direction déjà calculée
     public void TryAttack(Vector3 attackDirection)
     {
-        // ✅ Auto‑combo si on maintient le bouton
         if (IsAttacking)
         {
             comboQueued = true;
-            comboTimer = comboBufferTime;
+            comboTimer  = comboBufferTime;
             return;
         }
 
-        if (!controller.CanAct || controller.IsDashing)
-            return;
+        if (!controller.CanAct || controller.IsDashing) return;
 
         float attackSpeed       = stats.GetStat(StatType.AttackSpeed);
         float cooldownReduction = stats.GetStat(StatType.CooldownReduction);
-        float cooldown = (1f / attackSpeed) * (1f - Mathf.Clamp01(cooldownReduction));
+        float cooldown = (1f / attackSpeed) *
+                         (1f - Mathf.Clamp01(cooldownReduction));
 
-        if (Time.time < nextAttack)
-            return;
+        if (Time.time < nextAttack)    return;
+        if (attackDirection == Vector3.zero) return;
 
-        if (attackDirection == Vector3.zero)
-            return;
+        // ← Son à chaque coup de mêlée
+        if (PlayerSoundManager.Instance != null)
+            PlayerSoundManager.Instance.PlayMelee();
 
         animator?.CrossFade("Armature|Attaque", 0.05f, 0, 0f);
 
-        bool withDash = !hasDashedThisChain;
+        bool withDash      = !hasDashedThisChain;
         hasDashedThisChain = true;
 
         StartCoroutine(RotateAndAttack(attackDirection.normalized, withDash));
@@ -99,7 +99,7 @@ public class PlayerMelee : MonoBehaviour
         Quaternion targetRot = Quaternion.LookRotation(direction);
 
         float angle = Quaternion.Angle(startRot, targetRot);
-        float tMax = Mathf.Min(angle / attackRotateSpeed, maxRotateTime);
+        float tMax  = Mathf.Min(angle / attackRotateSpeed, maxRotateTime);
 
         float t = 0f;
         while (t < tMax)
@@ -126,7 +126,6 @@ public class PlayerMelee : MonoBehaviour
                 float step = dashSpeed * Time.deltaTime;
                 cc.Move(direction * step);
                 traveled += step;
-
                 CheckConeDamage(direction);
                 yield return null;
             }
@@ -151,7 +150,7 @@ public class PlayerMelee : MonoBehaviour
         }
         else
         {
-            hasDashedThisChain = false; // ✅ fin de chaîne
+            hasDashedThisChain = false;
         }
     }
 
@@ -161,14 +160,13 @@ public class PlayerMelee : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            if (hit.transform.root == transform.root)
-                continue;
+            if (hit.transform.root == transform.root) continue;
 
             IDamageable dmg = hit.GetComponent<IDamageable>();
-            if (dmg == null || hitTargets.Contains(dmg))
-                continue;
+            if (dmg == null || hitTargets.Contains(dmg)) continue;
 
-            Vector3 toTarget = (hit.transform.position - transform.position).normalized;
+            Vector3 toTarget = (hit.transform.position -
+                                transform.position).normalized;
             float angle = Vector3.Angle(forward, toTarget);
 
             if (angle <= coneAngle * 0.5f)
@@ -193,9 +191,9 @@ public class PlayerMelee : MonoBehaviour
     {
         StopAllCoroutines();
         hitTargets.Clear();
-        comboQueued = false;
+        comboQueued        = false;
         hasDashedThisChain = false;
-        IsAttacking = false;
+        IsAttacking        = false;
 
         controller.SetMovement(true);
         controller.SetActions(true);

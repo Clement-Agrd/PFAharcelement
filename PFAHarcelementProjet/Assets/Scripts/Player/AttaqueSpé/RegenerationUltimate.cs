@@ -59,7 +59,7 @@ public class RegenerationUltimate : MonoBehaviour
 
     public void Setup(float percent, float duration, float cooldown)
     {
-        regenPercent = percent;
+        regenPercent  = percent;
         regenDuration = duration;
         baseCooldown  = cooldown;
     }
@@ -86,17 +86,16 @@ public class RegenerationUltimate : MonoBehaviour
 
         if (regenVFXPrefab != null)
         {
-            GameObject vfxGO = Instantiate(
-                regenVFXPrefab,
-                transform.position,
-                Quaternion.identity,
-                transform
-            );
+            GameObject vfxGO = Instantiate(regenVFXPrefab,
+                transform.position, Quaternion.identity, transform);
             vfxGO.transform.localPosition = Vector3.zero;
             vfxInstance = vfxGO.GetComponent<RegenerationVFX>();
         }
 
-        // Scale sur HP max
+        // ← Son en boucle
+        if (UltimateSoundManager.Instance != null)
+            UltimateSoundManager.Instance.PlayRegenLoop();
+
         float maxHP     = stats.GetStat(StatType.MaxHealth);
         float totalHeal = maxHP * regenPercent;
         float elapsed   = 0f;
@@ -110,6 +109,10 @@ public class RegenerationUltimate : MonoBehaviour
                 playerHealth.Heal((totalHeal / regenDuration) * Time.deltaTime);
             yield return null;
         }
+
+        // ← Arrête le son
+        if (UltimateSoundManager.Instance != null)
+            UltimateSoundManager.Instance.StopRegenLoop();
 
         if (vfxInstance != null)
             Destroy(vfxInstance.gameObject);

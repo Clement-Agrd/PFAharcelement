@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c1045d518134561976d2ca48c2aa55d, type: 3}
-  m_Name: UltimateInvisibility
+  m_Name: UltimateOndeChoc
   m_EditorClassIdentifier: Assembly-CSharp::UltimateData
-  ultimateName: "Dispara\xEEtre"
-  description: Fuir pour survivre
-  icon: {fileID: 0}
-  type: 6
+  ultimateName: Brise le Silence
+  description: Rompre le silence face au menace
+  icon: {fileID: 21300000, guid: 1785a20362612be49a0dcedc17c84e2e, type: 3}
+  type: 4
   specialDamage: 30
   specialRadius: 5
   specialCooldown: 8

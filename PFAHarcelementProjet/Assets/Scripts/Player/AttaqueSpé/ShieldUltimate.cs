@@ -88,6 +88,10 @@ public class ShieldUltimate : MonoBehaviour
     {
         isActive = true;
 
+        // ← Son au début
+        if (UltimateSoundManager.Instance != null)
+            UltimateSoundManager.Instance.PlayShieldStart();
+
         if (shieldVFXPrefab != null)
         {
             shieldInstance = Instantiate(shieldVFXPrefab,
@@ -98,10 +102,7 @@ public class ShieldUltimate : MonoBehaviour
             if (shieldCollider != null) shieldCollider.SetActive(true);
         }
 
-        if (playerHealth != null)
-            playerHealth.SetInvincible(true);
-
-        Debug.Log($"🛡️ Bouclier actif {shieldDuration}s");
+        if (playerHealth != null) playerHealth.SetInvincible(true);
 
         yield return new WaitForSeconds(shieldDuration);
 
@@ -134,9 +135,7 @@ public class ShieldUltimate : MonoBehaviour
         Matrix4x4 oldMatrix = Gizmos.matrix;
         Gizmos.matrix = Matrix4x4.TRS(
             transform.TransformPoint(shieldOffset),
-            transform.rotation,
-            scale
-        );
+            transform.rotation, scale);
         Gizmos.DrawWireSphere(Vector3.zero, 0.5f);
         Gizmos.matrix = oldMatrix;
 

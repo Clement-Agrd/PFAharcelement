@@ -64,12 +64,9 @@ public class SwarmOfPredatorsUltimate : MonoBehaviour
         baseCooldown  = cooldown;
         swarmPrefab   = prefab;
 
-        // Récupère le projectile du joueur
         PlayerCombat combat = GetComponent<PlayerCombat>();
         if (combat != null)
             projectilePrefab = combat.projectile;
-        else
-            Debug.LogWarning("⚠️ PlayerCombat introuvable — projectile non assigné");
     }
 
     void OnInput(InputAction.CallbackContext ctx)
@@ -93,6 +90,10 @@ public class SwarmOfPredatorsUltimate : MonoBehaviour
         isActive = true;
         activeAllies.Clear();
 
+        // ← Son au lancement
+        if (UltimateSoundManager.Instance != null)
+            UltimateSoundManager.Instance.PlaySwarmLaunch();
+
         for (int i = 0; i < swarmCount; i++)
         {
             if (swarmPrefab == null) continue;
@@ -102,30 +103,17 @@ public class SwarmOfPredatorsUltimate : MonoBehaviour
             Vector3 spawnPos = transform.position +
                                transform.right * side * offset;
 
-            GameObject ally = Instantiate(
-                swarmPrefab,
-                spawnPos,
-                transform.rotation
-            );
+            GameObject ally = Instantiate(swarmPrefab, spawnPos, transform.rotation);
 
             SwarmAlly allyScript = ally.GetComponent<SwarmAlly>();
             if (allyScript != null)
-                allyScript.Setup(
-                    transform,
-                    swarmDuration,
-                    i,
-                    swarmCount,
-                    projectilePrefab,
-                    stats          // ← passe les stats du joueur directement
-                );
+                allyScript.Setup(transform, swarmDuration, i,
+                                 swarmCount, projectilePrefab, stats);
 
             activeAllies.Add(ally);
         }
 
         Debug.Log($"🦈 Meute : {swarmCount} alliés en ligne");
-        Debug.Log($"🦈 RangedDamage : {stats.GetStat(StatType.RangedDamage):F1}");
-        Debug.Log($"🦈 ProjectileSpeed : {stats.GetStat(StatType.ProjectileSpeed):F1}");
-        Debug.Log($"🦈 AttackSpeed : {stats.GetStat(StatType.AttackSpeed):F1}");
 
         yield return new WaitForSeconds(swarmDuration);
 
@@ -134,6 +122,5 @@ public class SwarmOfPredatorsUltimate : MonoBehaviour
 
         activeAllies.Clear();
         isActive = false;
-        Debug.Log("🦈 Meute terminée");
     }
 }

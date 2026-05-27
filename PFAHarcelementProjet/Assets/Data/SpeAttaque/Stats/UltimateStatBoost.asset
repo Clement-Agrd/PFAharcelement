@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c1045d518134561976d2ca48c2aa55d, type: 3}
-  m_Name: UltimateOndeChoc
+  m_Name: UltimateStatBoost
   m_EditorClassIdentifier: Assembly-CSharp::UltimateData
-  ultimateName: Brise le Silence
-  description: Rompre le silence face au menace
-  icon: {fileID: 0}
-  type: 4
+  ultimateName: "Col\xE8re Lib\xE9r\xE9e"
+  description: "Quand la col\xE8re devient une force"
+  icon: {fileID: 21300000, guid: 23a85133c05be9742af7c7730e5023be, type: 3}
+  type: 1
   specialDamage: 30
   specialRadius: 5
   specialCooldown: 8

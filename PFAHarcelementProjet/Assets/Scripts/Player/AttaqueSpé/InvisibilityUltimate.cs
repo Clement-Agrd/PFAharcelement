@@ -80,35 +80,19 @@ public class InvisibilityUltimate : MonoBehaviour
     {
         isActive = true;
 
+        // ← Son au début
+        if (UltimateSoundManager.Instance != null)
+            UltimateSoundManager.Instance.PlayInvisibilityStart();
+
         if (invisibilityVFXPrefab != null)
         {
-            GameObject vfxGO = Instantiate(
-                invisibilityVFXPrefab,
-                transform.position,
-                Quaternion.identity,
-                transform
-            );
+            GameObject vfxGO = Instantiate(invisibilityVFXPrefab,
+                transform.position, Quaternion.identity, transform);
             vfxGO.transform.localPosition = Vector3.zero;
             vfxInstance = vfxGO.GetComponent<InvisibilityVFX>();
-
-            // Trouve automatiquement les renderers du requin
-            // en excluant les particle systems
-            if (vfxInstance != null)
-            {
-                vfxInstance.sharkRenderers.Clear();
-                Renderer[] allRends = GetComponentsInChildren<Renderer>();
-                foreach (Renderer r in allRends)
-                {
-                    if (r.GetComponent<ParticleSystem>()         != null) continue;
-                    if (r.GetComponent<ParticleSystemRenderer>() != null) continue;
-                    vfxInstance.sharkRenderers.Add(r);
-                    Debug.Log($"✅ Renderer requin : {r.gameObject.name}");
-                }
-            }
         }
 
-        if (vfxInstance != null)
-            vfxInstance.FadeOut();
+        if (vfxInstance != null) vfxInstance.FadeOut();
 
         int originalLayer = gameObject.layer;
         gameObject.layer  = LayerMask.NameToLayer("Invisible");
@@ -118,11 +102,8 @@ public class InvisibilityUltimate : MonoBehaviour
         yield return new WaitForSeconds(invisibilityDuration);
 
         gameObject.layer = originalLayer;
-
-        if (vfxInstance != null)
-            vfxInstance.FadeIn();
+        if (vfxInstance != null) vfxInstance.FadeIn();
 
         isActive = false;
-        Debug.Log("👻 Invisibilité terminée");
     }
 }

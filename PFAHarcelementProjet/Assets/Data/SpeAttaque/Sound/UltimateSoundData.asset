@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a0ba17e59474968a7e8b2ed33c45e5a, type: 3}
+  m_Name: UltimateSoundData
+  m_EditorClassIdentifier: Assembly-CSharp::UltimateSoundData
+  swarmLaunch: {fileID: 8300000, guid: 476459e3959bc6043b618074ef1ed037, type: 3}
+  specialLaunch: {fileID: 8300000, guid: 85115d3ef3ed5ca4ebb3d52dec109028, type: 3}
+  regenLoop: {fileID: 8300000, guid: 4b5809a9d36e3f1469a260f243ade076, type: 3}
+  invisibilityStart: {fileID: 8300000, guid: 1cb0b5c62ebd59a46b6195ca282c744a, type: 3}
+  mirrorStart: {fileID: 8300000, guid: fbee554cfb89cc544bf0a774f7d33261, type: 3}
+  mirrorReflect: {fileID: 0}
+  shieldStart: {fileID: 8300000, guid: cce04c06c1dc5074dbc34af992b4f0b6, type: 3}
+  shieldHit: {fileID: 8300000, guid: 862b2bada9fad6e4a9ed7d552a55baab, type: 3}
+  statBoostStart: {fileID: 8300000, guid: dc8965c0043309a4596b935f52d724a3, type: 3}
+  shockwaveStart: {fileID: 8300000, guid: 85115d3ef3ed5ca4ebb3d52dec109028, type: 3}

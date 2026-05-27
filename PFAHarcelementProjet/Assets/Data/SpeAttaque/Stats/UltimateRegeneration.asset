@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c1045d518134561976d2ca48c2aa55d, type: 3}
-  m_Name: UltimateMirror
+  m_Name: UltimateRegeneration
   m_EditorClassIdentifier: Assembly-CSharp::UltimateData
-  ultimateName: Retour de Flamme
-  description: "Renvoyer la violence \xE0 son exp\xE9diteur"
-  icon: {fileID: 0}
-  type: 5
+  ultimateName: "R\xE9silience"
+  description: "Se reconstruire apr\xE8s les blessures"
+  icon: {fileID: 21300000, guid: 43a64540c58f7c5418c7ac3080074235, type: 3}
+  type: 8
   specialDamage: 30
   specialRadius: 5
   specialCooldown: 8

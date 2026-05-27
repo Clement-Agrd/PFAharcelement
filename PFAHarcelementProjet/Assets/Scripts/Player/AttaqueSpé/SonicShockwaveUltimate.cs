@@ -82,6 +82,10 @@ public class SonicShockwaveUltimate : MonoBehaviour
     {
         isActive = true;
 
+        // ← Son au début
+        if (UltimateSoundManager.Instance != null)
+            UltimateSoundManager.Instance.PlayShockwaveStart();
+
         if (shockwaveVFXPrefab != null)
         {
             GameObject vfx = Instantiate(shockwaveVFXPrefab,

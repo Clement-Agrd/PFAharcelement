@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c1045d518134561976d2ca48c2aa55d, type: 3}
-  m_Name: UltimateShield
+  m_Name: UltimateMirror
   m_EditorClassIdentifier: Assembly-CSharp::UltimateData
-  ultimateName: Carapace Mentale
-  description: "Se prot\xE9ger des attaques psychologiques"
-  icon: {fileID: 0}
-  type: 2
+  ultimateName: L'Effet Boomerang
+  description: "Tu n'as plus \xE0 encaisser seul. Le miroir absorbe et renvoie. La
+    douleur ne t'appartient plus."
+  icon: {fileID: 21300000, guid: 57a08c03e2b3acb4bb39c587d6ddf3dc, type: 3}
+  type: 5
   specialDamage: 30
   specialRadius: 5
   specialCooldown: 8
