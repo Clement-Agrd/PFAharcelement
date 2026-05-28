@@ -9,6 +9,8 @@ TagManager:
   - Enemy
   - EnemyProjectile
   - Persistent
+  - Panel
+  - CameraRig
   layers:
   - Default
   - TransparentFX

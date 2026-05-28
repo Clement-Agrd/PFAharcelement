@@ -1,4 +1,5 @@
 // Scripts/Player/PlayerHealth.cs
+
 using System;
 using UnityEngine;
 using UnityEngine.Events;
@@ -8,24 +9,26 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 {
     [Header("Événements")]
     public UnityEvent<float, float> onHealthChanged;
-    public UnityEvent               onDeath;
+    public UnityEvent onDeath;
 
     [Header("Mort")]
-    public float deathDelay = 2f; // délai avant retour menu
+    public float deathDelay = 2f;
 
     public static Action OnPlayerDamaged;
 
     private PlayerStats stats;
-    private float       lastMaxHealth;
-    private float       currentHealth;
-    private bool        isDead;
-    private bool        isInvincible = false;
-    private bool        isMirror     = false;
+    private float lastMaxHealth;
+    private float currentHealth;
 
-    public bool IsDead  => isDead;
-    public bool IsDead_ => isDead;
+    private bool isDead;
+    private bool isInvincible = false;
+    private bool isMirror = false;
 
-    // ─── Invincibilité / Miroir ───────────────────────────────────────────────
+    public bool IsDead => isDead;
+
+    // ─────────────────────────────────────────────────────────────
+    // INVINCIBILITÉ / MIROIR
+    // ─────────────────────────────────────────────────────────────
 
     public void SetInvincible(bool value)
     {
@@ -39,36 +42,43 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         Debug.Log($"🪞 Miroir : {value}");
     }
 
-    // ─── IDamageable ─────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────
+    // DAMAGE
+    // ─────────────────────────────────────────────────────────────
 
     public void TakeDamage(float amount)
     {
-        if (isDead)       return;
+        if (isDead) return;
         if (isInvincible) return;
 
-        float tankiness   = stats.GetStat(StatType.Tankiness);
+        float tankiness = stats.GetStat(StatType.Tankiness);
         float finalDamage = amount * (1f - Mathf.Clamp01(tankiness));
 
-        // Renvoi des dégâts si miroir actif
+        // Renvoi des dégâts
         if (isMirror)
         {
             Collider[] hits = Physics.OverlapSphere(transform.position, 15f);
+
             foreach (Collider hit in hits)
             {
                 if (!hit.CompareTag("Enemy")) continue;
+
                 IDamageable enemy = hit.GetComponent<IDamageable>();
+
                 if (enemy != null)
                 {
                     enemy.TakeDamage(finalDamage);
                     Debug.Log($"🪞 Dégâts renvoyés à {hit.name} : {finalDamage}");
                 }
+
                 break;
             }
+
             return;
         }
 
         currentHealth -= finalDamage;
-        currentHealth  = Mathf.Max(currentHealth, 0f);
+        currentHealth = Mathf.Max(currentHealth, 0f);
 
         OnPlayerDamaged?.Invoke();
 
@@ -78,23 +88,28 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             Die();
     }
 
-    // ─── API publique ─────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────
+    // HEAL
+    // ─────────────────────────────────────────────────────────────
 
     public void Heal(float amount)
     {
         if (isDead) return;
 
-        float maxHP   = stats.GetStat(StatType.MaxHealth);
+        float maxHP = stats.GetStat(StatType.MaxHealth);
+
         currentHealth = Mathf.Min(currentHealth + amount, maxHP);
 
         onHealthChanged?.Invoke(currentHealth, maxHP);
     }
 
     public float GetCurrentHP() => currentHealth;
-    public float GetMaxHP()     => stats != null ? stats.GetStat(StatType.MaxHealth) : 100f;
-    public float GetHPRatio()   => currentHealth / GetMaxHP();
+    public float GetMaxHP() => stats != null ? stats.GetStat(StatType.MaxHealth) : 100f;
+    public float GetHPRatio() => currentHealth / GetMaxHP();
 
-    // ─── Unity ───────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────
+    // UNITY
+    // ─────────────────────────────────────────────────────────────
 
     void Awake()
     {
@@ -103,21 +118,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     void Start()
     {
-        float maxHP   = stats.GetStat(StatType.MaxHealth);
-        currentHealth = maxHP;
-        lastMaxHealth = maxHP;
-
-        Invoke(nameof(BroadcastHP), 0.1f);
-    }
-
-    void BroadcastHP()
-    {
-        onHealthChanged?.Invoke(currentHealth, stats.GetStat(StatType.MaxHealth));
+        ResetPlayer();
     }
 
     void OnEnable()
     {
-        stats = GetComponent<PlayerStats>();
         if (stats != null)
             stats.OnStatsChanged += HandleStatsChanged;
     }
@@ -128,25 +133,50 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             stats.OnStatsChanged -= HandleStatsChanged;
     }
 
+    // ─────────────────────────────────────────────────────────────
+    // RESET PLAYER
+    // ─────────────────────────────────────────────────────────────
+
+    public void ResetPlayer()
+    {
+        isDead = false;
+
+        float maxHP = stats.GetStat(StatType.MaxHealth);
+
+        currentHealth = maxHP;
+        lastMaxHealth = maxHP;
+
+        onHealthChanged?.Invoke(currentHealth, maxHP);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // STATS CHANGED
+    // ─────────────────────────────────────────────────────────────
+
     void HandleStatsChanged()
     {
         float newMaxHP = stats.GetStat(StatType.MaxHealth);
-        float delta    = newMaxHP - lastMaxHealth;
+
+        float delta = newMaxHP - lastMaxHealth;
 
         if (delta > 0)
             currentHealth += delta;
 
         currentHealth = Mathf.Min(currentHealth, newMaxHP);
+
         lastMaxHealth = newMaxHP;
 
         onHealthChanged?.Invoke(currentHealth, newMaxHP);
     }
 
-    // ─── Mort ────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────
+    // DEATH
+    // ─────────────────────────────────────────────────────────────
 
     void Die()
     {
         if (isDead) return;
+
         isDead = true;
 
         Debug.Log("💀 Joueur mort");
@@ -155,33 +185,54 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         // Convertit le gold en XP
         if (XPManager.Instance != null)
-        {
             XPManager.Instance.ConvertGoldToXP();
-        }
 
-        // Retour au menu après délai
-        Invoke(nameof(CleanupAndLoad), deathDelay);
+        Invoke(nameof(ReturnToMenu), deathDelay);
     }
 
-    void CleanupAndLoad()
+    // ─────────────────────────────────────────────────────────────
+    // MENU RESET
+    // ─────────────────────────────────────────────────────────────
+
+    void ReturnToMenu()
     {
-        // ✅ récupère tous les objets, même persistants
-        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
-
-        foreach (GameObject obj in allObjects)
-        {
-            // ✅ skip ceux qui sont dans un asset/prefab
-            if (!obj.scene.IsValid()) continue;
-
-            // ✅ skip GameManagers (tagged Persistent)
-            if (obj.CompareTag("Persistent")) continue;
-
-            // ✅ on ne détruit pas le portail lui-même
-            if (obj == gameObject) continue;
-
-            Destroy(obj);
-        }
+        ResetRun(gameObject);
 
         SceneManager.LoadScene("MainMenu");
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // RESET RUN
+    // ─────────────────────────────────────────────────────────────
+
+    void ResetRun(GameObject player)
+    {
+        // Reset buffs
+        PlayerStats stats = player.GetComponent<PlayerStats>();
+
+        if (stats != null)
+            stats.ClearAllModifiers();
+
+        // Reset HP
+        PlayerHealth health = player.GetComponent<PlayerHealth>();
+
+        if (health != null)
+            health.ResetPlayer();
+
+        // Reset ultimate
+        if (UltimateManager.Instance != null)
+            UltimateManager.Instance.ResetUltimate(player);
+        
+        stats.ResetRunStats();
+
+        FindFirstObjectByType<PickupDetector>()?.ForceRefresh();
+        UIStatsPanel.Instance?.ClearPreview();
+        BuffUI.Instance?.SetPickup(null);
+
+        // Désactive le player dans le menu
+        player.SetActive(false);
+
+        // Reset position
+        player.transform.position = Vector3.zero;
     }
 }

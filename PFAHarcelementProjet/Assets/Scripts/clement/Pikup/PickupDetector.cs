@@ -1,3 +1,4 @@
+// PickupDetector.cs
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,13 +9,40 @@ public class PickupDetector : MonoBehaviour
 
     private readonly List<RewardPickup> nearbyPickups = new();
     private RewardPickup closestPickup;
-    private RewardPickup lastPickup;
 
+    private int lastPickupId = -1;
+    private RewardPickup lastPreviewedPickup = null;
+
+    // Cache local — ne dépend plus du singleton statique
+    private UIStatsPanel cachedStatsPanel = null;
 
     void Update()
     {
         FindPickups();
         UpdateClosestPickup();
+    }
+
+    // Cherche le panel dans la scène si le cache est vide ou détruit
+    UIStatsPanel GetStatsPanel()
+    {
+        if (cachedStatsPanel != null)
+            return cachedStatsPanel;
+
+        // Cherche d'abord via le singleton
+        if (UIStatsPanel.Instance != null)
+        {
+            cachedStatsPanel = UIStatsPanel.Instance;
+            Debug.Log("[PickupDetector] UIStatsPanel trouvé via Instance");
+            return cachedStatsPanel;
+        }
+
+        // Fallback : cherche dans la scène active
+        cachedStatsPanel = FindFirstObjectByType<UIStatsPanel>();
+
+        if (cachedStatsPanel != null)
+            Debug.Log("[PickupDetector] UIStatsPanel trouvé via FindFirstObjectByType");
+        
+        return cachedStatsPanel;
     }
 
     void FindPickups()
@@ -27,8 +55,9 @@ public class PickupDetector : MonoBehaviour
         foreach (var hit in hits)
         {
             RewardPickup pickup = hit.GetComponent<RewardPickup>();
-            if (pickup != null)
-                nearbyPickups.Add(pickup);
+            if (pickup == null) continue;
+            if (pickup.gameObject == null) continue;
+            nearbyPickups.Add(pickup);
         }
     }
 
@@ -39,8 +68,8 @@ public class PickupDetector : MonoBehaviour
 
         foreach (var pickup in nearbyPickups)
         {
+            if (pickup == null) continue;
             float dist = Vector3.Distance(transform.position, pickup.transform.position);
-
             if (dist <= pickup.interactionRange && dist < minDist)
             {
                 minDist = dist;
@@ -48,25 +77,44 @@ public class PickupDetector : MonoBehaviour
             }
         }
 
-        // 🔁 Si le pickup n’a pas changé → on ne fait rien
-        if (closestPickup == lastPickup)
+        int currentId = closestPickup != null ? closestPickup.GetInstanceID() : -1;
+
+        // ───── BuffUI ─────────────────────────────────────────────────────────
+        if (currentId != lastPickupId)
+        {
+            lastPickupId = currentId;
+
+            if (BuffUI.Instance != null)
+                BuffUI.Instance.SetPickup(closestPickup);
+        }
+
+        // ───── UIStatsPanel preview ───────────────────────────────────────────
+        UIStatsPanel panel = GetStatsPanel();
+
+        if (panel == null)
             return;
 
-        lastPickup = closestPickup;
+        if (closestPickup == lastPreviewedPickup)
+            return;
 
-        // 📦 UI description
-        BuffUI.Instance.SetPickup(closestPickup);
+        lastPreviewedPickup = closestPickup;
 
-        // 📊 Preview stats
         if (closestPickup != null)
-            UIStatsPanel.Instance.PreviewBuff(closestPickup.buffData);
+        {
+            Debug.Log($"[PickupDetector] PreviewBuff → {closestPickup.name}");
+            panel.PreviewBuff(closestPickup.buffData);
+        }
         else
-            UIStatsPanel.Instance.ClearPreview();
+        {
+            Debug.Log("[PickupDetector] ClearPreview");
+            panel.ClearPreview();
+        }
     }
 
     void OnEnable()
     {
         RewardPickup.OnPickupConsumed += HandlePickupConsumed;
+        ResetState();
     }
 
     void OnDisable()
@@ -74,16 +122,41 @@ public class PickupDetector : MonoBehaviour
         RewardPickup.OnPickupConsumed -= HandlePickupConsumed;
     }
 
+    // Vide le cache quand la scène change pour forcer la recherche au prochain Update
+    void OnDestroy()
+    {
+        cachedStatsPanel = null;
+    }
+
     void HandlePickupConsumed(RewardPickup pickup)
     {
-        if (pickup == lastPickup)
-        {
-            lastPickup = null;
-            closestPickup = null;
+        ResetState();
 
+        if (BuffUI.Instance != null)
             BuffUI.Instance.SetPickup(null);
-            UIStatsPanel.Instance.ClearPreview();
 
-        }
+        UIStatsPanel panel = GetStatsPanel();
+        if (panel != null)
+            panel.ClearPreview();
+    }
+
+    public void ForceRefresh()
+    {
+        cachedStatsPanel = null; // force la recherche au prochain Update
+        ResetState();
+
+        if (BuffUI.Instance != null)
+            BuffUI.Instance.SetPickup(null);
+
+        UIStatsPanel panel = GetStatsPanel();
+        if (panel != null)
+            panel.ClearPreview();
+    }
+
+    void ResetState()
+    {
+        closestPickup       = null;
+        lastPickupId        = -1;
+        lastPreviewedPickup = null;
     }
 }

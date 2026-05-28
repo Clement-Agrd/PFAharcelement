@@ -1,4 +1,4 @@
-﻿// Scripts/UI/MainMenuUI.cs
+// Scripts/UI/MainMenuUI.cs
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
@@ -65,6 +65,49 @@ public class MainMenuUI : MonoBehaviour
 
     void LaunchGame()
     {
+        ActivePlayer();
+    }
+    
+    void ActivePlayer()
+    {
+        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+
+        foreach (GameObject obj in allObjects)
+        {
+            if (!obj.scene.IsValid())
+                continue;
+
+            if (!obj.CompareTag("Player"))
+                continue;
+
+            obj.SetActive(true);
+        }
+        Debug.Log("🎮 Run démarrée - Player activé");
+        
+        var player = GameObject.FindGameObjectWithTag("Player");
+        
+        // Reset buffs
+        PlayerStats stats = player.GetComponent<PlayerStats>();
+
+        if (stats != null)
+            stats.ClearAllModifiers();
+
+        // Reset HP
+        PlayerHealth health = player.GetComponent<PlayerHealth>();
+
+        if (health != null)
+            health.ResetPlayer();
+
+        // Reset ultimate
+        if (UltimateManager.Instance != null)
+            UltimateManager.Instance.ResetUltimate(player);
+        
+        stats.ResetRunStats();
+
+        FindFirstObjectByType<PickupDetector>()?.ForceRefresh();
+        UIStatsPanel.Instance?.ClearPreview();
+        BuffUI.Instance?.SetPickup(null);
+        
         // Fondu musical avant de charger la scène
         if (MusicManager.Instance != null)
             MusicManager.Instance.PlayGameMusic();

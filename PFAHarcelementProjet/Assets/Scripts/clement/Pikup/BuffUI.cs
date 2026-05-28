@@ -18,19 +18,31 @@ public class BuffUI : MonoBehaviour
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
-        panel.SetActive(false);
+
+        if (panel != null)
+            panel.SetActive(false);
     }
 
     public void SetPickup(RewardPickup pickup)
     {
+        if (panel == null || buffNameText == null || descriptionText == null || priceText == null)
+            return;
+        
         if (pickup == null)
         {
             panel.SetActive(false);
             return;
         }
 
-        panel.SetActive(true);
+        if (panel != null)
+            panel.SetActive(true);
 
         // ✅ Infos de base
         buffNameText.text = pickup.buffData.buffName;

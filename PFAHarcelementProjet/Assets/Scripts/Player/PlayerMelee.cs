@@ -1,4 +1,4 @@
-﻿// Scripts/Player/PlayerMelee.cs
+// Scripts/Player/PlayerMelee.cs
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

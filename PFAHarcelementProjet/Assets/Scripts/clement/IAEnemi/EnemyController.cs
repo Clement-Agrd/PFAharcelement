@@ -22,7 +22,8 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
 
     [Header("Récompense")]
     public int goldValue = 10;
-
+    public int xpValue   = 5;
+    
     public abstract void PerformAttack();
 
     public bool IsDead => CurrentHealth <= 0f;
@@ -152,21 +153,31 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
     {
         Debug.Log($"{gameObject.name} est mort");
 
-        // ─── Récompense gold ──────────────────────────────────────────────
-        if (XPManager.Instance != null && goldValue > 0)
+        if (XPManager.Instance != null)
         {
-            XPManager.Instance.AddGold(goldValue);
-            Debug.Log($"💰 +{goldValue} gold ({gameObject.name})");
+            // ✅ GOLD
+            if (goldValue > 0)
+            {
+                XPManager.Instance.AddGold(goldValue);
+                Debug.Log($"💰 +{goldValue} gold ({gameObject.name})");
+            }
+
+            // ✅ XP DIRECT
+            if (xpValue > 0)
+            {
+                XPManager.Instance.AddXP(xpValue);
+                Debug.Log($"✨ +{xpValue} XP ({gameObject.name})");
+            }
         }
 
-        // ─── Bestiaire ────────────────────────────────────────────────────
+        // ─── Bestiaire ───────────────────
         if (bestiaryEntry != null)
             BestiaryManager.Instance.UnlockCreature(bestiaryEntry.id);
 
         gameObject.SetActive(false);
         Destroy(gameObject, 2f);
     }
-
+    
     protected virtual void Update()
     {
         StateMachine.Update();

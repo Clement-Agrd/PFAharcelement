@@ -14,7 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameScene.unity
     guid: 73089ea7b5688da48a0dd458afd7d39b
-  - enabled: 0
+  - enabled: 1
     path: "Assets/Scenes/Cl\xE9ment scene/MainClem.unity"
     guid: 98febda56a0a4e44ea6fb9061ffc3936
   - enabled: 1

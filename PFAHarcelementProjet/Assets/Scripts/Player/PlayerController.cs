@@ -69,32 +69,7 @@ public class PlayerController : MonoBehaviour
 
     // ─── DASH ───────────────────────────────────────────────
 
-    public void StartDash(Vector3 direction)
-    {
-        if (!CanAct || isDashing)
-            return;
 
-        StartCoroutine(DashCoroutine(direction));
-    }
-
-    IEnumerator DashCoroutine(Vector3 direction)
-    {
-        isDashing = true;
-
-        float elapsed = 0f;
-        while (elapsed < dashDuration)
-        {
-            Vector3 move = direction * dashSpeed;
-            move.y = verticalVelocity;
-            controller.Move(move * Time.deltaTime);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        isDashing = false;
-    }
-
-    public bool IsDashing => isDashing;
 
     // ─── VERROU API ──────────────────────────────────────────
 

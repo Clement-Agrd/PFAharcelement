@@ -10,32 +10,49 @@ public class FinalPortal : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (used) return;
-        if (!other.CompareTag("Player")) return;
-        XPManager.Instance.ConvertGoldToXP();
+
+        if (!other.CompareTag("Player"))
+            return;
+
         used = true;
 
-        CleanupAndLoad();
-    }
+        // Convertit le gold en XP
+        if (XPManager.Instance != null)
+            XPManager.Instance.ConvertGoldToXP();
 
-    void CleanupAndLoad()
-    {
-        // ✅ récupère tous les objets, même persistants
-        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
-
-        foreach (GameObject obj in allObjects)
-        {
-            // ✅ skip ceux qui sont dans un asset/prefab
-            if (!obj.scene.IsValid()) continue;
-
-            // ✅ skip GameManagers (tagged Persistent)
-            if (obj.CompareTag("Persistent")) continue;
-
-            // ✅ on ne détruit pas le portail lui-même
-            if (obj == gameObject) continue;
-
-            Destroy(obj);
-        }
+        ResetRun(other.gameObject);
 
         SceneManager.LoadScene(menuSceneName);
+    }
+
+    void ResetRun(GameObject player)
+    {
+        // Reset buffs
+        PlayerStats stats = player.GetComponent<PlayerStats>();
+
+        if (stats != null)
+            stats.ClearAllModifiers();
+
+        // Reset HP
+        PlayerHealth health = player.GetComponent<PlayerHealth>();
+
+        if (health != null)
+            health.ResetPlayer();
+
+        // Reset ultimate
+        if (UltimateManager.Instance != null)
+            UltimateManager.Instance.ResetUltimate(player);
+
+        stats.ResetRunStats();
+
+        FindFirstObjectByType<PickupDetector>()?.ForceRefresh();
+        UIStatsPanel.Instance?.ClearPreview();
+        BuffUI.Instance?.SetPickup(null);
+
+        // Désactive le player dans le menu
+        player.SetActive(false);
+
+        // Reset position
+        player.transform.position = Vector3.zero;
     }
 }

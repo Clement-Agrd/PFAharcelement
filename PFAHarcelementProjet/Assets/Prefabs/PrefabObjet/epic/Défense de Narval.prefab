@@ -32,6 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5811564253942348636}
+  - {fileID: 8665648302612773484}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1842965106386798193
@@ -132,4 +133,70 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 8029142899459995171, guid: 6e95624d2a7aa1f4783637051c3d69ee, type: 3}
   m_PrefabInstance: {fileID: 4597027366529584511}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &9207653738717519239
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 967512116345746588}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.6344302
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.6344302
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.31224716
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.31224716
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -37.59
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 13ad0fdff0422d74eb26b546bb46cba9, type: 2}
+    - target: {fileID: 919132149155446097, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+      propertyPath: m_Name
+      value: 3D_Item_NarwhalTusk
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+--- !u!4 &8665648302612773484 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e302fa528c747a34fbb0ec2e940d8e3f, type: 3}
+  m_PrefabInstance: {fileID: 9207653738717519239}
   m_PrefabAsset: {fileID: 0}

@@ -276,4 +276,19 @@ public class UltimateUI : MonoBehaviour
                 break;
         }
     }
+    public void ClearUltimate()
+    {
+        currentData = null;
+
+        if (root != null)
+            root.SetActive(false);
+
+        if (cooldownText != null)
+            cooldownText.text = "";
+
+        if (cooldownFill != null)
+            cooldownFill.fillAmount = 0f;
+
+        isPulsing = false;
+    }
 }

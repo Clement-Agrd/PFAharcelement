@@ -1,22 +1,14 @@
-using UnityEngine;
+// UIStatsPanel.cs
 using System.Collections.Generic;
+using UnityEngine;
 
 public class UIStatsPanel : MonoBehaviour
 {
     public PlayerStats playerStats;
     public StatUIRow rowPrefab;
     public Transform contentRoot;
-    
-    
 
     public static UIStatsPanel Instance;
-
-    void Awake()
-    {
-        Instance = this;
-    }
-
-
 
     [System.Serializable]
     public class StatIcon
@@ -27,7 +19,29 @@ public class UIStatsPanel : MonoBehaviour
 
     public List<StatIcon> statIcons;
 
-    Dictionary<StatType, StatUIRow> rows = new();
+    private Dictionary<StatType, StatUIRow> rows = new();
+
+    // ─────────────────────────────────────────────────────────────────────────
+
+    void Awake()
+    {
+        Instance = this;
+        Debug.Log("[UIStatsPanel] Awake — Instance assignée");
+    }
+
+    void OnEnable()
+    {
+        TryBindPlayer();
+    }
+
+    // Désouscription obligatoire : UIStatsPanel est dans GameScene et se détruit
+    // quand on revient au menu. Sans ça, le delegate mort reste sur PlayerStats
+    // (DontDestroyOnLoad) et plante ou corrompt la prochaine session.
+    void OnDisable()
+    {
+        if (playerStats != null)
+            playerStats.OnStatsChanged -= UpdateAll;
+    }
 
     void Start()
     {
@@ -38,40 +52,56 @@ public class UIStatsPanel : MonoBehaviour
             row.icon.sprite = stat.icon;
         }
 
+        TryBindPlayer();
         UpdateAll();
+    }
 
+    // ─── Binding ─────────────────────────────────────────────────────────────
+
+    void TryBindPlayer()
+    {
+        // Si pas encore assigné (ou référence perdue), cherche dans la scène
+        if (playerStats == null || playerStats.gameObject == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+                playerStats = player.GetComponent<PlayerStats>();
+        }
+
+        if (playerStats == null) return;
+
+        // Toujours re-souscrire, avec déduplication (- avant + pour éviter les doublons)
+        // C'est le cœur du fix : une nouvelle UIStatsPanel doit toujours s'abonner,
+        // qu'elle ait trouvé le player ou qu'il soit pré-assigné dans l'Inspector.
+        playerStats.OnStatsChanged -= UpdateAll;
         playerStats.OnStatsChanged += UpdateAll;
     }
 
-    void OnDestroy()
+    bool IsValid()
     {
-        if (playerStats != null)
-            playerStats.OnStatsChanged -= UpdateAll;
+        return playerStats != null && playerStats.gameObject != null;
     }
-    
+
+    // ─── Preview ─────────────────────────────────────────────────────────────
+
     public void PreviewBuff(BuffPickupData buff)
     {
+        TryBindPlayer();
+
+        if (!IsValid()) return;
+
+        if (buff == null)
+        {
+            UpdateAll();
+            return;
+        }
+
         foreach (var pair in rows)
         {
             StatType statType = pair.Key;
 
             float current = playerStats.GetStat(statType);
-
-            float preview = current;
-
-            // ✅ Applique TOUS les modifiers du buff en preview
-            foreach (var mod in buff.modifiers)
-            {
-                if (mod.statType != statType) continue;
-
-                StatModifier previewModifier = new StatModifier(
-                    mod.statType,
-                    mod.modifierType,
-                    mod.value
-                );
-
-                preview = playerStats.GetStatPreview(statType, previewModifier);
-            }
+            float preview = playerStats.GetStatPreviewWithBuff(statType, buff.modifiers);
 
             pair.Value.Set(
                 GetSprite(statType),
@@ -81,16 +111,20 @@ public class UIStatsPanel : MonoBehaviour
             );
         }
     }
-    
+
     public void ClearPreview()
     {
         UpdateAll();
     }
 
-
+    // ─── Mise à jour normale ─────────────────────────────────────────────────
 
     void UpdateAll()
     {
+        TryBindPlayer();
+
+        if (!IsValid()) return;
+
         foreach (var pair in rows)
         {
             StatType stat = pair.Key;
@@ -104,8 +138,11 @@ public class UIStatsPanel : MonoBehaviour
         }
     }
 
+    // ─── Utilitaire ──────────────────────────────────────────────────────────
+
     Sprite GetSprite(StatType type)
     {
-        return statIcons.Find(s => s.statType == type).icon;
+        var entry = statIcons.Find(s => s.statType == type);
+        return entry != null ? entry.icon : null;
     }
 }

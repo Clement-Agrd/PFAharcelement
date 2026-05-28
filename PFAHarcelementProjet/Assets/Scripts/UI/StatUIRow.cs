@@ -18,6 +18,8 @@ public class StatUIRow : MonoBehaviour
         StatType type
     )
     {
+        Debug.Log($"UI SET {type} : {current} -> {preview}");
+        
         icon.sprite = sprite;
 
         if (Mathf.Approximately(current, preview))

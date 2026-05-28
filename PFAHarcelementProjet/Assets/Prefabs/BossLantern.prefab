@@ -156,7 +156,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7621299943098457849}
   serializedVersion: 5
-  m_Mass: 50
+  m_Mass: 1000
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -197,6 +197,7 @@ MonoBehaviour:
   attackCooldown: 1.2
   stopChaseRange: 4
   goldValue: 10
+  xpValue: 5
   SummonPrefab: {fileID: 1262792258009639148, guid: 8d2f211eb2dea89439ffbd0e2fde183d, type: 3}
   SummonCount: 4
   SummonRadius: 4

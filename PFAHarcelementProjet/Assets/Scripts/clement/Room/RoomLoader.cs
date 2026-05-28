@@ -1,289 +1,303 @@
-﻿    using UnityEngine;
-    using System.Collections;
+﻿using System;
+using UnityEngine;
+using System.Collections;
+using Random = UnityEngine.Random;
 
-    public class RoomLoader : MonoBehaviour
+public class RoomLoader : MonoBehaviour
+{
+    public static RoomLoader Instance;
+
+    private Transform spawnPoint;
+
+    [Header("Rooms")]
+    public GameObject[] combatRooms;
+    public GameObject[] eliteRooms;
+    public GameObject[] shopRooms;
+    public GameObject eventRoom;
+    public GameObject bossRoom;
+
+    [Header("Setup")]
+    public Transform roomContainer;
+
+    [Header("Animation Settings")]
+    [SerializeField] private float fallDistance = 15f;
+    [SerializeField] private float fallSpeed = 2f;
+    [SerializeField] private float riseSpeed = 2f;
+    [SerializeField] private float waveDelayMultiplier = 0.1f;
+    [SerializeField] private float maxDelay = 0.5f;
+    [SerializeField] private float rotationIntensity = 200f;
+    [SerializeField] private float totalAnimDuration = 2f;
+
+    [SerializeField] private string spawnLayerName = "Spawn";
+
+    private GameObject currentRoom;
+
+    // ─────────────────────────────────────────────────────────────
+    // PLAYER SAFE ACCESS (IMPORTANT)
+    // ─────────────────────────────────────────────────────────────
+
+    private PlayerController Player
     {
-        public static RoomLoader Instance;
-
-        private Transform spawnPoint;
-
-        [Header("Rooms")]
-        public GameObject[] combatRooms;
-        public GameObject[] eliteRooms;
-        public GameObject[] shopRooms;
-        public GameObject eventRoom;
-        public GameObject bossRoom;
-
-        [Header("Setup")]
-        public Transform roomContainer;
-
-        [Header("Animation Settings")]
-        [SerializeField] private float fallDistance = 15f;
-        [SerializeField] private float fallSpeed = 2f;
-        [SerializeField] private float riseSpeed = 2f;
-
-        [SerializeField] private float waveDelayMultiplier = 0.1f;
-        [SerializeField] private float maxDelay = 0.5f;
-
-        [SerializeField] private float rotationIntensity = 200f;
-        [SerializeField] private float totalAnimDuration = 2f;
-        
-        [SerializeField] private string spawnLayerName = "Spawn";
-
-
-        private GameObject currentRoom;
-        private PlayerController player;
-
-
-        void Awake()
+        get
         {
-            Instance = this;
-            player = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
+            GameObject obj = GameObject.FindWithTag("Player");
+            if (obj == null) return null;
 
-            spawnPoint = FindSpawnPoint();
-
-            if (spawnPoint == null)
-            {
-                Debug.LogError("[RoomLoader] Aucun SpawnPoint trouvé (layer 'Spawn')");
-            }
+            return obj.GetComponent<PlayerController>();
         }
+    }
 
-        
-        private Transform FindSpawnPoint()
+    void Awake()
+    {
+        Instance = this;
+        spawnPoint = FindSpawnPoint();
+    }
+    
+    private Transform FindSpawnPoint()
+    {
+        int spawnLayer = LayerMask.NameToLayer(spawnLayerName);
+        if (spawnLayer < 0)
         {
-            int spawnLayer = LayerMask.NameToLayer(spawnLayerName);
-            if (spawnLayer < 0)
-            {
-                Debug.LogError($"[RoomLoader] Layer '{spawnLayerName}' introuvable !");
-                return null;
-            }
-
-            // On cherche PRIORITAIREMENT chez le player
-            foreach (Transform t in player.GetComponentsInChildren<Transform>())
-            {
-                if (t.gameObject.layer == spawnLayer)
-                    return t;
-            }
-
+            Debug.LogError($"[RoomLoader] Layer '{spawnLayerName}' introuvable !");
             return null;
         }
 
-        // ─────────────────────────────────────────────────────────────
-        // API PUBLIQUE
-        // ─────────────────────────────────────────────────────────────
+        var player = Player;
+        if (player == null) return null;
 
-        public void LoadRoom(RoomType type)
+        foreach (Transform t in player.GetComponentsInChildren<Transform>())
         {
-            StartCoroutine(TransitionAndLoad(type));
+            if (t.gameObject.layer == spawnLayer)
+                return t;
         }
 
-        // ─────────────────────────────────────────────────────────────
-        // CORE LOGIC
-        // ─────────────────────────────────────────────────────────────
+        return null;
+    }
 
-        private IEnumerator TransitionAndLoad(RoomType type)
+    // ─────────────────────────────────────────────────────────────
+    // PUBLIC API
+    // ─────────────────────────────────────────────────────────────
+
+    public void LoadRoom(RoomType type)
+    {
+        StartCoroutine(TransitionAndLoad(type));
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // CORE
+    // ─────────────────────────────────────────────────────────────
+
+    private IEnumerator TransitionAndLoad(RoomType type)
+    {
+        PlayerController player = Player;
+
+        if (player == null)
         {
-           
-            player.SetMovement(false);
-            player.SetActions(false);
+            Debug.LogError("❌ Player introuvable dans RoomLoader");
+            yield break;
+        }
 
-            CharacterController chac = player.GetComponent<CharacterController>();
-            if (chac != null)
-                chac.enabled = false;
+        // Disable player safely
+        player.SetMovement(false);
+        player.SetActions(false);
 
-            
+        CharacterController cc = player.GetComponent<CharacterController>();
+        if (cc != null)
+            cc.enabled = false;
 
+        PlayerCombat combat = player.GetComponent<PlayerCombat>();
+        if (combat != null)
+            combat.CancelCombat();
 
-            PlayerCombat combat = player.GetComponent<PlayerCombat>();
-            if (combat != null)
-            {
-                combat.CancelCombat();
-            }
+        // ─────────────────────────────────────────────
+        // EXIT OLD ROOM
+        // ─────────────────────────────────────────────
 
+        if (currentRoom != null)
+        {
+            foreach (var exit in currentRoom.GetComponentsInChildren<IRoomExit>())
+                exit.OnRoomExit();
 
+            yield return StartCoroutine(SlideOutRoom(currentRoom));
 
-            // SORTIE DE L'ANCIENNE SALLE
+            Destroy(currentRoom);
+        }
 
-            if (currentRoom != null)
-            {
-                foreach (var exit in currentRoom.GetComponentsInChildren<IRoomExit>())
-                {
-                    exit.OnRoomExit();
-                }
+        // ─────────────────────────────────────────────
+        // SPAWN NEW ROOM
+        // ─────────────────────────────────────────────
 
-                yield return StartCoroutine(SlideOutRoom(currentRoom));
-                Destroy(currentRoom);
-            }
+        GameObject prefab = GetRoomPrefab(type);
 
+        currentRoom = Instantiate(
+            prefab,
+            spawnPoint != null ? spawnPoint.position : Vector3.zero,
+            Quaternion.identity,
+            roomContainer
+        );
 
-            // CHOIX DU PREFAB
-            GameObject prefab = GetRoomPrefab(type);
+        StageManager.Instance?.RegisterRoom(currentRoom);
 
-            // ⚠️ IMPORTANT :
-            // On instancie TOUJOURS avec une rotation identité
-            // Le prefab DOIT être à (0,0,0)
-            currentRoom = Instantiate(
-                prefab,
-                spawnPoint.position,
-                Quaternion.identity,
-                roomContainer
-            );
+        // ─────────────────────────────────────────────
+        // ENTER ANIMATION
+        // ─────────────────────────────────────────────
 
-            StageManager.Instance.RegisterRoom(currentRoom);
+        yield return StartCoroutine(SlideInRoomStylized(currentRoom));
 
-            // ENTRÉE DE LA SALLE
-            yield return StartCoroutine(SlideInRoomStylized(currentRoom));
+        foreach (var enter in currentRoom.GetComponentsInChildren<IRoomEnter>())
+            enter.OnRoomEnter();
 
-            // ✅ NOTIFICATION "SALLE PRÊTE"
-            foreach (var enter in currentRoom.GetComponentsInChildren<IRoomEnter>())
-            {
-                enter.OnRoomEnter();
-            }
+        // ─────────────────────────────────────────────
+        // RE-ENABLE PLAYER (SAFE)
+        // ─────────────────────────────────────────────
 
-
-
-            CharacterController cc = player.GetComponent<CharacterController>();
-            if (cc != null)
-                cc.enabled = true;
+        player = Player;
+        if (player != null)
+        {
+            CharacterController newCC = player.GetComponent<CharacterController>();
+            if (newCC != null)
+                newCC.enabled = true;
 
             player.SetMovement(true);
             player.SetActions(true);
-
-
-        }
-
-        // ─────────────────────────────────────────────────────────────
-        // PREFAB SELECTION
-        // ─────────────────────────────────────────────────────────────
-
-        private GameObject GetRoomPrefab(RoomType type)
-        {
-            return type switch
-            {
-                RoomType.Combat => combatRooms[Random.Range(0, combatRooms.Length)],
-                RoomType.Elite  => eliteRooms[Random.Range(0, eliteRooms.Length)],
-                RoomType.Shop   => shopRooms[Random.Range(0, shopRooms.Length)],
-                RoomType.Event  => eventRoom,
-                RoomType.Boss   => bossRoom,
-                _               => combatRooms[0]
-            };
-        }
-
-        // ─────────────────────────────────────────────────────────────
-        // ANIMATIONS
-        // ─────────────────────────────────────────────────────────────
-
-
-        private IEnumerator SlideOutRoom(GameObject room)
-        {
-            RoomVisualRoot visualRoot = room.GetComponent<RoomVisualRoot>();
-            if (visualRoot == null || visualRoot.visualsRoot == null)
-                yield break;
-
-            Transform[] parts = visualRoot.visualsRoot.GetComponentsInChildren<Transform>();
-
-            foreach (Transform part in parts)
-            {
-                if (part == visualRoot.visualsRoot) continue;
-
-                float delay = Mathf.Clamp(
-                    (part.position.x - visualRoot.visualsRoot.position.x) * waveDelayMultiplier,
-                    0f,
-                    maxDelay
-                );
-
-                StartCoroutine(FallPart(part, delay));
-            }
-
-            yield return new WaitForSeconds(totalAnimDuration);
-        }
-        private IEnumerator FallPart(Transform part, float delay)
-        {
-            if (part == null) yield break;
-
-            yield return new WaitForSeconds(delay);
-
-            if (part == null) yield break;
-
-            Vector3 startPos = part.position;
-            Quaternion startRot = part.localRotation;
-
-            Vector3 targetPos = startPos + Vector3.down * fallDistance;
-            Vector3 randomRot = Random.insideUnitSphere * rotationIntensity;
-
-            float t = 0f;
-            while (t < 1f)
-            {
-                if (part == null) yield break;
-
-                t += Time.deltaTime * fallSpeed;
-
-                part.position = Vector3.Lerp(startPos, targetPos, t);
-                part.Rotate(randomRot * Time.deltaTime);
-
-                yield return null;
-            }
-
-            if (part == null) yield break;
-            part.localRotation = startRot;
-        }
-
-
-        
-        private IEnumerator SlideInRoomStylized(GameObject room)
-        {
-            RoomVisualRoot visualRoot = room.GetComponent<RoomVisualRoot>();
-            if (visualRoot == null || visualRoot.visualsRoot == null)
-                yield break;
-
-            Transform[] parts = visualRoot.visualsRoot.GetComponentsInChildren<Transform>();
-
-            foreach (Transform part in parts)
-            {
-                if (part == visualRoot.visualsRoot) continue;
-
-                Vector3 finalPos = part.position;
-                part.position = finalPos + Vector3.down * fallDistance;
-
-                float delay = Mathf.Clamp(
-                    (finalPos.x - visualRoot.visualsRoot.position.x) * waveDelayMultiplier,
-                    0f,
-                    maxDelay
-                );
-
-                StartCoroutine(RisePart(part, finalPos, delay));
-            }
-
-            yield return new WaitForSeconds(totalAnimDuration);
-        }
-
-        private IEnumerator RisePart(Transform part, Vector3 targetPos, float delay)
-        {
-            if (part == null) yield break;
-
-            yield return new WaitForSeconds(delay);
-
-            if (part == null) yield break;
-
-            Vector3 startPos = part.position;
-            Quaternion startRot = part.localRotation;
-            Vector3 randomRot = Random.insideUnitSphere * rotationIntensity;
-
-            float t = 0f;
-            while (t < 1f)
-            {
-                if (part == null) yield break;
-
-                t += Time.deltaTime * riseSpeed;
-
-                part.position = Vector3.Lerp(startPos, targetPos, t);
-                part.Rotate(randomRot * (1f - t) * Time.deltaTime);
-
-                yield return null;
-            }
-
-            if (part == null) yield break;
-            part.position = targetPos;
-            part.localRotation = startRot;
         }
     }
+
+    // ─────────────────────────────────────────────────────────────
+    // PREFABS
+    // ─────────────────────────────────────────────────────────────
+
+    private GameObject GetRoomPrefab(RoomType type)
+    {
+        return type switch
+        {
+            RoomType.Combat => combatRooms[Random.Range(0, combatRooms.Length)],
+            RoomType.Elite  => eliteRooms[Random.Range(0, eliteRooms.Length)],
+            RoomType.Shop   => shopRooms[Random.Range(0, shopRooms.Length)],
+            RoomType.Event  => eventRoom,
+            RoomType.Boss   => bossRoom,
+            _               => combatRooms[0]
+        };
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // ANIMATIONS (UNCHANGED BUT SAFE)
+    // ─────────────────────────────────────────────────────────────
+
+    private IEnumerator SlideOutRoom(GameObject room)
+    {
+        RoomVisualRoot root = room.GetComponent<RoomVisualRoot>();
+        if (root == null || root.visualsRoot == null)
+            yield break;
+
+        Transform[] parts = root.visualsRoot.GetComponentsInChildren<Transform>();
+
+        foreach (Transform part in parts)
+        {
+            if (part == root.visualsRoot) continue;
+
+            float delay = Mathf.Clamp(
+                (part.position.x - root.visualsRoot.position.x) * waveDelayMultiplier,
+                0f,
+                maxDelay
+            );
+
+            StartCoroutine(FallPart(part, delay));
+        }
+
+        yield return new WaitForSeconds(totalAnimDuration);
+    }
+
+    private IEnumerator FallPart(Transform part, float delay)
+    {
+        if (part == null) yield break;
+
+        yield return new WaitForSeconds(delay);
+        if (part == null) yield break;
+
+        Vector3 startPos = part.position;
+        Quaternion startRot = part.rotation;
+
+        Vector3 targetPos = startPos + Vector3.down * fallDistance;
+        Vector3 randomRot = Random.insideUnitSphere * rotationIntensity;
+
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            if (part == null) yield break;
+
+            t += Time.deltaTime * fallSpeed;
+
+            part.position = Vector3.Lerp(startPos, targetPos, t);
+
+            part.rotation = startRot * Quaternion.Euler(randomRot * t * Time.deltaTime);
+
+            yield return null;
+        }
+
+        if (part == null) yield break;
+
+        part.position = targetPos;
+        part.rotation = startRot;
+    }
+
+    private IEnumerator SlideInRoomStylized(GameObject room)
+    {
+        RoomVisualRoot root = room.GetComponent<RoomVisualRoot>();
+        if (root == null || root.visualsRoot == null)
+            yield break;
+
+        Transform[] parts = root.visualsRoot.GetComponentsInChildren<Transform>();
+
+        foreach (Transform part in parts)
+        {
+            if (part == root.visualsRoot) continue;
+
+            Vector3 finalPos = part.position;
+            part.position = finalPos + Vector3.down * fallDistance;
+
+            float delay = Mathf.Clamp(
+                (finalPos.x - root.visualsRoot.position.x) * waveDelayMultiplier,
+                0f,
+                maxDelay
+            );
+
+            StartCoroutine(RisePart(part, finalPos, delay));
+        }
+
+        yield return new WaitForSeconds(totalAnimDuration);
+    }
+
+    private IEnumerator RisePart(Transform part, Vector3 targetPos, float delay)
+    {
+        if (part == null) yield break;
+
+        yield return new WaitForSeconds(delay);
+        if (part == null) yield break;
+
+        Vector3 startPos = part.position;
+        Quaternion startRot = part.rotation;
+        Vector3 randomRot = Random.insideUnitSphere * rotationIntensity;
+
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            if (part == null) yield break;
+
+            t += Time.deltaTime * riseSpeed;
+
+            part.position = Vector3.Lerp(startPos, targetPos, t);
+
+            part.rotation = startRot * Quaternion.Euler(randomRot * (1f - t) * Time.deltaTime);
+
+            yield return null;
+        }
+
+        if (part == null) yield break;
+
+        part.position = targetPos;
+        part.rotation = startRot;
+    }
+}
