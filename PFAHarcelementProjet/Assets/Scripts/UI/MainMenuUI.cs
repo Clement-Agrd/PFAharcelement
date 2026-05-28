@@ -85,24 +85,31 @@ public class MainMenuUI : MonoBehaviour
         Debug.Log("🎮 Run démarrée - Player activé");
         
         var player = GameObject.FindGameObjectWithTag("Player");
-        
-        // Reset buffs
-        PlayerStats stats = player.GetComponent<PlayerStats>();
 
-        if (stats != null)
-            stats.ClearAllModifiers();
+        if (player != null)
+        {
+            // Reset buffs
+            PlayerStats stats = player.GetComponent<PlayerStats>();
 
-        // Reset HP
-        PlayerHealth health = player.GetComponent<PlayerHealth>();
+            if (stats != null)
+                stats.ClearAllModifiers();
 
-        if (health != null)
-            health.ResetPlayer();
+            // Reset HP
+            PlayerHealth health = player.GetComponent<PlayerHealth>();
 
-        // Reset ultimate
-        if (UltimateManager.Instance != null)
-            UltimateManager.Instance.ResetUltimate(player);
-        
-        stats.ResetRunStats();
+            if (health != null)
+                health.ResetPlayer();
+
+            // Reset ultimate
+            if (UltimateManager.Instance != null)
+                UltimateManager.Instance.ResetUltimate(player);
+
+            stats.ResetRunStats();
+
+            FindFirstObjectByType<PickupDetector>()?.ForceRefresh();
+            UIStatsPanel.Instance?.ClearPreview();
+            BuffUI.Instance?.SetPickup(null);
+        }
 
         FindFirstObjectByType<PickupDetector>()?.ForceRefresh();
         UIStatsPanel.Instance?.ClearPreview();
