@@ -73,7 +73,7 @@ public class PlayerDash : MonoBehaviour
 
         SetInvincible(true);
 
-        // ← Son au lancement du dash
+        // Son dash
         if (PlayerSoundManager.Instance != null)
             PlayerSoundManager.Instance.PlayDash();
     }
@@ -91,10 +91,8 @@ public class PlayerDash : MonoBehaviour
         {
             restoreTime += Time.deltaTime;
             float t = restoreTime / restoreAimDuration;
-
             transform.rotation = Quaternion.Slerp(
                 restoreStartRot, restoreTargetRot, t);
-
             if (t >= 1f) restoringAim = false;
             return;
         }
@@ -107,10 +105,8 @@ public class PlayerDash : MonoBehaviour
         {
             alignTime += Time.deltaTime;
             float t = alignTime / alignDuration;
-
             transform.rotation = Quaternion.Slerp(
                 alignStartRot, alignTargetRot, t);
-
             if (t >= 1f) aligning = false;
         }
         else
@@ -127,13 +123,10 @@ public class PlayerDash : MonoBehaviour
         {
             isDashing       = false;
             invincibleTimer = postDashIFrames;
-
             restoreStartRot  = transform.rotation;
             restoreTargetRot = Quaternion.LookRotation(lockedAimDirection);
             restoreTime      = 0f;
-
-            if (combat.isShooting)
-                restoringAim = true;
+            if (combat.isShooting) restoringAim = true;
         }
     }
 

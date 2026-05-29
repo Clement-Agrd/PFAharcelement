@@ -7,9 +7,14 @@ public class PlayerSoundManager : MonoBehaviour
     public static PlayerSoundManager Instance { get; private set; }
 
     [Header("Références")]
-    public AudioSource      sfxSource;
-    public AudioMixer       audioMixer;
-    public PlayerSoundData  soundData;
+    public AudioMixer      audioMixer;
+    public PlayerSoundData soundData;
+
+    [Header("Audio Sources")]
+    public AudioSource meleeSource;
+    public AudioSource dashSource;
+
+    private bool muted = false;
 
     void Awake()
     {
@@ -18,13 +23,36 @@ public class PlayerSoundManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void PlayShoot()  => Play(soundData?.shoot);
-    public void PlayMelee()  => Play(soundData?.melee);
-    public void PlayDash()   => Play(soundData?.dash);
+    // Gardé vide pour compatibilité
+    public void SetShootPressed(bool pressed) { }
 
-    void Play(AudioClip clip)
+    public void PlayMelee()
     {
-        if (clip == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(clip);
+        if (muted) return;
+        if (meleeSource == null) return;
+        if (soundData?.melee == null) return;
+        meleeSource.PlayOneShot(soundData.melee);
+    }
+
+    public void PlayDash()
+    {
+        if (muted) return;
+        if (dashSource == null) return;
+        if (soundData?.dash == null) return;
+        dashSource.PlayOneShot(soundData.dash);
+    }
+
+    public void Mute()
+    {
+        muted = true;
+        if (meleeSource != null) meleeSource.Stop();
+        if (dashSource  != null) dashSource.Stop();
+        Debug.Log("🔇 Sons mutés");
+    }
+
+    public void Unmute()
+    {
+        muted = false;
+        Debug.Log("🔊 Sons réactivés");
     }
 }

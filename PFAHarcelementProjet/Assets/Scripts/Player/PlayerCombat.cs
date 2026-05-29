@@ -42,7 +42,7 @@ public class PlayerCombat : MonoBehaviour
     {
         DetectInputDevice();
 
-        if (!controller.CanAct)             return;
+        if (!controller.CanAct)                 return;
         if (melee != null && melee.IsAttacking) return;
 
         Vector3 aimDirection  = GetAimDirection();
@@ -126,12 +126,10 @@ public class PlayerCombat : MonoBehaviour
                 {
                     Vector3 dir = ray.GetPoint(distance) - transform.position;
                     dir.y = 0f;
-
                     if (dir.sqrMagnitude > 0.001f)
                         lastMouseAimDirection = dir.normalized;
                 }
             }
-
             return lastMouseAimDirection;
         }
 
@@ -161,10 +159,6 @@ public class PlayerCombat : MonoBehaviour
             p.lifeStealRatio = stats.GetStat(StatType.LifeSteal);
         }
 
-        // ← Son à chaque tir
-        if (PlayerSoundManager.Instance != null)
-            PlayerSoundManager.Instance.PlayShoot();
-
         nextFire = Time.time + fireRate;
     }
 
@@ -187,5 +181,11 @@ public class PlayerCombat : MonoBehaviour
     {
         nextFire = 0f;
         if (melee != null) melee.CancelAttack();
+    }
+
+    void OnDisable()
+    {
+        if (PlayerSoundManager.Instance != null)
+            PlayerSoundManager.Instance.SetShootPressed(false);
     }
 }

@@ -35,8 +35,8 @@ public class PlayerMelee : MonoBehaviour
     [Header("Références")]
     public Animator animator;
 
-    PlayerStats      stats;
-    PlayerController controller;
+    PlayerStats         stats;
+    PlayerController    controller;
     CharacterController cc;
 
     float nextAttack;
@@ -74,10 +74,10 @@ public class PlayerMelee : MonoBehaviour
         float cooldown = (1f / attackSpeed) *
                          (1f - Mathf.Clamp01(cooldownReduction));
 
-        if (Time.time < nextAttack)    return;
+        if (Time.time < nextAttack)          return;
         if (attackDirection == Vector3.zero) return;
 
-        // ← Son à chaque coup de mêlée
+        // Son mêlée
         if (PlayerSoundManager.Instance != null)
             PlayerSoundManager.Instance.PlayMelee();
 
@@ -104,7 +104,8 @@ public class PlayerMelee : MonoBehaviour
         float t = 0f;
         while (t < tMax)
         {
-            transform.rotation = Quaternion.Slerp(startRot, targetRot, t / tMax);
+            transform.rotation = Quaternion.Slerp(
+                startRot, targetRot, t / tMax);
             t += Time.deltaTime;
             yield return null;
         }
