@@ -1,134 +1,273 @@
-﻿// Scripts/NPC/NPCDialogue.cs
+// Scripts/NPC/NPCDialogue.cs
 
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 
 public class NPCDialogue : MonoBehaviour
 {
     [Header("Détection joueur")]
-    public float interactRange = 3f;
-    public KeyCode interactKey = KeyCode.E;
+    [SerializeField] private float interactRange = 3f;
+    [SerializeField] private KeyCode interactKey = KeyCode.E;
 
     [Header("Dialogue")]
-    public Sprite npcPortrait;
-    public string npcName = "Entité des Abysses";
-    public List<string> dialogLines = new List<string>();
+    [SerializeField] private Sprite npcPortrait;
+    [SerializeField] private string npcName = "Entité des Abysses";
+    [SerializeField] private List<string> dialogLines = new List<string>();
 
+    [Header("Récompense")]
+    [SerializeField] private bool giveUltimate = false;
+
+    // États internes
     private bool playerInRange = false;
-    private bool dialogDone = false;
-    private bool dialogOpen = false;
 
-    void Start()
+    // Dialogue déjà consommé définitivement
+    private bool dialogueCompleted = false;
+
+    // Dialogue actuellement ouvert
+    private bool dialogueOpen = false;
+
+    // Sécurité anti double lancement
+    private bool interactionLocked = false;
+
+    // Sécurité anti double callback
+    private bool finishTriggered = false;
+
+    // Cache UI
+    private NPCInteractUI interactUI;
+    private DialogueUI dialogueUI;
+    private UltimateChoiceUI ultimateChoiceUI;
+
+    // --------------------------------------------------
+    // INITIALISATION
+    // --------------------------------------------------
+
+    private void Awake()
     {
-        if (dialogLines == null || dialogLines.Count == 0)
-            Debug.LogWarning("⚠️ NPCDialogue : aucune ligne de dialogue");
-        else
-            Debug.Log($"✅ NPCDialogue prêt avec {dialogLines.Count} lignes");
+        interactUI      = FindObjectOfType<NPCInteractUI>(true);
+        dialogueUI      = FindObjectOfType<DialogueUI>(true);
+        ultimateChoiceUI = FindObjectOfType<UltimateChoiceUI>(true);
     }
 
-    void Update()
+    private void Start()
     {
+        if (dialogLines == null || dialogLines.Count == 0)
+        {
+            Debug.LogWarning($"⚠️ [{name}] Aucun dialogue configuré");
+        }
+        else
+        {
+            Debug.Log($"✅ [{name}] Dialogue chargé ({dialogLines.Count} lignes)");
+        }
+    }
+
+    // --------------------------------------------------
+    // UPDATE
+    // --------------------------------------------------
+
+    private void Update()
+    {
+        // Conditions de sécurité
         if (!playerInRange) return;
-        if (dialogDone) return;
-        if (dialogOpen) return;
+        if (interactionLocked) return;
+        if (dialogueCompleted) return;
+        if (dialogueOpen) return;
 
-        bool pressE = Input.GetKeyDown(interactKey);
+        bool keyboardPressed =
+            Input.GetKeyDown(interactKey);
 
-        bool pressGamepad =
+        bool gamepadPressed =
             Gamepad.current != null &&
             Gamepad.current.buttonNorth.wasPressedThisFrame;
 
-        if (pressE || pressGamepad)
+        if (keyboardPressed || gamepadPressed)
         {
-            Debug.Log("🗣️ Interaction déclenchée");
+            Debug.Log($"🗣️ [{name}] Interaction démarrée");
+
             OpenDialogue();
         }
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        Debug.Log($"🔵 Trigger entré : {other.name} | tag : {other.tag}");
+    // --------------------------------------------------
+    // TRIGGERS
+    // --------------------------------------------------
 
-        if (!other.CompareTag("Player"))
-            return;
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
 
         playerInRange = true;
 
-        if (dialogDone)
-            return;
+        Debug.Log($"🔵 [{name}] Joueur entré");
 
-        NPCInteractUI ui = FindObjectOfType<NPCInteractUI>(true);
+        // Ne pas afficher si déjà fini
+        if (dialogueCompleted) return;
 
-        if (ui != null)
-            ui.Show(interactKey.ToString());
+        // Ne pas afficher si interaction verrouillée
+        if (interactionLocked) return;
+
+        interactUI ??= FindObjectOfType<NPCInteractUI>(true);
+
+        if (interactUI != null)
+        {
+            interactUI.Show(interactKey.ToString());
+        }
         else
+        {
             Debug.LogError("❌ NPCInteractUI introuvable");
+        }
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player"))
             return;
 
         playerInRange = false;
 
-        NPCInteractUI ui = FindObjectOfType<NPCInteractUI>(true);
+        Debug.Log($"🔵 [{name}] Joueur sorti");
 
-        if (ui != null)
-            ui.Hide();
+        interactUI ??= FindObjectOfType<NPCInteractUI>(true);
+
+        if (interactUI != null)
+        {
+            interactUI.Hide();
+        }
     }
 
-    void OpenDialogue()
+    // --------------------------------------------------
+    // OUVERTURE DIALOGUE
+    // --------------------------------------------------
+
+    private void OpenDialogue()
     {
-        dialogOpen = true;
+        // Sécurité anti spam
+        if (interactionLocked) return;
 
         // Mute sons joueur
         if (PlayerSoundManager.Instance != null)
             PlayerSoundManager.Instance.Mute();
 
         NPCInteractUI interactUI = FindObjectOfType<NPCInteractUI>(true);
+        interactionLocked = true;
+        dialogueOpen = true;
+
+        // IMPORTANT :
+        // verrouille immédiatement le PNJ
+        // pour empêcher toute réinterraction
+        dialogueCompleted = true;
+
+        Debug.Log($"📖 [{name}] Ouverture dialogue");
 
         if (interactUI != null)
+        {
             interactUI.Hide();
+        }
 
-        DialogueUI ui = FindObjectOfType<DialogueUI>(true);
+        dialogueUI ??= FindObjectOfType<DialogueUI>(true);
 
-        if (ui == null)
+        if (dialogueUI == null)
         {
             Debug.LogError("❌ DialogueUI introuvable");
-            dialogOpen = false;
+
+            ResetInteractionState();
             return;
         }
 
-        ui.StartDialogue(
+        dialogueUI.StartDialogue(
             npcPortrait,
             npcName,
             dialogLines,
-            OnDialogueFinished);
+            OnDialogueFinished
+        );
     }
 
-    void OnDialogueFinished()
+    // --------------------------------------------------
+    // FIN DIALOGUE
+    // --------------------------------------------------
+
+    private void OnDialogueFinished()
     {
-        dialogDone = true;
-        dialogOpen = false;
+        // Protection ABSOLUE
+        if (finishTriggered)
+        {
+            Debug.LogWarning($"⚠️ [{name}] OnDialogueFinished rappelé plusieurs fois");
+            return;
+        }
 
         // Réactive les sons
         if (PlayerSoundManager.Instance != null)
             PlayerSoundManager.Instance.Unmute();
 
         Debug.Log("✅ Dialogue terminé — ouverture choix ultime");
+        finishTriggered = true;
 
-        UltimateChoiceUI choiceUI =
-            FindObjectOfType<UltimateChoiceUI>(true);
+        Debug.Log($"✅ [{name}] Dialogue terminé");
 
-        if (choiceUI != null)
-            choiceUI.Show(UltimateManager.Instance.GetRandomChoices(3));
+        dialogueOpen = false;
+
+        // --------------------------------------------------
+        // CHOIX ULTIME
+        // --------------------------------------------------
+
+        if (giveUltimate)
+        {
+            Debug.Log($"✨ [{name}] Ouverture choix ultime");
+
+            ultimateChoiceUI ??= FindObjectOfType<UltimateChoiceUI>(true);
+
+            if (ultimateChoiceUI != null)
+            {
+                if (UltimateManager.Instance != null)
+                {
+                    ultimateChoiceUI.Show(
+                        UltimateManager.Instance.GetRandomChoices(3)
+                    );
+                }
+                else
+                {
+                    Debug.LogError("❌ UltimateManager.Instance NULL");
+                }
+            }
+            else
+            {
+                Debug.LogError("❌ UltimateChoiceUI introuvable");
+            }
+        }
+
+        // --------------------------------------------------
+        // FIN DE ROOM
+        // --------------------------------------------------
+
+        if (StageManager.Instance != null)
+        {
+            Debug.Log($"🏁 [{name}] OnRoomEnd");
+
+            StageManager.Instance.OnRoomEnd();
+        }
         else
-            Debug.LogError("❌ UltimateChoiceUI introuvable");
+        {
+            Debug.LogError("❌ StageManager.Instance NULL");
+        }
     }
 
-    void OnDrawGizmosSelected()
+    // --------------------------------------------------
+    // RESET EN CAS D'ERREUR
+    // --------------------------------------------------
+
+    private void ResetInteractionState()
+    {
+        interactionLocked = false;
+        dialogueOpen = false;
+        dialogueCompleted = false;
+    }
+
+    // --------------------------------------------------
+    // GIZMOS
+    // --------------------------------------------------
+
+    private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, interactRange);

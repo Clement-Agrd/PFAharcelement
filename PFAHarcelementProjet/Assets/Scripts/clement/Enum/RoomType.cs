@@ -2,7 +2,8 @@
 {
     Combat,
     Elite,
-    Event,
+    Event1,
+    Event2,
     Shop,
     Boss
 }

@@ -17,30 +17,30 @@ MonoBehaviour:
     - roomType: 0
       rewardType: 2
   - choices:
-    - roomType: 2
-      rewardType: 0
-    - roomType: 3
-      rewardType: 0
-  - choices:
+    - roomType: 0
+      rewardType: 1
     - roomType: 0
       rewardType: 2
-    - roomType: 4
-      rewardType: 2
+  - choices:
+    - roomType: 2
+      rewardType: 0
   - choices:
     - roomType: 0
       rewardType: 2
     - roomType: 0
       rewardType: 1
   - choices:
+    - roomType: 4
+      rewardType: 0
     - roomType: 0
       rewardType: 2
-    - roomType: 3
-      rewardType: 0
   - choices:
     - roomType: 1
       rewardType: 2
+    - roomType: 0
+      rewardType: 1
   - choices:
-    - roomType: 2
+    - roomType: 3
       rewardType: 0
   - choices:
     - roomType: 0
@@ -48,10 +48,8 @@ MonoBehaviour:
     - roomType: 0
       rewardType: 1
   - choices:
-    - roomType: 3
-      rewardType: 0
-    - roomType: 0
-      rewardType: 2
-  - choices:
     - roomType: 4
+      rewardType: 0
+  - choices:
+    - roomType: 5
       rewardType: 2

@@ -13,7 +13,8 @@ public class RoomLoader : MonoBehaviour
     public GameObject[] combatRooms;
     public GameObject[] eliteRooms;
     public GameObject[] shopRooms;
-    public GameObject eventRoom;
+    public GameObject eventRoom1;
+    public GameObject eventRoom2;
     public GameObject bossRoom;
 
     [Header("Setup")]
@@ -174,7 +175,8 @@ public class RoomLoader : MonoBehaviour
             RoomType.Combat => combatRooms[Random.Range(0, combatRooms.Length)],
             RoomType.Elite  => eliteRooms[Random.Range(0, eliteRooms.Length)],
             RoomType.Shop   => shopRooms[Random.Range(0, shopRooms.Length)],
-            RoomType.Event  => eventRoom,
+            RoomType.Event1  => eventRoom1,
+            RoomType.Event2 => eventRoom2,
             RoomType.Boss   => bossRoom,
             _               => combatRooms[0]
         };
