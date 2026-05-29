@@ -59,7 +59,7 @@ public class SweepTentacle : MonoBehaviour
         if (!isActive || hasHitPlayer) return;
 
         Vector3 bottom = transform.position;
-        Vector3 top    = transform.position + Vector3.right * hitHeight;
+        Vector3 top    = transform.position + Vector3.back * hitHeight;
 
         Collider[] hits = Physics.OverlapCapsule(bottom, top, hitRadius);
         foreach (var hit in hits)
@@ -89,7 +89,7 @@ public class SweepTentacle : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, hitRadius);
-        Gizmos.DrawWireSphere(transform.position + Vector3.right * hitHeight, hitRadius);
+        Gizmos.DrawWireSphere(transform.position + Vector3.back * hitHeight, hitRadius);
         Gizmos.DrawRay(transform.position, slideDirection.normalized * slideDistance);
     }
 }

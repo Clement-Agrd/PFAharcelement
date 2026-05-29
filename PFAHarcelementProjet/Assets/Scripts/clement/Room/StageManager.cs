@@ -91,7 +91,7 @@ public class StageManager : MonoBehaviour
             GameObject obj = Instantiate(
                 choicePrefab,
                 currentRoomSpawnPoints.choiceSpawnPoints[i].position,
-                Quaternion.identity
+                currentRoomSpawnPoints.choiceSpawnPoints[i].rotation
             );
 
             obj.GetComponent<RoomChoiceInteractable>()

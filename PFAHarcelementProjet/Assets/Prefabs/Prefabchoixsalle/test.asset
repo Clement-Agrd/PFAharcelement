@@ -20,15 +20,15 @@ MonoBehaviour:
   - roomType: 2
     prefab: {fileID: 8081432087240451746, guid: 74bf7af144ec66242900215f3c5808e1, type: 3}
   - roomType: 3
-    prefab: {fileID: 1722166324853502446, guid: 89c6c7aa64267ff4db1f8c15410f4182, type: 3}
+    prefab: {fileID: 8081432087240451746, guid: 74bf7af144ec66242900215f3c5808e1, type: 3}
   - roomType: 4
+    prefab: {fileID: 1722166324853502446, guid: 89c6c7aa64267ff4db1f8c15410f4182, type: 3}
+  - roomType: 5
     prefab: {fileID: 3668865739353077625, guid: e77e473b698dc4942a11bc6309f80f57, type: 3}
   rewardVisuals:
   - rewardType: 1
     prefab: {fileID: 7246104903477765224, guid: 02f1da986d8ba174dac7462b1cceeee8, type: 3}
   - rewardType: 2
     prefab: {fileID: 8167748416442163260, guid: cee4de96e8d2f80489d367a206940a0c, type: 3}
-  - rewardType: 3
-    prefab: {fileID: 7246104903477765224, guid: 720a2e91105500244a5d5d69765db30c, type: 3}
   - rewardType: 0
     prefab: {fileID: 2926421387557078411, guid: 07f47a55c5b74fd408d57b102db9a4a1, type: 3}

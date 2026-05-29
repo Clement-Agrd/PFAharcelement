@@ -41,8 +41,9 @@ public class OctoInkState : EnemyStateBase
 
             foreach (Transform fp in octo.InkFirePoints)
             {
-                // Direction = forward tourné de "angle" degrés sur Y
-                Vector3 dir = Quaternion.Euler(0f, angle, 0f) * enemy.transform.forward;
+                Vector3 baseDir = -enemy.transform.right;
+
+                Vector3 dir = Quaternion.Euler(0f, angle, 0f) * baseDir;
 
                 GameObject p = Object.Instantiate(
                     octo.InkProjectilePrefab,
