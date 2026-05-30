@@ -67,7 +67,7 @@ public class PlayerMelee : MonoBehaviour
             return;
         }
 
-        if (!controller.CanAct || controller.IsDashing) return;
+        if (!controller.CanAct) return;
 
         float attackSpeed       = stats.GetStat(StatType.AttackSpeed);
         float cooldownReduction = stats.GetStat(StatType.CooldownReduction);

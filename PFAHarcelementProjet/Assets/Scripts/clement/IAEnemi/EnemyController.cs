@@ -116,9 +116,6 @@ public abstract class EnemyController : MonoBehaviour, IDamageable
         return false;
     }
 
-
-    protected virtual void FixedUpdate()  => StateMachine.FixedUpdate();
-
     protected virtual void FixedUpdate() => StateMachine.FixedUpdate();
 
     protected abstract void InitStates();

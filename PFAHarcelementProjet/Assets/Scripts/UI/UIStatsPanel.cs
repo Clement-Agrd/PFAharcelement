@@ -26,7 +26,6 @@ public class UIStatsPanel : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        Debug.Log("[UIStatsPanel] Awake — Instance assignée");
     }
 
     void OnEnable()
