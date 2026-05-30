@@ -9,7 +9,7 @@ public class InvisibilityVFX : MonoBehaviour
     public float invisibleAlpha = 0.15f;
     public float fadeSpeed      = 3f;
 
-    [Header("Références directes")]
+    [Header("Références — remplies automatiquement")]
     public List<Renderer> sharkRenderers = new List<Renderer>();
     public Material       transparentMaterial;
 
@@ -45,25 +45,37 @@ public class InvisibilityVFX : MonoBehaviour
         foreach (Renderer r in sharkRenderers)
         {
             if (r == null) continue;
+
+            // Sauvegarde le material original
             originalMaterials.Add(r.material);
 
+            // Applique le material transparent
             if (transparentMaterial != null)
+            {
                 r.material = transparentMaterial;
+                Debug.Log($"👻 Material transparent appliqué sur : {r.gameObject.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"⚠️ transparentMaterial non assigné sur InvisibilityVFX");
+            }
         }
 
-        Debug.Log($"👻 {sharkRenderers.Count} renderers du requin trouvés");
+        Debug.Log($"👻 {sharkRenderers.Count} renderers traités");
     }
 
     void SetAlpha(float alpha)
     {
         foreach (Renderer r in sharkRenderers)
         {
-            if (r == null) continue;
-            if (!r.material.HasProperty("_BaseColor")) continue;
+            if (r == null || r.material == null) continue;
 
-            Color c = r.material.GetColor("_BaseColor");
-            c.a     = alpha;
-            r.material.SetColor("_BaseColor", c);
+            if (r.material.HasProperty("_BaseColor"))
+            {
+                Color c = r.material.GetColor("_BaseColor");
+                c.a     = alpha;
+                r.material.SetColor("_BaseColor", c);
+            }
         }
     }
 
@@ -85,11 +97,16 @@ public class InvisibilityVFX : MonoBehaviour
 
         if (isFadingIn)
         {
+            // Remet les materials originaux
             for (int i = 0; i < sharkRenderers.Count; i++)
             {
                 if (sharkRenderers[i] != null && i < originalMaterials.Count)
+                {
                     sharkRenderers[i].material = originalMaterials[i];
+                    Debug.Log($"👻 Material original restauré : {sharkRenderers[i].gameObject.name}");
+                }
             }
+
             Destroy(gameObject);
         }
     }
