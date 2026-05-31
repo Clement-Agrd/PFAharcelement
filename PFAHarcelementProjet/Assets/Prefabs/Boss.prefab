@@ -9879,12 +9879,14 @@ MonoBehaviour:
   AllowRotation: 1
   rotationSpeed: 10
   bestiaryEntry: {fileID: 0}
-  maxHealth: 100
+  maxHealth: 150
   moveSpeed: 3
   attackRange: 8
   chaseRange: 20
-  attackCooldown: 1.2
+  attackCooldown: 1
   stopChaseRange: 4
+  goldValue: 50
+  xpValue: 20
   PiranaSwarm: {fileID: 6931260352811871398}
   TelegraphVFX: {fileID: 8677957236655163879}
   TelegraphDuration: 1.2
@@ -9897,7 +9899,7 @@ MonoBehaviour:
   SpinDuration: 1.5
   ExpandDuration: 0.8
   AoERadius: 10
-  AoEDamagePerSecond: 100
+  AoEDamagePerSecond: 200
   RandomZoneCount: 5
   ZoneSpawnRadius: 10
   ZoneStateDuration: 3.5
@@ -9918,7 +9920,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 200
-  bestiaryEntry: {fileID: 0}
 --- !u!135 &4286003096953999205
 SphereCollider:
   m_ObjectHideFlags: 0

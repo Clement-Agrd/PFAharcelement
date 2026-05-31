@@ -111,14 +111,14 @@ MonoBehaviour:
   AllowRotation: 0
   rotationSpeed: 10
   bestiaryEntry: {fileID: 0}
-  maxHealth: 100
+  maxHealth: 300
   moveSpeed: 3
   attackRange: 30
   chaseRange: 20
   attackCooldown: 1.2
   stopChaseRange: 4
-  goldValue: 10
-  xpValue: 5
+  goldValue: 100
+  xpValue: 40
   TentaclePrefab: {fileID: 1896380747540556557, guid: aac6f10f91bb82e4b996525927a770ad, type: 3}
   TentacleSpawnRadius: 7
   WaveInterval: 2.5

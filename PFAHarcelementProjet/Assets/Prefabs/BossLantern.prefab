@@ -196,8 +196,8 @@ MonoBehaviour:
   chaseRange: 20
   attackCooldown: 1.2
   stopChaseRange: 4
-  goldValue: 10
-  xpValue: 5
+  goldValue: 100
+  xpValue: 50
   SummonPrefab: {fileID: 1262792258009639148, guid: 2e003c4c812978a49b619f308badcb3d, type: 3}
   SummonCount: 4
   SummonRadius: 4

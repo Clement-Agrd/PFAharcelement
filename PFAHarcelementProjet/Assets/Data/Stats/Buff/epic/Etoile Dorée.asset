@@ -20,25 +20,25 @@ MonoBehaviour:
     value: 100
   - statType: 1
     modifierType: 0
-    value: 10
+    value: 0.2
   - statType: 2
     modifierType: 0
-    value: 15
+    value: 10
   - statType: 3
     modifierType: 0
-    value: 10
+    value: 3
   - statType: 4
     modifierType: 0
-    value: 5
+    value: 2
   - statType: 5
     modifierType: 0
-    value: 2
+    value: 1
   - statType: 6
     modifierType: 0
-    value: 0.1
+    value: 0.04
   - statType: 7
     modifierType: 0
-    value: 3
+    value: 2
   - statType: 8
     modifierType: 0
-    value: 3
+    value: 2

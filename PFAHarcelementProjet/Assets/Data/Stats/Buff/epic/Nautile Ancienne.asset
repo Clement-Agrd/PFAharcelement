@@ -16,11 +16,8 @@ MonoBehaviour:
   description: "Augmente beaucoup la R\xE9duction de Recharge mais r\xE9duit la Sangsue"
   modifiers:
   - statType: 8
-    modifierType: 1
-    value: 0.5
-  - statType: 8
     modifierType: 0
-    value: 0.2
+    value: 2
   - statType: 6
     modifierType: 0
-    value: -0.2
+    value: -0.5

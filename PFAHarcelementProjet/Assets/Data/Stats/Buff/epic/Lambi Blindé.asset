@@ -17,11 +17,8 @@ MonoBehaviour:
     de Nage"
   modifiers:
   - statType: 1
-    modifierType: 1
-    value: 0.5
-  - statType: 1
     modifierType: 0
-    value: 4
+    value: 0.2
   - statType: 7
-    modifierType: 1
-    value: -0.2
+    modifierType: 0
+    value: -3

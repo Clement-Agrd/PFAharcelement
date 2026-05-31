@@ -100,14 +100,18 @@ MonoBehaviour:
   AllowRotation: 1
   rotationSpeed: 10
   bestiaryEntry: {fileID: 0}
-  maxHealth: 20
+  maxHealth: 30
   moveSpeed: 6
   attackRange: 10
   chaseRange: 50
   attackCooldown: 0.5
   stopChaseRange: 7
+  goldValue: 10
+  xpValue: 5
   projectilePrefab: {fileID: 1883360933919936385, guid: eece4e49eeb1cfa479a92e1c0dddc47e, type: 3}
   firePoint: {fileID: 1209730540548839449}
+  attackTiltAngle: 20
+  tiltSpeed: 10
 --- !u!1001 &362423239656591409
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -17,4 +17,4 @@ MonoBehaviour:
   modifiers:
   - statType: 4
     modifierType: 0
-    value: 2
+    value: 0.5

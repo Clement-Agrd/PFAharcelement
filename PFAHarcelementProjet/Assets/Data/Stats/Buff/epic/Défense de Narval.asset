@@ -17,8 +17,8 @@ MonoBehaviour:
     D\xE9g\xE2ts de Morsure"
   modifiers:
   - statType: 3
-    modifierType: 1
-    value: 0.7
+    modifierType: 0
+    value: 5
   - statType: 2
-    modifierType: 1
-    value: -0.3
+    modifierType: 0
+    value: -10

@@ -18,8 +18,8 @@ MonoBehaviour:
     icon: {fileID: 21300000, guid: 895230a6e67c1364ba976132e3211aa5, type: 3}
     statType: 0
     modifierType: 0
-    maxLevel: 10
-    valuePerLevel: 20
+    maxLevel: 5
+    valuePerLevel: 50
     baseCost: 100
     costMultiplier: 2
   - displayName: "D\xE9g\xE2ts de Morsure"
@@ -37,7 +37,7 @@ MonoBehaviour:
     statType: 3
     modifierType: 0
     maxLevel: 5
-    valuePerLevel: 5
+    valuePerLevel: 2
     baseCost: 100
     costMultiplier: 2
   - displayName: Vitesse de Nage
@@ -46,8 +46,8 @@ MonoBehaviour:
     statType: 7
     modifierType: 1
     maxLevel: 5
-    valuePerLevel: 0.1
-    baseCost: 150
+    valuePerLevel: 0.2
+    baseCost: 100
     costMultiplier: 2
   - displayName: Vitesse d'attaque
     description: "Rapidit\xE9 d'ex\xE9cution des attaques."
@@ -55,8 +55,8 @@ MonoBehaviour:
     statType: 5
     modifierType: 1
     maxLevel: 5
-    valuePerLevel: 0.1
-    baseCost: 150
+    valuePerLevel: 0.05
+    baseCost: 100
     costMultiplier: 2
   - displayName: Vitesse de Projectile
     description: "Rapidit\xE9 de d\xE9placements des projectiles."
@@ -64,7 +64,7 @@ MonoBehaviour:
     statType: 4
     modifierType: 0
     maxLevel: 5
-    valuePerLevel: 3
+    valuePerLevel: 0.1
     baseCost: 100
     costMultiplier: 2
   - displayName: "\xC9caille Solide"
@@ -73,8 +73,8 @@ MonoBehaviour:
     statType: 1
     modifierType: 0
     maxLevel: 5
-    valuePerLevel: 0.05
-    baseCost: 200
+    valuePerLevel: 0.02
+    baseCost: 100
     costMultiplier: 2
   - displayName: Sangsue
     description: Vol de vie du requin aux ennemis.
@@ -83,7 +83,7 @@ MonoBehaviour:
     modifierType: 1
     maxLevel: 5
     valuePerLevel: 0.05
-    baseCost: 200
+    baseCost: 100
     costMultiplier: 2
   - displayName: "R\xE9duction de Recharge"
     description: "R\xE9duit le temps de recharge de la capacit\xE9 ultime."
@@ -91,6 +91,6 @@ MonoBehaviour:
     statType: 8
     modifierType: 0
     maxLevel: 5
-    valuePerLevel: 5
-    baseCost: 150
+    valuePerLevel: 0.1
+    baseCost: 100
     costMultiplier: 2

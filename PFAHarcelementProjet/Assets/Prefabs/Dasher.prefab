@@ -100,13 +100,14 @@ MonoBehaviour:
   AllowRotation: 1
   rotationSpeed: 10
   bestiaryEntry: {fileID: 0}
-  maxHealth: 30
+  maxHealth: 50
   moveSpeed: 3
   attackRange: 1.5
   chaseRange: 8
-  attackCooldown: 1.2
+  attackCooldown: 0.5
   stopChaseRange: 4
   goldValue: 10
+  xpValue: 5
   DashTriggerRange: 6
   DashHitRadius: 3
   WindupDuration: 0.5
@@ -114,7 +115,7 @@ MonoBehaviour:
   RecoveryDuration: 0.8
   DashCooldown: 2.5
   DashSpeed: 18
-  DashDamage: 20
+  DashDamage: 30
   KnockbackForce: 8
 --- !u!1001 &8689676585551543784
 PrefabInstance:

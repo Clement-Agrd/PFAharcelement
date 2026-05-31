@@ -1959,7 +1959,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectileEnemy
   speed: 10
   lifeTime: 5
-  damage: 10
+  damage: 15
+  isReflected: 0
+  reflectedDirection: {x: 0, y: 0, z: 0}
 --- !u!1 &1889300634666037307
 GameObject:
   m_ObjectHideFlags: 0
