@@ -21,7 +21,6 @@ public class MainMenuUI : MonoBehaviour
     {
         ShowMenu();
 
-        // Lance la musique du menu
         if (MusicManager.Instance != null)
             MusicManager.Instance.PlayMenuMusic();
     }
@@ -30,12 +29,21 @@ public class MainMenuUI : MonoBehaviour
     {
         if (videoPlayer != null && videoPlayer.clip != null)
         {
+            // Affiche le panel cinématique
             ShowOnly(panelCinematic);
-            videoPlayer.Play();
+
+            // Prépare la vidéo
+            videoPlayer.Stop();
+            videoPlayer.time = 0;
+            videoPlayer.loopPointReached -= OnCinematicEnd; // évite les doublons
             videoPlayer.loopPointReached += OnCinematicEnd;
+            videoPlayer.Play();
+
+            Debug.Log("🎬 Cinématique lancée");
         }
         else
         {
+            Debug.Log("⚠️ Pas de vidéo — lancement direct");
             LaunchGame();
         }
     }
@@ -46,85 +54,77 @@ public class MainMenuUI : MonoBehaviour
     public void OnQuit()     => Application.Quit();
     public void OnBack()     => ShowMenu();
 
+    // Appelé quand la cinématique se termine
+    void OnCinematicEnd(VideoPlayer vp)
+    {
+        vp.loopPointReached -= OnCinematicEnd;
+        Debug.Log("🎬 Cinématique terminée — lancement du jeu");
+        LaunchGame();
+    }
+
     void ShowMenu() => ShowOnly(panelMenu);
 
     void ShowOnly(GameObject panel)
     {
-        panelMenu     .SetActive(panel == panelMenu);
-        panelOptions  .SetActive(panel == panelOptions);
-        panelCredits  .SetActive(panel == panelCredits);
-        panelStatTree .SetActive(panel == panelStatTree);
-        panelCinematic.SetActive(panel == panelCinematic);
-    }
-
-    void OnCinematicEnd(VideoPlayer vp)
-    {
-        vp.loopPointReached -= OnCinematicEnd;
-        LaunchGame();
+        if (panelMenu      != null) panelMenu     .SetActive(panel == panelMenu);
+        if (panelOptions   != null) panelOptions  .SetActive(panel == panelOptions);
+        if (panelCredits   != null) panelCredits  .SetActive(panel == panelCredits);
+        if (panelStatTree  != null) panelStatTree .SetActive(panel == panelStatTree);
+        if (panelCinematic != null) panelCinematic.SetActive(panel == panelCinematic);
     }
 
     void LaunchGame()
     {
-        ActivePlayer();
-    }
-    
-    void ActivePlayer()
-    {
-        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+        ResetPlayer();
 
-        foreach (GameObject obj in allObjects)
-        {
-            if (!obj.scene.IsValid())
-                continue;
-
-            if (!obj.CompareTag("Player"))
-                continue;
-
-            obj.SetActive(true);
-        }
-        Debug.Log("🎮 Run démarrée - Player activé");
-        
-        var player = GameObject.FindGameObjectWithTag("Player");
-
-        if (player != null)
-        {
-            // Reset buffs
-            PlayerStats stats = player.GetComponent<PlayerStats>();
-
-            if (stats != null)
-                stats.ClearAllModifiers();
-
-            // Reset HP
-            PlayerHealth health = player.GetComponent<PlayerHealth>();
-
-            if (health != null)
-                health.ResetPlayer();
-
-            // Reset ultimate
-            if (UltimateManager.Instance != null)
-                UltimateManager.Instance.ResetUltimate(player);
-
-            stats.ResetRunStats();
-
-            FindFirstObjectByType<PickupDetector>()?.ForceRefresh();
-            UIStatsPanel.Instance?.ClearPreview();
-            BuffUI.Instance?.SetPickup(null);
-        }
-
-        FindFirstObjectByType<PickupDetector>()?.ForceRefresh();
-        UIStatsPanel.Instance?.ClearPreview();
-        BuffUI.Instance?.SetPickup(null);
-        
-        // Fondu musical avant de charger la scène
+        // Fondu musical
         if (MusicManager.Instance != null)
             MusicManager.Instance.PlayGameMusic();
 
         StartCoroutine(LoadGameAfterFade());
     }
 
+    void ResetPlayer()
+    {
+        // Réactive le joueur s'il est désactivé
+        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+        foreach (GameObject obj in allObjects)
+        {
+            if (!obj.scene.IsValid())    continue;
+            if (!obj.CompareTag("Player")) continue;
+            obj.SetActive(true);
+        }
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+        {
+            Debug.LogWarning("⚠️ Joueur introuvable pour le reset");
+            return;
+        }
+
+        PlayerStats stats = player.GetComponent<PlayerStats>();
+        if (stats != null)
+        {
+            stats.ClearAllModifiers();
+            stats.ResetRunStats();
+        }
+
+        PlayerHealth health = player.GetComponent<PlayerHealth>();
+        if (health != null)
+            health.ResetPlayer();
+
+        if (UltimateManager.Instance != null)
+            UltimateManager.Instance.ResetUltimate(player);
+
+        FindFirstObjectByType<PickupDetector>()?.ForceRefresh();
+        UIStatsPanel.Instance?.ClearPreview();
+        BuffUI.Instance?.SetPickup(null);
+
+        Debug.Log("🎮 Joueur réinitialisé");
+    }
+
     IEnumerator LoadGameAfterFade()
     {
-        // Attend la durée du fondu
         yield return new WaitForSecondsRealtime(
             MusicManager.Instance != null
                 ? MusicManager.Instance.fadeDuration
