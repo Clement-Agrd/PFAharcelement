@@ -11,6 +11,7 @@ TagManager:
   - Persistent
   - Panel
   - CameraRig
+  - PNJ
   layers:
   - Default
   - TransparentFX

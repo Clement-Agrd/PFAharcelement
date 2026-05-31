@@ -71,14 +71,17 @@ public class BossTripleDashState : EnemyStateBase
             if (!hasHit)
             {
                 Collider[] hits = Physics.OverlapSphere(
-                    enemy.transform.position, boss.TripleDashHitRadius, hitboxMask);
+                    enemy.Rb.position,
+                    boss.TripleDashHitRadius,
+                    hitboxMask);
 
                 foreach (var hit in hits)
                 {
-                    if (hit.CompareTag("Player"))
+                    PlayerHealth hp = hit.GetComponentInParent<PlayerHealth>();
+
+                    if (hp != null)
                     {
-                        hit.GetComponent<PlayerHealth>()
-                           ?.TakeDamage(boss.TripleDashDamage);
+                        hp.TakeDamage(boss.TripleDashDamage);
                         hasHit = true;
                         break;
                     }

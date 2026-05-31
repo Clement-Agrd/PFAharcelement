@@ -30,7 +30,7 @@ public class StageManager : MonoBehaviour
     public ItemPrefabPool combatItemPool;
     public ItemPrefabPool eliteItemPool;
     public ItemPrefabPool bossItemPool;
-    
+    public ItemPrefabPool eventItemPool;
     
     [Header("Exit")]
     public GameObject nextStagePortalPrefab;
@@ -213,12 +213,18 @@ public class StageManager : MonoBehaviour
             case RoomType.Combat:
             default:
                 return combatItemPool;
+            
+            case RoomType.Event1:
+                return eventItemPool;
+            
+            case RoomType.Event2:
+                return eventItemPool;
         }
     }
-
     
     public void ClearRoomChoices()
     {
+        // Supprime les choix de salle
         foreach (var choice in spawnedChoices)
         {
             if (choice != null)
@@ -226,6 +232,13 @@ public class StageManager : MonoBehaviour
         }
 
         spawnedChoices.Clear();
-    }
 
+        // Supprime tous les PNJ
+        GameObject[] pnjs = GameObject.FindGameObjectsWithTag("PNJ");
+
+        foreach (GameObject pnj in pnjs)
+        {
+            Destroy(pnj);
+        }
+    }
 }

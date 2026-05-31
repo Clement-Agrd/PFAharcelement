@@ -57,7 +57,7 @@ CapsuleCollider:
   m_Radius: 0.72
   m_Height: 0.04
   m_Direction: 2
-  m_Center: {x: 0, y: 0, z: 0.1}
+  m_Center: {x: 0, y: 1, z: 0.1}
 --- !u!54 &2649765873307549280
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -107,6 +107,7 @@ MonoBehaviour:
   attackCooldown: 1.2
   stopChaseRange: 4
   goldValue: 10
+  xpValue: 5
   DashTriggerRange: 6
   DashHitRadius: 3
   WindupDuration: 0.5
@@ -142,7 +143,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9a8b5d111445d9f4286a54756648534a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9a8b5d111445d9f4286a54756648534a, type: 3}
       propertyPath: m_LocalPosition.z

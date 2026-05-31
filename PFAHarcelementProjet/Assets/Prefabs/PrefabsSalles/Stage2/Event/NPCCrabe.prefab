@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 9220303465449975804}
   m_Layer: 0
   m_Name: NPCCrabe
-  m_TagString: Untagged
+  m_TagString: PNJ
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50,11 +50,10 @@ MonoBehaviour:
   interactRange: 4.75
   interactKey: 101
   npcPortrait: {fileID: 21300000, guid: 9cf79b2450f6a6644a9e71f52aee463d, type: 3}
-  npcName: coelacanthe
+  npcName: Raie
   dialogLines:
-  - Choisis le sang
-  - Choisis le sang
-  - Choisis le sang
+  - "Continuer d\u2019avancer est le seul moyen d\u2019arriver \xE0 la fin, tu peux
+    ralentir mais tu ne dois pas t\u2019arr\xEAter."
   giveUltimate: 0
 --- !u!135 &7617731499422882636
 SphereCollider:

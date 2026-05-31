@@ -5818,7 +5818,6 @@ Transform:
   - {fileID: 4347894677969118421}
   - {fileID: 8361640179747583971}
   - {fileID: 4300046829326912692}
-  - {fileID: 383781005637089488}
   m_Father: {fileID: 7961988599270410312}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2682338724811735155
@@ -6414,109 +6413,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &3242602631792990231
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 383781005637089488}
-  - component: {fileID: 7302120403563068503}
-  - component: {fileID: 2717026677527567091}
-  - component: {fileID: 8139527440324985817}
-  m_Layer: 0
-  m_Name: NPC
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &383781005637089488
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3242602631792990231}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.9868637, z: -0, w: 0.16155535}
-  m_LocalPosition: {x: -0.12695312, y: -4.39335, z: 9.878174}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7788086151241484071}
-  m_LocalEulerAnglesHint: {x: 0, y: -161.406, z: 0}
---- !u!114 &7302120403563068503
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3242602631792990231}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dd65249e297423cb1a4a10321ae1bc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCDialogue
-  interactRange: 4.75
-  interactKey: 101
-  npcPortrait: {fileID: 21300000, guid: 9cf79b2450f6a6644a9e71f52aee463d, type: 3}
-  npcName: coelacanthe
-  dialogLines:
-  - Choisis le sang
-  - Choisis le sang
-  - Choisis le sang
-  giveUltimate: 1
---- !u!135 &2717026677527567091
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3242602631792990231}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 4.77
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &8139527440324985817
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3242602631792990231}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &3269759642130718221
 GameObject:
   m_ObjectHideFlags: 0
@@ -14743,7 +14639,7 @@ Transform:
   m_GameObject: {fileID: 7235236894252774174}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.70773685, z: -0, w: 0.7064762}
-  m_LocalPosition: {x: 11.18, y: 0.66, z: -0.64}
+  m_LocalPosition: {x: 11.18, y: 1.16, z: -0.64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14761,7 +14657,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a158af177e1746f6b7e772c5f4c9344d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 1611203892527020399, guid: bb09454304aaf774aa8f94da893ecb46, type: 3}
+  enemyPrefab: {fileID: 3223558547640690090, guid: be49f008cf1de0b40abfc2fa0393ee72, type: 3}
 --- !u!1 &7246416605831501778
 GameObject:
   m_ObjectHideFlags: 0

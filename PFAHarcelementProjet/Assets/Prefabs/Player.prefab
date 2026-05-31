@@ -338,6 +338,15 @@ GameObject:
   - component: {fileID: 2861437632454952681}
   - component: {fileID: 578442995725811264}
   - component: {fileID: 775410004666437173}
+  - component: {fileID: 5397950883188362881}
+  - component: {fileID: 2327658558776645256}
+  - component: {fileID: 8273961295234522600}
+  - component: {fileID: 2540036445154649222}
+  - component: {fileID: 530103588368020729}
+  - component: {fileID: 980387334141170999}
+  - component: {fileID: 6067344988029640285}
+  - component: {fileID: 55923750173326360}
+  - component: {fileID: 8628248784685246482}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -690,6 +699,141 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   detectionRadius: 4
+--- !u!114 &5397950883188362881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904793958230079869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69215165e2964c7cacd99fd517e8dcd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InvisibilityUltimate
+  invisibilityVFXPrefab: {fileID: 6726276570970884863, guid: 267006f959aa9d349856c817aa9e7019, type: 3}
+  startUnlocked: 0
+--- !u!114 &2327658558776645256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904793958230079869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24f5543e29914146bd4806ae0b5d9cc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MirrorUltimate
+  mirrorDiskPrefab: {fileID: 2468311555362992683, guid: cef2b1e54fe2b7241a6bc9b80b13c217, type: 3}
+  diskOffset: 1.5
+  startUnlocked: 0
+--- !u!114 &8273961295234522600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904793958230079869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c1ffe043e484fcba3b81104a2f9c620, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RegenerationUltimate
+  regenVFXPrefab: {fileID: 3786327298805592301, guid: a700f7387a447934283aaecfe5f4788a, type: 3}
+  startUnlocked: 0
+--- !u!114 &2540036445154649222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904793958230079869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d48473b51ab146598f1e7ffadc6f6623, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShieldUltimate
+  shieldVFXPrefab: {fileID: 322969054686146020, guid: ec5b362b08e910d43901327c275a431c, type: 3}
+  shieldOffset: {x: 0, y: -0.36, z: 0}
+  showGizmo: 1
+  startUnlocked: 0
+--- !u!114 &530103588368020729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904793958230079869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63cb49880ec74b6c95a5ba70856e19de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SonicShockwaveUltimate
+  shockwaveVFXPrefab: {fileID: 1636104056809957142, guid: daebaa6b4fea70b4487b396da5f1a89f, type: 3}
+  startUnlocked: 0
+--- !u!114 &980387334141170999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904793958230079869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ca3c9d2f5284e40b9eba89048ee2a04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatBoostUltimate
+  statBoostVFXPrefab: {fileID: 4695454059241560045, guid: 71da3548cf5189249b998725310516a9, type: 3}
+  startUnlocked: 0
+--- !u!114 &6067344988029640285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904793958230079869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba1ea0e88977427eadbb388f156bd28c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SwarmOfPredatorsUltimate
+  startUnlocked: 0
+--- !u!114 &55923750173326360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904793958230079869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d13fe7f46e6842a5a6651c6d52568728, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeightOfSilenceUltimate
+  silenceVFXPrefab: {fileID: 3932558266077254671, guid: 500c5683f889e2a46ab2fccca7f1f272, type: 3}
+  startUnlocked: 0
+--- !u!114 &8628248784685246482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904793958230079869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc1bac6ad8b54f5b9b738226423c78a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpecialAttack
+  explosionVFX: {fileID: 5551718882146614446, guid: ca5678a67971360408484fc2051d9d2e, type: 3}
+  explosionRadius: 5
+  baseCooldown: 8
+  baseDamage: 30
+  aimIndicator: {fileID: 0}
+  maxRange: 15
+  gamepadAimSpeed: 25
+  gamepadDeadzone: 0.15
+  startUnlocked: 0
 --- !u!1 &916419747914102696
 GameObject:
   m_ObjectHideFlags: 0

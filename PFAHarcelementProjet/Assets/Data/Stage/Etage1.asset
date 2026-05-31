@@ -41,7 +41,7 @@ MonoBehaviour:
       rewardType: 1
   - choices:
     - roomType: 3
-      rewardType: 0
+      rewardType: 2
   - choices:
     - roomType: 0
       rewardType: 2

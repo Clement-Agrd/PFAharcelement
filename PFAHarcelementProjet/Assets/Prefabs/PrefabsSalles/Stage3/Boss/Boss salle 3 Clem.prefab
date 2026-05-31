@@ -953,37 +953,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &836696295554128088
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6324152242238978474}
-  m_Layer: 0
-  m_Name: choix salle (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6324152242238978474
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 836696295554128088}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.15, y: 0.59, z: -3.54}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7961988599270410312}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &867290974018744192
 GameObject:
   m_ObjectHideFlags: 0
@@ -3447,7 +3416,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5400521293067556130}
-  - {fileID: 6324152242238978474}
   - {fileID: 2213480735937982283}
   - {fileID: 4326000527736046823}
   - {fileID: 6327982860973679413}
@@ -3473,8 +3441,7 @@ MonoBehaviour:
   rewardSpawnPoint: {fileID: 2213480735937982283}
   choiceSpawnPoints:
   - {fileID: 5400521293067556130}
-  - {fileID: 6324152242238978474}
-  exitSpawnPoint: {fileID: 0}
+  exitSpawnPoint: {fileID: 5400521293067556130}
 --- !u!114 &4600988927483433620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10074,7 +10041,7 @@ Transform:
   m_GameObject: {fileID: 6646632460531342860}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.54, y: 0.82, z: 6.49}
+  m_LocalPosition: {x: 18.13, y: 0.82, z: 4.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

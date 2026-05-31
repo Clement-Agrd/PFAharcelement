@@ -48,9 +48,69 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7316492776764967247, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.009106331
+      objectReference: {fileID: 0}
+    - target: {fileID: -7316492776764967247, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.63954353
+      objectReference: {fileID: 0}
+    - target: {fileID: -7316492776764967247, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7316492776764967247, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7316492776764967247, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -7316492776764967247, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7316492776764967247, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 0161c100b20369e4195564386578e317, type: 3}
       propertyPath: m_Name
       value: Coelacanth
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_TagString
+      value: PNJ
+      objectReference: {fileID: 0}
+    - target: {fileID: 4036638822535873717, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.009106331
+      objectReference: {fileID: 0}
+    - target: {fileID: 4036638822535873717, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.63954353
+      objectReference: {fileID: 0}
+    - target: {fileID: 4036638822535873717, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4036638822535873717, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4036638822535873717, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4036638822535873717, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4036638822535873717, guid: 0161c100b20369e4195564386578e317, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -68,6 +128,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0161c100b20369e4195564386578e317, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9181213964674148739}
+    - targetCorrespondingSourceObject: {fileID: -616191181821830061, guid: 0161c100b20369e4195564386578e317, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7248865574674965403}
   m_SourcePrefab: {fileID: 100100000, guid: 0161c100b20369e4195564386578e317, type: 3}
 --- !u!1 &3223558547640690090 stripped
 GameObject:
@@ -114,8 +177,11 @@ MonoBehaviour:
   - "L'oc\xE9an garde les secrets de ceux qui souffrent en silence..."
   - "Mais le silence a ses limites. Il est temps que ta voix r\xE9sonne comme une
     vague."
+  - "J\u2019ai v\xE9cu pr\xE8s d\u2019un si\xE8cle, je sais que le temps r\xE9soudra
+    tes maux."
   - "Choisis bien, jeune requin. Ce pouvoir est n\xE9 de la douleur de ceux qui se
     sont relev\xE9s avant toi."
+  giveUltimate: 1
 --- !u!135 &8673330777525873661
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -164,3 +230,29 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!1 &6273463535368996008 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -616191181821830061, guid: 0161c100b20369e4195564386578e317, type: 3}
+  m_PrefabInstance: {fileID: 2341036977949841659}
+  m_PrefabAsset: {fileID: 0}
+--- !u!135 &7248865574674965403
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6273463535368996008}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.7
+  m_Center: {x: 0, y: 0, z: 0}

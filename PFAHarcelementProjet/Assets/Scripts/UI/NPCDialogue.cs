@@ -219,15 +219,27 @@ public class NPCDialogue : MonoBehaviour
 
             if (ultimateChoiceUI != null)
             {
-                if (UltimateManager.Instance != null)
+                UltimateManager ultimateManager = UltimateManager.Instance;
+
+                if (ultimateManager == null)
+                {
+                    ultimateManager = FindFirstObjectByType<UltimateManager>(FindObjectsInactive.Include);
+
+                    if (ultimateManager != null)
+                    {
+                        Debug.Log("🔍 UltimateManager retrouvé via FindFirstObjectByType");
+                    }
+                }
+
+                if (ultimateManager != null)
                 {
                     ultimateChoiceUI.Show(
-                        UltimateManager.Instance.GetRandomChoices(3)
+                        ultimateManager.GetRandomChoices(3)
                     );
                 }
                 else
                 {
-                    Debug.LogError("❌ UltimateManager.Instance NULL");
+                    Debug.LogError("❌ Aucun UltimateManager trouvé dans la scène");
                 }
             }
             else

@@ -60,13 +60,17 @@ public class BossLongDashState : EnemyStateBase
             {
                 int mask = LayerMask.GetMask("PlayerHitbox");
                 Collider[] hits = Physics.OverlapSphere(
-                    enemy.transform.position, boss.LongDashHitRadius, mask);
+                    enemy.Rb.position,
+                    boss.LongDashHitRadius,
+                    mask);
 
                 foreach (var hit in hits)
                 {
-                    if (hit.CompareTag("Player"))
+                    PlayerHealth hp = hit.GetComponentInParent<PlayerHealth>();
+
+                    if (hp != null)
                     {
-                        hit.GetComponent<PlayerHealth>()?.TakeDamage(boss.LongDashDamage);
+                        hp.TakeDamage(boss.LongDashDamage);
                         hasHit = true;
                         break;
                     }

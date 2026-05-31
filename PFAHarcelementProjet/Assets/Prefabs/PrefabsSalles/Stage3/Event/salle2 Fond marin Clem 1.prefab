@@ -11258,7 +11258,7 @@ Transform:
   m_GameObject: {fileID: 5496586711871578420}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.63855, y: -0.03, z: -0.8668213}
+  m_LocalPosition: {x: 9.63855, y: 2, z: -0.8668213}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -18033,11 +18033,11 @@ MonoBehaviour:
   interactRange: 4.75
   interactKey: 101
   npcPortrait: {fileID: 21300000, guid: 9cf79b2450f6a6644a9e71f52aee463d, type: 3}
-  npcName: coelacanthe
+  npcName: Baleine
   dialogLines:
-  - Choisis le sang
-  - Choisis le sang
-  - Choisis le sang
+  - "J\u2019ai travers\xE9 de nombreuses mers, m\xEAme si \xE7a peut para\xEEtre
+    insurmontable, n\u2019abandonne jamais et tu y arriveras. Tu as bien m\xE9rit\xE9
+    de te reposer. "
   giveUltimate: 1
 --- !u!135 &8935194723041334781
 SphereCollider:

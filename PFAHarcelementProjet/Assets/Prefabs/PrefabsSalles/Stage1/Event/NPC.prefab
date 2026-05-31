@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 9220303465449975804}
   m_Layer: 0
   m_Name: NPC
-  m_TagString: Untagged
+  m_TagString: PNJ
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50,11 +50,11 @@ MonoBehaviour:
   interactRange: 4.75
   interactKey: 101
   npcPortrait: {fileID: 21300000, guid: 9cf79b2450f6a6644a9e71f52aee463d, type: 3}
-  npcName: coelacanthe
+  npcName: Tortue
   dialogLines:
-  - Choisis le sang
-  - Choisis le sang
-  - Choisis le sang
+  - "Viens aupr\xE8s de moi. J\u2019ai trouv\xE9 ceci lors de mes voyages, prends-le."
+  - "N\u2019oublie pas que l\u2019aide peut prendre bien des formes, et qu\u2019il
+    ne faut pas h\xE9siter \xE0 l\u2019accepter lorsqu\u2019elle se pr\xE9sente."
   giveUltimate: 0
 --- !u!135 &7617731499422882636
 SphereCollider:
@@ -172,6 +172,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: tortue
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: ed44445ce009a544aa42ec7d0a56cf10, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 06aafaf9df56a824991927ec65fe7451, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
