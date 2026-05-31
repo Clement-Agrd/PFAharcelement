@@ -1,19 +1,22 @@
+// CameraFeedback.cs
 using UnityEngine;
 
 public class CameraFeedback : MonoBehaviour
 {
     CameraShake cameraShake;
-    DamageFlash damageFlash;
+
+    // Cache local — ne dépend plus du singleton statique
+    private DamageFlash cachedDamageFlash = null;
 
     void Awake()
     {
         cameraShake = GetComponent<CameraShake>();
-        damageFlash = FindObjectOfType<DamageFlash>();
     }
 
     void OnEnable()
     {
         PlayerHealth.OnPlayerDamaged += PlayFeedback;
+        cachedDamageFlash = null; // force la recherche au prochain appel
     }
 
     void OnDisable()
@@ -21,9 +24,29 @@ public class CameraFeedback : MonoBehaviour
         PlayerHealth.OnPlayerDamaged -= PlayFeedback;
     }
 
+    DamageFlash GetDamageFlash()
+    {
+        if (cachedDamageFlash != null)
+            return cachedDamageFlash;
+
+        if (DamageFlash.Instance != null)
+        {
+            cachedDamageFlash = DamageFlash.Instance;
+            return cachedDamageFlash;
+        }
+
+        cachedDamageFlash = FindFirstObjectByType<DamageFlash>();
+        return cachedDamageFlash;
+    }
+
     void PlayFeedback()
     {
         cameraShake?.Shake(0.15f, 0.2f);
-        damageFlash?.Flash();
+
+        DamageFlash flash = GetDamageFlash();
+        if (flash != null)
+            flash.Flash();
+        else
+            Debug.LogWarning("[CameraFeedback] DamageFlash introuvable");
     }
 }

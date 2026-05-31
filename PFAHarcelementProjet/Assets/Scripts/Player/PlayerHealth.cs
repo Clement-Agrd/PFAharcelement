@@ -235,4 +235,5 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         // Reset position
         player.transform.position = Vector3.zero;
     }
+    
 }
