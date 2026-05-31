@@ -75,7 +75,6 @@ public class UltimateManager : MonoBehaviour
                 ApplyRegeneration(player, data);    break;
         }
 
-        // Cherche UltimateUI dans la scène
         UltimateUI ui = FindObjectOfType<UltimateUI>(true);
         Debug.Log($"🎮 UltimateUI trouvé : {ui != null}");
 
@@ -98,6 +97,7 @@ public class UltimateManager : MonoBehaviour
             Debug.LogError("❌ SpecialAttack introuvable sur le joueur");
             return;
         }
+        special.enabled         = true;
         special.baseDamage      = data.specialDamage;
         special.explosionRadius = data.specialRadius;
         special.baseCooldown    = data.specialCooldown;
@@ -108,6 +108,7 @@ public class UltimateManager : MonoBehaviour
     {
         StatBoostUltimate boost = player.GetComponent<StatBoostUltimate>();
         if (boost == null) boost = player.AddComponent<StatBoostUltimate>();
+        boost.enabled = true;
         boost.Setup(data.statBoostPercent, data.statBoostDuration);
         boost.Unlock();
     }
@@ -116,6 +117,7 @@ public class UltimateManager : MonoBehaviour
     {
         ShieldUltimate shield = player.GetComponent<ShieldUltimate>();
         if (shield == null) shield = player.AddComponent<ShieldUltimate>();
+        shield.enabled = true;
         shield.Setup(data.shieldDuration, data.shieldCooldown);
         shield.Unlock();
     }
@@ -124,6 +126,7 @@ public class UltimateManager : MonoBehaviour
     {
         SwarmOfPredatorsUltimate swarm = player.GetComponent<SwarmOfPredatorsUltimate>();
         if (swarm == null) swarm = player.AddComponent<SwarmOfPredatorsUltimate>();
+        swarm.enabled = true;
         swarm.Setup(
             data.swarmCount,
             data.swarmDamage,
@@ -138,6 +141,7 @@ public class UltimateManager : MonoBehaviour
     {
         SonicShockwaveUltimate shockwave = player.GetComponent<SonicShockwaveUltimate>();
         if (shockwave == null) shockwave = player.AddComponent<SonicShockwaveUltimate>();
+        shockwave.enabled = true;
         shockwave.Setup(
             data.shockwaveRadius,
             data.shockwaveDuration,
@@ -150,6 +154,7 @@ public class UltimateManager : MonoBehaviour
     {
         MirrorUltimate mirror = player.GetComponent<MirrorUltimate>();
         if (mirror == null) mirror = player.AddComponent<MirrorUltimate>();
+        mirror.enabled = true;
         mirror.Setup(data.mirrorDuration, data.mirrorCooldown);
         mirror.Unlock();
     }
@@ -158,6 +163,7 @@ public class UltimateManager : MonoBehaviour
     {
         InvisibilityUltimate invis = player.GetComponent<InvisibilityUltimate>();
         if (invis == null) invis = player.AddComponent<InvisibilityUltimate>();
+        invis.enabled = true;
         invis.Setup(data.invisibilityDuration, data.invisibilityCooldown);
         invis.Unlock();
     }
@@ -166,6 +172,7 @@ public class UltimateManager : MonoBehaviour
     {
         WeightOfSilenceUltimate silence = player.GetComponent<WeightOfSilenceUltimate>();
         if (silence == null) silence = player.AddComponent<WeightOfSilenceUltimate>();
+        silence.enabled = true;
         silence.Setup(
             data.silenceRadius,
             data.silenceSlowness,
@@ -179,55 +186,43 @@ public class UltimateManager : MonoBehaviour
     {
         RegenerationUltimate regen = player.GetComponent<RegenerationUltimate>();
         if (regen == null) regen = player.AddComponent<RegenerationUltimate>();
+        regen.enabled = true;
         regen.Setup(data.regenPercent, data.regenDuration, data.regenCooldown);
         regen.Unlock();
     }
+
     public void ResetUltimate(GameObject player)
     {
         currentUltimate = null;
 
-        // Désactive tous les ultimates possibles
-
         SpecialAttack special = player.GetComponent<SpecialAttack>();
-        if (special != null)
-            special.enabled = false;
+        if (special != null) special.enabled = false;
 
         StatBoostUltimate boost = player.GetComponent<StatBoostUltimate>();
-        if (boost != null)
-            boost.enabled = false;
+        if (boost != null) boost.enabled = false;
 
         ShieldUltimate shield = player.GetComponent<ShieldUltimate>();
-        if (shield != null)
-            shield.enabled = false;
+        if (shield != null) shield.enabled = false;
 
         SwarmOfPredatorsUltimate swarm = player.GetComponent<SwarmOfPredatorsUltimate>();
-        if (swarm != null)
-            swarm.enabled = false;
+        if (swarm != null) swarm.enabled = false;
 
         SonicShockwaveUltimate shockwave = player.GetComponent<SonicShockwaveUltimate>();
-        if (shockwave != null)
-            shockwave.enabled = false;
+        if (shockwave != null) shockwave.enabled = false;
 
         MirrorUltimate mirror = player.GetComponent<MirrorUltimate>();
-        if (mirror != null)
-            mirror.enabled = false;
+        if (mirror != null) mirror.enabled = false;
 
         InvisibilityUltimate invis = player.GetComponent<InvisibilityUltimate>();
-        if (invis != null)
-            invis.enabled = false;
+        if (invis != null) invis.enabled = false;
 
         WeightOfSilenceUltimate silence = player.GetComponent<WeightOfSilenceUltimate>();
-        if (silence != null)
-            silence.enabled = false;
+        if (silence != null) silence.enabled = false;
 
         RegenerationUltimate regen = player.GetComponent<RegenerationUltimate>();
-        if (regen != null)
-            regen.enabled = false;
+        if (regen != null) regen.enabled = false;
 
-        // Reset UI
         UltimateUI ui = FindObjectOfType<UltimateUI>(true);
-
-        if (ui != null)
-            ui.ClearUltimate();
+        if (ui != null) ui.ClearUltimate();
     }
 }

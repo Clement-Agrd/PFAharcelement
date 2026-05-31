@@ -202,7 +202,7 @@ MonoBehaviour:
   SummonCount: 4
   SummonRadius: 4
   SummonWindup: 1
-  ProjectilePrefab: {fileID: 2725591829447007800, guid: fc1227368a75dbe408c5a36a2c828230, type: 3}
+  ProjectilePrefab: {fileID: 2725591829447007800, guid: e4c2295f57625ed4faf65fd89895da07, type: 3}
   LongDashWindup: 0.6
   LongDashDistance: 10
   LongDashDuration: 0.4

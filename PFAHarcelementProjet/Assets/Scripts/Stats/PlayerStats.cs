@@ -165,8 +165,22 @@ public class PlayerStats : MonoBehaviour
         {
             case StatType.CooldownReduction:
                 return Mathf.Clamp(value, 0f, 0.95f);
+
+            case StatType.Tankiness:
+                return Mathf.Clamp(value, 0f, 0.8f);
+
+            case StatType.MaxHealth:
+            case StatType.MeleeDamage:
+            case StatType.RangedDamage:
+            case StatType.MoveSpeed:
+            case StatType.ProjectileSpeed:
+                return Mathf.Max(1f, value);
+
+            case StatType.AttackSpeed:
+                return Mathf.Max(0.2f, value);
+
             default:
-                return stat != StatType.MaxHealth ? Mathf.Max(0f, value) : value;
+                return Mathf.Max(0f, value);
         }
     }
 }

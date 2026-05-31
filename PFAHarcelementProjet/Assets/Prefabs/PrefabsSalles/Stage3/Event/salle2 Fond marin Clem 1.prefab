@@ -18038,7 +18038,7 @@ MonoBehaviour:
   - "J\u2019ai travers\xE9 de nombreuses mers, m\xEAme si \xE7a peut para\xEEtre
     insurmontable, n\u2019abandonne jamais et tu y arriveras. Tu as bien m\xE9rit\xE9
     de te reposer. "
-  giveUltimate: 1
+  giveUltimate: 0
 --- !u!135 &8935194723041334781
 SphereCollider:
   m_ObjectHideFlags: 0

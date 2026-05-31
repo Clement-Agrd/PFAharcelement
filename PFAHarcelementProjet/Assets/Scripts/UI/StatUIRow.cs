@@ -48,6 +48,7 @@ public class StatUIRow : MonoBehaviour
     {
         switch (type)
         {
+            case StatType.Tankiness:
             case StatType.LifeSteal:
             case StatType.CooldownReduction:
                 return (value * 100f).ToString("0") + "%";
