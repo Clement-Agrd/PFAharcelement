@@ -33,7 +33,7 @@ MonoBehaviour:
   shockwaveDuration: 3
   shockwaveCooldown: 15
   mirrorDuration: 6
-  mirrorCooldown: 18
+  mirrorCooldown: 25
   invisibilityDuration: 5
   invisibilityCooldown: 20
   silenceRadius: 10

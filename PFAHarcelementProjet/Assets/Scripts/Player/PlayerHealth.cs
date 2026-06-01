@@ -1,34 +1,32 @@
 // Scripts/Player/PlayerHealth.cs
-
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
     [Header("Événements")]
     public UnityEvent<float, float> onHealthChanged;
-    public UnityEvent onDeath;
+    public UnityEvent               onDeath;
 
     [Header("Mort")]
-    public float deathDelay = 2f;
+    public Image deathOverlay;
 
     public static Action OnPlayerDamaged;
 
     private PlayerStats stats;
-    private float lastMaxHealth;
-    private float currentHealth;
-
-    private bool isDead;
-    private bool isInvincible = false;
-    private bool isMirror = false;
+    private float       lastMaxHealth;
+    private float       currentHealth;
+    private bool        isDead       = false;
+    private bool        isInvincible = false;
+    private bool        isMirror     = false;
 
     public bool IsDead => isDead;
 
-    // ─────────────────────────────────────────────────────────────
-    // INVINCIBILITÉ / MIROIR
-    // ─────────────────────────────────────────────────────────────
+    // ─── Invincibilité / Miroir ───────────────────────────────────────────────
 
     public void SetInvincible(bool value)
     {
@@ -42,43 +40,35 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         Debug.Log($"🪞 Miroir : {value}");
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // DAMAGE
-    // ─────────────────────────────────────────────────────────────
+    // ─── Damage ───────────────────────────────────────────────────────────────
 
     public void TakeDamage(float amount)
     {
-        if (isDead) return;
+        if (isDead)       return;
         if (isInvincible) return;
 
-        float tankiness = stats.GetStat(StatType.Tankiness);
+        float tankiness   = stats.GetStat(StatType.Tankiness);
         float finalDamage = amount * (1f - Mathf.Clamp01(tankiness));
 
-        // Renvoi des dégâts
         if (isMirror)
         {
             Collider[] hits = Physics.OverlapSphere(transform.position, 15f);
-
             foreach (Collider hit in hits)
             {
                 if (!hit.CompareTag("Enemy")) continue;
-
                 IDamageable enemy = hit.GetComponent<IDamageable>();
-
                 if (enemy != null)
                 {
                     enemy.TakeDamage(finalDamage);
                     Debug.Log($"🪞 Dégâts renvoyés à {hit.name} : {finalDamage}");
                 }
-
                 break;
             }
-
             return;
         }
 
         currentHealth -= finalDamage;
-        currentHealth = Mathf.Max(currentHealth, 0f);
+        currentHealth  = Mathf.Max(currentHealth, 0f);
 
         OnPlayerDamaged?.Invoke();
 
@@ -88,28 +78,23 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             Die();
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // HEAL
-    // ─────────────────────────────────────────────────────────────
+    // ─── Heal ─────────────────────────────────────────────────────────────────
 
     public void Heal(float amount)
     {
         if (isDead) return;
 
-        float maxHP = stats.GetStat(StatType.MaxHealth);
-
+        float maxHP   = stats.GetStat(StatType.MaxHealth);
         currentHealth = Mathf.Min(currentHealth + amount, maxHP);
 
         onHealthChanged?.Invoke(currentHealth, maxHP);
     }
 
     public float GetCurrentHP() => currentHealth;
-    public float GetMaxHP() => stats != null ? stats.GetStat(StatType.MaxHealth) : 100f;
-    public float GetHPRatio() => currentHealth / GetMaxHP();
+    public float GetMaxHP()     => stats != null ? stats.GetStat(StatType.MaxHealth) : 100f;
+    public float GetHPRatio()   => currentHealth / GetMaxHP();
 
-    // ─────────────────────────────────────────────────────────────
-    // UNITY
-    // ─────────────────────────────────────────────────────────────
+    // ─── Unity ───────────────────────────────────────────────────────────────
 
     void Awake()
     {
@@ -119,6 +104,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     void Start()
     {
         ResetPlayer();
+
+        // S'assure que l'overlay est transparent au départ
+        if (deathOverlay != null)
+            deathOverlay.color = new Color(0f, 0f, 0f, 0f);
     }
 
     void OnEnable()
@@ -133,50 +122,47 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             stats.OnStatsChanged -= HandleStatsChanged;
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // RESET PLAYER
-    // ─────────────────────────────────────────────────────────────
+    // ─── Reset Player ─────────────────────────────────────────────────────────
 
     public void ResetPlayer()
     {
         isDead = false;
 
-        float maxHP = stats.GetStat(StatType.MaxHealth);
+        if (stats == null)
+            stats = GetComponent<PlayerStats>();
 
+        float maxHP   = stats.GetStat(StatType.MaxHealth);
         currentHealth = maxHP;
         lastMaxHealth = maxHP;
 
         onHealthChanged?.Invoke(currentHealth, maxHP);
+
+        // Reset overlay
+        if (deathOverlay != null)
+            deathOverlay.color = new Color(0f, 0f, 0f, 0f);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // STATS CHANGED
-    // ─────────────────────────────────────────────────────────────
+    // ─── Stats Changed ────────────────────────────────────────────────────────
 
     void HandleStatsChanged()
     {
         float newMaxHP = stats.GetStat(StatType.MaxHealth);
-
-        float delta = newMaxHP - lastMaxHealth;
+        float delta    = newMaxHP - lastMaxHealth;
 
         if (delta > 0)
             currentHealth += delta;
 
         currentHealth = Mathf.Min(currentHealth, newMaxHP);
-
         lastMaxHealth = newMaxHP;
 
         onHealthChanged?.Invoke(currentHealth, newMaxHP);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // DEATH
-    // ─────────────────────────────────────────────────────────────
+    // ─── Death ────────────────────────────────────────────────────────────────
 
     void Die()
     {
         if (isDead) return;
-
         isDead = true;
 
         Debug.Log("💀 Joueur mort");
@@ -185,55 +171,75 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         // Convertit le gold en XP
         if (XPManager.Instance != null)
+        {
+            Debug.Log($"✨ Conversion : {XPManager.Instance.GetGold()} gold → XP");
             XPManager.Instance.ConvertGoldToXP();
+        }
 
-        Invoke(nameof(ReturnToMenu), deathDelay);
+        StartCoroutine(DeathFade());
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // MENU RESET
-    // ─────────────────────────────────────────────────────────────
+    IEnumerator DeathFade()
+    {
+        float elapsed  = 0f;
+        float duration = 1.5f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t  = Mathf.Clamp01(elapsed / duration);
+
+            // Ralentit le temps progressivement
+            Time.timeScale = Mathf.Lerp(1f, 0f, t);
+
+            // Fade vers le noir
+            if (deathOverlay != null)
+                deathOverlay.color = new Color(0f, 0f, 0f, Mathf.Lerp(0f, 1f, t));
+
+            yield return null;
+        }
+
+        // Stoppe complètement
+        Time.timeScale = 0f;
+
+        // Petite pause à l'écran noir
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        ReturnToMenu();
+    }
+
+    // ─── Return To Menu ───────────────────────────────────────────────────────
 
     void ReturnToMenu()
     {
         ResetRun(gameObject);
-
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // RESET RUN
-    // ─────────────────────────────────────────────────────────────
+    // ─── Reset Run ────────────────────────────────────────────────────────────
 
     void ResetRun(GameObject player)
     {
-        // Reset buffs
-        PlayerStats stats = player.GetComponent<PlayerStats>();
+        PlayerStats playerStats = player.GetComponent<PlayerStats>();
+        if (playerStats != null)
+        {
+            playerStats.ClearAllModifiers();
+            playerStats.ResetRunStats();
+        }
 
-        if (stats != null)
-            stats.ClearAllModifiers();
-
-        // Reset HP
         PlayerHealth health = player.GetComponent<PlayerHealth>();
-
         if (health != null)
             health.ResetPlayer();
 
-        // Reset ultimate
         if (UltimateManager.Instance != null)
             UltimateManager.Instance.ResetUltimate(player);
-        
-        stats.ResetRunStats();
 
         FindFirstObjectByType<PickupDetector>()?.ForceRefresh();
         UIStatsPanel.Instance?.ClearPreview();
         BuffUI.Instance?.SetPickup(null);
 
-        // Désactive le player dans le menu
         player.SetActive(false);
-
-        // Reset position
         player.transform.position = Vector3.zero;
     }
-    
 }

@@ -34,7 +34,7 @@ MonoBehaviour:
   mirrorDuration: 6
   mirrorCooldown: 18
   invisibilityDuration: 5
-  invisibilityCooldown: 20
+  invisibilityCooldown: 30
   silenceRadius: 10
   silenceSlowness: 0.8
   silenceDuration: 5

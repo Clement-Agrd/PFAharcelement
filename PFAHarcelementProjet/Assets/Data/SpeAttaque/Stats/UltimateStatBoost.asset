@@ -20,7 +20,7 @@ MonoBehaviour:
   specialRadius: 5
   specialCooldown: 8
   statBoostPercent: 0.3
-  statBoostDuration: 10
+  statBoostDuration: 3
   shieldDuration: 5
   shieldCooldown: 20
   swarmCount: 5
