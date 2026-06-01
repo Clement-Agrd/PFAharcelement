@@ -49,7 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCDialogue
   interactRange: 4.75
   interactKey: 101
-  npcPortrait: {fileID: 21300000, guid: 9cf79b2450f6a6644a9e71f52aee463d, type: 3}
+  npcPortrait: {fileID: 21300000, guid: 3514e1104f96f164380a8d9fe87ec651, type: 3}
   npcName: Raie
   dialogLines:
   - "Continuer d\u2019avancer est le seul moyen d\u2019arriver \xE0 la fin, tu peux

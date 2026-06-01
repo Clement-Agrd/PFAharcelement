@@ -49,7 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCDialogue
   interactRange: 4.75
   interactKey: 101
-  npcPortrait: {fileID: 21300000, guid: 9cf79b2450f6a6644a9e71f52aee463d, type: 3}
+  npcPortrait: {fileID: 21300000, guid: 1494cf440849f754c93865a229f254e4, type: 3}
   npcName: Crabe
   dialogLines:
   - "Bien s\u2019\xE9quiper est presque aussi important que les personnes qui t\u2019accompagnent,

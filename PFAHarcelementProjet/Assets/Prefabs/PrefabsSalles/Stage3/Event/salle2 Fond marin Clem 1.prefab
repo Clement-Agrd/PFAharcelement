@@ -18032,7 +18032,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCDialogue
   interactRange: 4.75
   interactKey: 101
-  npcPortrait: {fileID: 21300000, guid: 9cf79b2450f6a6644a9e71f52aee463d, type: 3}
+  npcPortrait: {fileID: 21300000, guid: 0b563988f32970c439949269644d0166, type: 3}
   npcName: Baleine
   dialogLines:
   - "J\u2019ai travers\xE9 de nombreuses mers, m\xEAme si \xE7a peut para\xEEtre
