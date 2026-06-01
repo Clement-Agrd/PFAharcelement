@@ -23,10 +23,10 @@ MonoBehaviour:
     value: 0.1
   - statType: 2
     modifierType: 0
-    value: 6
+    value: 8
   - statType: 3
     modifierType: 0
-    value: 2
+    value: 5
   - statType: 4
     modifierType: 0
     value: 1
@@ -41,4 +41,4 @@ MonoBehaviour:
     value: 1
   - statType: 8
     modifierType: 1
-    value: 0.02
+    value: 0.15

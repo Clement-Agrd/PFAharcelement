@@ -22,15 +22,15 @@ public class DashAttackState : EnemyStateBase
         hasHit = false;
         phase  = Phase.Windup;
 
-        // Direction figée au moment du déclenchement (pas de tracking pendant le dash)
         dashDirection = (enemy.PlayerTransform.position - enemy.transform.position);
         dashDirection.y = 0f;
         dashDirection   = dashDirection.normalized;
 
-        // Regarde le joueur immédiatement
         if (dashDirection != Vector3.zero)
             enemy.transform.rotation = Quaternion.LookRotation(dashDirection);
 
+        enemy.Rb.linearVelocity = Vector3.zero;   // ← vide la vélocité accumulée
+        enemy.Rb.isKinematic = true;               // ← plus pushable pendant le windup
         enemy.TriggerAnim("Speed");
     }
 
@@ -66,26 +66,29 @@ public class DashAttackState : EnemyStateBase
         phase = Phase.Dashing;
         enemy.TriggerAnim("Attack");
 
-        // Freeze la rotation pendant le dash
+        enemy.Rb.isKinematic = false;              // ← reactivé pour MovePosition
         enemy.Rb.freezeRotation = true;
+        enemy.Rb.constraints |= RigidbodyConstraints.FreezePositionY;
     }
 
     private void UpdateDashing()
     {
-        // Détection de contact avec le joueur
         if (!hasHit && enemy.IsPlayerInRange(dasher.DashHitRadius))
         {
             hasHit = true;
             HitPlayer();
+
+            // ← Stoppe immédiatement le dash au contact
+            timer = dasher.DashDuration;
+            enemy.Rb.linearVelocity = Vector3.zero;
+            return;
         }
 
-        // Fin du dash → recovery
         if (timer >= dasher.DashDuration)
         {
             timer = 0f;
             phase = Phase.Recovery;
-
-            enemy.Rb.linearVelocity = Vector3.zero; // stoppe net
+            enemy.Rb.linearVelocity = Vector3.zero;
             enemy.PlayAnim("Idle");
         }
     }
@@ -120,7 +123,9 @@ public class DashAttackState : EnemyStateBase
 
     public override void Exit()
     {
+        enemy.Rb.isKinematic = false;
         enemy.Rb.freezeRotation = false;
+        enemy.Rb.constraints &= ~RigidbodyConstraints.FreezePositionY;
         enemy.Rb.linearVelocity = Vector3.zero;
     }
 }

@@ -34,11 +34,11 @@ MonoBehaviour:
     modifierType: 1
     value: 0.2
   - statType: 6
-    modifierType: 1
-    value: 0.1
+    modifierType: 0
+    value: 0.2
   - statType: 7
     modifierType: 1
     value: 0.1
   - statType: 8
-    modifierType: 1
-    value: 0.1
+    modifierType: 0
+    value: 0.2
