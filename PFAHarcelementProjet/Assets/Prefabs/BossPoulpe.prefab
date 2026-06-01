@@ -139,7 +139,7 @@ MonoBehaviour:
   SweepTotalDuration: 3
   TelegraphVFX: {fileID: 0}
   TelegraphDuration: 1
-  RecoveryDuration: 1.5
+  RecoveryDuration: 0.2
 --- !u!136 &4970510887988223022
 CapsuleCollider:
   m_ObjectHideFlags: 0

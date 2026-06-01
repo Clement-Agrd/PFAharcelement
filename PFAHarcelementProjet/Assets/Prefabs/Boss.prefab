@@ -9879,10 +9879,10 @@ MonoBehaviour:
   AllowRotation: 1
   rotationSpeed: 10
   bestiaryEntry: {fileID: 0}
-  maxHealth: 150
-  moveSpeed: 3
-  attackRange: 8
-  chaseRange: 20
+  maxHealth: 250
+  moveSpeed: 6
+  attackRange: 15
+  chaseRange: 30
   attackCooldown: 1
   stopChaseRange: 4
   goldValue: 50
@@ -9898,7 +9898,7 @@ MonoBehaviour:
   SpinSpeed: 360
   SpinDuration: 1.5
   ExpandDuration: 0.8
-  AoERadius: 10
+  AoERadius: 20
   AoEDamagePerSecond: 200
   RandomZoneCount: 5
   ZoneSpawnRadius: 10
@@ -9906,7 +9906,7 @@ MonoBehaviour:
   BurstCount: 6
   BurstInterval: 0.25
   BurstSpread: 0.1
-  RecoveryDuration: 2
+  RecoveryDuration: 0.2
 --- !u!114 &8470449992852437037
 MonoBehaviour:
   m_ObjectHideFlags: 0

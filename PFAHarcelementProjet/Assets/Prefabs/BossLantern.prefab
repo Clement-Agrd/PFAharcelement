@@ -190,10 +190,10 @@ MonoBehaviour:
   AllowRotation: 1
   rotationSpeed: 10
   bestiaryEntry: {fileID: 0}
-  maxHealth: 100
-  moveSpeed: 3
-  attackRange: 8
-  chaseRange: 20
+  maxHealth: 1000
+  moveSpeed: 7
+  attackRange: 20
+  chaseRange: 30
   attackCooldown: 1.2
   stopChaseRange: 4
   goldValue: 100
@@ -217,7 +217,7 @@ MonoBehaviour:
   TripleDashHitRadius: 5
   TripleDashPause: 0.15
   TripleDashRecovery: 0.6
-  RecoveryDuration: 1.2
+  RecoveryDuration: 0.2
 --- !u!135 &1819245403568920219
 SphereCollider:
   m_ObjectHideFlags: 0
