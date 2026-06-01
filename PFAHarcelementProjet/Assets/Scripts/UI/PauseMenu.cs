@@ -69,6 +69,31 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
         VirtualCursorController.Instance?.HideCursor();
         XPManager.Instance.ConvertGoldToXP();
+        GameObject obj = GameObject.FindWithTag("Player");
+        ResetRun(obj);
+    }
+    void ResetRun(GameObject player)
+    {
+        PlayerStats stats = player.GetComponent<PlayerStats>();
+        if (stats != null)
+        {
+            stats.ClearAllModifiers();
+            stats.ResetRunStats();
+        }
+
+        PlayerHealth health = player.GetComponent<PlayerHealth>();
+        if (health != null)
+            health.ResetPlayer();
+
+        if (UltimateManager.Instance != null)
+            UltimateManager.Instance.ResetUltimate(player);
+
+        FindFirstObjectByType<PickupDetector>()?.ForceRefresh();
+        UIStatsPanel.Instance?.ClearPreview();
+        BuffUI.Instance?.SetPickup(null);
+
+        player.SetActive(false);
+        player.transform.position = Vector3.zero;
         SceneManager.LoadScene("MainMenu");
     }
 }
