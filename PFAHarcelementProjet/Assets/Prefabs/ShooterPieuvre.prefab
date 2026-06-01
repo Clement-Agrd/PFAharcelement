@@ -207,7 +207,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 2725591829447007800, guid: fc1227368a75dbe408c5a36a2c828230, type: 3}
   firePoint: {fileID: 1209730540548839449}
   attackTiltAngle: -60
-  tiltSpeed: 2
+  tiltSpeed: 4
 --- !u!1 &1398010251339418771
 GameObject:
   m_ObjectHideFlags: 0
