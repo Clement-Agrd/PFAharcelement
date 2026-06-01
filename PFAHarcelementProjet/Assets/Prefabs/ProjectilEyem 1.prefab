@@ -187,4 +187,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectileEnemy
   speed: 10
   lifeTime: 5
-  damage: 10
+  damage: 40
+  isReflected: 0
+  reflectedDirection: {x: 0, y: 0, z: 0}

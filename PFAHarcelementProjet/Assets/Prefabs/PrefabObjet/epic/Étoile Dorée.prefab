@@ -71,7 +71,7 @@ MonoBehaviour:
   buffData: {fileID: 11400000, guid: c0fa0148d784089499d6e61174a7de4c, type: 2}
   pickupMode: 0
   interactionRange: 10
-  price: 100
+  price: 200
 --- !u!1001 &2729546266469949734
 PrefabInstance:
   m_ObjectHideFlags: 0

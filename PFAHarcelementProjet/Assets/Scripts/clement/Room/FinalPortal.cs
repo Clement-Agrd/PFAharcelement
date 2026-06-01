@@ -1,18 +1,18 @@
+// Scripts/FinalPortal.cs
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class FinalPortal : MonoBehaviour
 {
+    [Header("Scène")]
     public string menuSceneName = "MainMenu";
 
     private bool used = false;
 
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
         if (used) return;
-
-        if (!other.CompareTag("Player"))
-            return;
+        if (!other.CompareTag("Player")) return;
 
         used = true;
 
@@ -22,37 +22,39 @@ public class FinalPortal : MonoBehaviour
 
         ResetRun(other.gameObject);
 
+        // Lance le slideshow puis retour menu
+        if (EndSlideshowUI.Instance != null)
+            EndSlideshowUI.Instance.Play(GoToMenu);
+        else
+            GoToMenu();
+    }
+
+    void GoToMenu()
+    {
         SceneManager.LoadScene(menuSceneName);
     }
 
     void ResetRun(GameObject player)
     {
-        // Reset buffs
         PlayerStats stats = player.GetComponent<PlayerStats>();
-
         if (stats != null)
+        {
             stats.ClearAllModifiers();
+            stats.ResetRunStats();
+        }
 
-        // Reset HP
         PlayerHealth health = player.GetComponent<PlayerHealth>();
-
         if (health != null)
             health.ResetPlayer();
 
-        // Reset ultimate
         if (UltimateManager.Instance != null)
             UltimateManager.Instance.ResetUltimate(player);
-
-        stats.ResetRunStats();
 
         FindFirstObjectByType<PickupDetector>()?.ForceRefresh();
         UIStatsPanel.Instance?.ClearPreview();
         BuffUI.Instance?.SetPickup(null);
 
-        // Désactive le player dans le menu
         player.SetActive(false);
-
-        // Reset position
         player.transform.position = Vector3.zero;
     }
 }

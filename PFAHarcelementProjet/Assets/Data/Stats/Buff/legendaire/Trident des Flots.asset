@@ -17,10 +17,10 @@ MonoBehaviour:
   modifiers:
   - statType: 5
     modifierType: 1
-    value: 1
+    value: 0.8
   - statType: 2
     modifierType: 1
-    value: -0.5
+    value: -0.3
   - statType: 3
     modifierType: 1
-    value: -0.5
+    value: -0.3

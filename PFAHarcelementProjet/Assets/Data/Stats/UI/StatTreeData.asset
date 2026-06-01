@@ -33,7 +33,7 @@ MonoBehaviour:
     costMultiplier: 2
   - displayName: "D\xE9g\xE2ts Aquatiques"
     description: "D\xE9g\xE2ts faits \xE0 distance."
-    icon: {fileID: 21300000, guid: c3a678c12ad545847b59a3b3031843ce, type: 3}
+    icon: {fileID: 21300000, guid: 250d7c557378fe443886a501291c4ff8, type: 3}
     statType: 3
     modifierType: 0
     maxLevel: 5
