@@ -16,6 +16,10 @@ public class EndSlideshowUI : MonoBehaviour
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
+
+        // Cache l'image mais garde le Canvas actif
+        if (displayImage != null)
+            displayImage.gameObject.SetActive(false);
     }
 
     public void Play(System.Action onFinished)
@@ -26,7 +30,7 @@ public class EndSlideshowUI : MonoBehaviour
             return;
         }
 
-        gameObject.SetActive(true);
+        displayImage.gameObject.SetActive(true); // Active l'image, pas le Canvas
         StartCoroutine(PlaySlideshow(onFinished));
     }
 
@@ -43,6 +47,7 @@ public class EndSlideshowUI : MonoBehaviour
             yield return StartCoroutine(Fade(1f, 0f));
         }
 
+        displayImage.gameObject.SetActive(false); // ← ajout
         onFinished?.Invoke();
     }
 

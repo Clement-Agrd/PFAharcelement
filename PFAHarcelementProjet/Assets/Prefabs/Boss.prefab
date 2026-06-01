@@ -9898,7 +9898,7 @@ MonoBehaviour:
   SpinSpeed: 360
   SpinDuration: 1.5
   ExpandDuration: 0.8
-  AoERadius: 20
+  AoERadius: 13
   AoEDamagePerSecond: 200
   RandomZoneCount: 5
   ZoneSpawnRadius: 10

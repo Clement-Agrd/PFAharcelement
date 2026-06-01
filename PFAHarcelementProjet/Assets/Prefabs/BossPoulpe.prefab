@@ -111,7 +111,7 @@ MonoBehaviour:
   AllowRotation: 0
   rotationSpeed: 10
   bestiaryEntry: {fileID: 0}
-  maxHealth: 300
+  maxHealth: 500
   moveSpeed: 3
   attackRange: 30
   chaseRange: 20

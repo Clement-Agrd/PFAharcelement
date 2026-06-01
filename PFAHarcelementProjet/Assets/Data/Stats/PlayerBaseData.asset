@@ -18,6 +18,6 @@ MonoBehaviour:
   meleeDamage: 20
   rangedDamage: 5
   attackSpeed: 1.5
-  projectileSpeed: 10
+  projectileSpeed: 12
   cooldownReduction: 0
   moveSpeed: 6
