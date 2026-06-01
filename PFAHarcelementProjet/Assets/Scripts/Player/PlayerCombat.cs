@@ -104,7 +104,21 @@ public class PlayerCombat : MonoBehaviour
             ? new Vector3(move.x, 0f, move.y).normalized
             : Vector3.zero;
     }
+    
+    public void TriggerDash()
+    {
+        if (dash == null || !dash.CanDash) return;
 
+        Vector3 moveDirection = GetMoveDirection();
+        Vector3 aimDirection  = GetAimDirection();
+
+        Vector3 dashDir = moveDirection != Vector3.zero
+            ? moveDirection
+            : aimDirection;
+
+        dash.StartDash(dashDir, aimDirection);
+    }
+    
     Vector3 GetAimDirection()
     {
         if (activeAimDevice == AimDevice.Gamepad)
